@@ -58,13 +58,11 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 		var pos = GetDimensions().Position();
 
-		var inventoryBack = TextureAssets.InventoryBack.Value;
-		var colorBack = HighlightedIngredient == null || Ingredient == null 
-			? Color.White
-			: HighlightedIngredient.IsEquivalent(Ingredient)
-				? Main.OurFavoriteColor
-				: Color.White;
-		sb.Draw(inventoryBack, pos, null, colorBack, 0, Vector2.Zero, _scale, 0, 0);
+		var inventoryBack = (HighlightedIngredient?.IsEquivalent(Ingredient!) ?? false) 
+			? TextureAssets.InventoryBack14.Value
+			: TextureAssets.InventoryBack.Value;
+
+		sb.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, _scale, 0, 0);
 
 		QuiteEnoughRecipes.DrawItemIcon(DisplayedItem, -1, sb, pos + inventoryBack.Size() * _scale / 2,
 			_scale, 32, Color.White);

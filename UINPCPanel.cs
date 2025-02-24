@@ -19,13 +19,16 @@ namespace QuiteEnoughRecipes;
  * Displays an NPC. Similar to a bestiary button, but is never locked. Shows the name of the NPC
  * when hovered.
  */
-public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<NPCIngredient>
+public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<NPCIngredient>, IHighlightableElement
 {
 	// This needs to be a child of the panel to handle overflow properly.
-	private class UINPCIcon : UIElement
+	private class UINPCIcon : UIElement, IIngredientElement, IHighlightableElement
 	{
 		private int _npcID = 0;
 		private bool _isHovering => Parent?.IsMouseHovering ?? false;
+
+		public IIngredient? HighlightedIngredient { get; set; }
+		public IIngredient Ingredient => new NPCIngredient(NPCID);
 
 		public BestiaryEntry Entry { get; private set; }
 		public required int NPCID
@@ -74,6 +77,13 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 				UnlockState = BestiaryEntryUnlockState.CanShowPortraitOnly_1
 			};
 
+			if (HighlightedIngredient?.IsEquivalent(Ingredient) ?? false)
+			{
+				var dim = GetDimensions().ToRectangle();
+				dim.Inflate(-2, -2);
+				sb.Draw(TextureAssets.MagicPixel.Value, dim, Main.OurFavoriteColor);
+			}
+
 			QuiteEnoughRecipes.LoadNPCAsync(NPCID);
 			Entry.Icon.Draw(collectionInfo, sb,
 				new EntryIconDrawSettings(){
@@ -91,6 +101,8 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 	private string _hoverText = "";
 
 	public IIngredient Ingredient => new NPCIngredient(_icon.NPCID);
+
+	public IIngredient? HighlightedIngredient { get; set; }
 
 	public UINPCPanel(int npcID)
 	{

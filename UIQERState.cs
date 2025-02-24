@@ -448,7 +448,7 @@ public class UIQERState : UIState
 		{
 			if (element is IHighlightableElement highlightable)
 			{
-				highlightable.HighlightedIngredient = _clickedIngredient;
+				highlightable.HighlightedIngredient = _history[_historyIndex].ClickedIngredient;
 			}
 			HighlightRecursive(element.Children);
 		}
