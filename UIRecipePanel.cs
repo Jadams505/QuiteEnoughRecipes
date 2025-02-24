@@ -9,8 +9,10 @@ using Terraria;
 namespace QuiteEnoughRecipes;
 
 // Displays a recipe; similar to what you might see in the crafting window.
-public class UIRecipePanel : UIAutoExtend
+public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 {
+	public IIngredient? HighlightedIngredient { get; set; }
+
 	/*
 	 * Sometimes we want to show recipes that aren't real recipes (like shimmer), so we want to
 	 * create a new `Recipe` object. However, Terraria will throw an exception if we try to

@@ -236,6 +236,7 @@ public class UIQERState : UIState
 
 	public override void Update(GameTime t)
 	{
+		HighlightRecursive(Children);
 		base.Update(t);
 		Main.LocalPlayer.mouseInterface = true;
 	}
@@ -438,6 +439,18 @@ public class UIQERState : UIState
 		if (_history.Count > MaxHistorySize)
 		{
 			_history.RemoveRange(0, _history.Count - MaxHistorySize);
+		}
+	}
+
+	private void HighlightRecursive(IEnumerable<UIElement> elements)
+	{
+		foreach (var element in elements)
+		{
+			if (element is IHighlightableElement highlightable)
+			{
+				highlightable.HighlightedIngredient = _clickedIngredient;
+			}
+			HighlightRecursive(element.Children);
 		}
 	}
 

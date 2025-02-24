@@ -98,3 +98,8 @@ public record struct NPCIngredient(int ID) : IIngredient
 		return other is NPCIngredient n && n.ID == ID;
 	}
 }
+
+public interface IHighlightableElement
+{
+	public IIngredient? HighlightedIngredient { get; set; }
+}

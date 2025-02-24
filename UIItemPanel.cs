@@ -16,7 +16,7 @@ namespace QuiteEnoughRecipes;
  * have any other special behavior when interacted with; this can be achieved by subscribing to the
  * events from `UIElement`.
  */
-public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement<ItemIngredient>
+public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement<ItemIngredient>, IHighlightableElement
 {
 	public const int DefaultSideLength = 52;
 
@@ -29,6 +29,8 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 	public Item? DisplayedItem;
 
 	public IIngredient? Ingredient => DisplayedItem == null ? null : new ItemIngredient(DisplayedItem);
+
+	public IIngredient? HighlightedIngredient { get; set; }
 
 	// The icon will be scaled to fit in a square with side length `width`.
 	public UIItemPanel(Item? displayedItem, float width = DefaultSideLength)
@@ -57,7 +59,12 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 		var pos = GetDimensions().Position();
 
 		var inventoryBack = TextureAssets.InventoryBack.Value;
-		sb.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, _scale, 0, 0);
+		var colorBack = HighlightedIngredient == null || Ingredient == null 
+			? Color.White
+			: HighlightedIngredient.IsEquivalent(Ingredient)
+				? Main.OurFavoriteColor
+				: Color.White;
+		sb.Draw(inventoryBack, pos, null, colorBack, 0, Vector2.Zero, _scale, 0, 0);
 
 		QuiteEnoughRecipes.DrawItemIcon(DisplayedItem, -1, sb, pos + inventoryBack.Size() * _scale / 2,
 			_scale, 32, Color.White);
