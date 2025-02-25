@@ -19,10 +19,10 @@ namespace QuiteEnoughRecipes;
  * Displays an NPC. Similar to a bestiary button, but is never locked. Shows the name of the NPC
  * when hovered.
  */
-public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<NPCIngredient>, IHighlightableElement
+public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<NPCIngredient>
 {
 	// This needs to be a child of the panel to handle overflow properly.
-	private class UINPCIcon : UIElement, IIngredientElement, IHighlightableElement
+	private class UINPCIcon : UIElement, IHighlightableElement
 	{
 		private int _npcID = 0;
 		private bool _isHovering => Parent?.IsMouseHovering ?? false;
@@ -77,7 +77,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 				UnlockState = BestiaryEntryUnlockState.CanShowPortraitOnly_1
 			};
 
-			if (HighlightedIngredient?.IsEquivalent(Ingredient) ?? false)
+			if (QERConfig.Instance.ShouldHighlightMatchingIngredients(HighlightedIngredient, Ingredient))
 			{
 				var dim = GetDimensions().ToRectangle();
 				dim.Inflate(-2, -2);
@@ -101,8 +101,6 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 	private string _hoverText = "";
 
 	public IIngredient Ingredient => new NPCIngredient(_icon.NPCID);
-
-	public IIngredient? HighlightedIngredient { get; set; }
 
 	public UINPCPanel(int npcID)
 	{

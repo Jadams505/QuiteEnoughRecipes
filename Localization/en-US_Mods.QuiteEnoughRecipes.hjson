@@ -59,6 +59,15 @@ Configs: {
 				'''
 		}
 
+		HighlightClickedItems: {
+			Label: Highlight Clicked Items
+			Tooltip:
+				'''
+				If this is enabled, clicking an item will highlight all occurances of that item,
+				making it easier to find how the item is used.
+				'''
+		}
+
 		DisplayName: QER Config
 	}
 }

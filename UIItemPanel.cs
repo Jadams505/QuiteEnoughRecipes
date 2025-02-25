@@ -58,7 +58,7 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 		var pos = GetDimensions().Position();
 
-		var inventoryBack = (HighlightedIngredient?.IsEquivalent(Ingredient!) ?? false) 
+		var inventoryBack = QERConfig.Instance.ShouldHighlightMatchingIngredients(HighlightedIngredient, Ingredient)
 			? TextureAssets.InventoryBack14.Value
 			: TextureAssets.InventoryBack.Value;
 
