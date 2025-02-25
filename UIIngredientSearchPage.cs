@@ -81,7 +81,7 @@ public class OptionPanelToggleButton : UIElement
  * A page including a scrollable list of ingredients, a search bar, and filter options. This
  * contains a list of type `T`, which are displayed in elements of type `E` in a grid.
  */
-public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage
+public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHighlightableElement
 	where T : IIngredient
 	where E : UIElement, IScrollableGridElement<T>, new()
 {
@@ -177,6 +177,8 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage
 
 	private UIQERSearchBar _searchBar = new();
 	private string? _searchText = null;
+
+	public IIngredient? HighlightedIngredient { get; set; }
 
 	/*
 	 * `squareSideLength` is the side length of the grid squares, and `padding` is the amount of
@@ -285,6 +287,14 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage
 		}
 
 		_ingredientList.Values = _filteredIngredients;
+
+		ExecuteRecursively(e =>
+		{
+			if (e is IHighlightableElement highlightable)
+			{
+				highlightable.HighlightedIngredient = HighlightedIngredient;
+			}
+		});
 	}
 
 	/*

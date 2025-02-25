@@ -11,7 +11,24 @@ namespace QuiteEnoughRecipes;
 // Displays a recipe; similar to what you might see in the crafting window.
 public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 {
-	public IIngredient? HighlightedIngredient { get; set; }
+	public Item CreateItem { get; set; }
+	public List<Item> RequiredItems { get; set; }
+	public List<int> AcceptedGroups { get; set; }
+	public List<int> RequiredTiles { get; set; }
+	public List<Condition> Conditions { get; set; }
+
+	private IIngredient? _highlightedIngredient;
+	public IIngredient? HighlightedIngredient
+	{
+		get => _highlightedIngredient;
+		set
+		{
+			_highlightedIngredient = value;
+			_constraintText?.SetText(ConstraintText());
+		}
+	}
+
+	private readonly UIText _constraintText;
 
 	/*
 	 * Sometimes we want to show recipes that aren't real recipes (like shimmer), so we want to
@@ -22,10 +39,11 @@ public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 		List<int>? acceptedGroups = null, List<int>? requiredTiles = null,
 		List<Condition>? conditions = null)
 	{
-		requiredItems ??= new();
-		acceptedGroups ??= new();
-		requiredTiles ??= new();
-		conditions ??= new();
+		CreateItem = createItem;
+		RequiredItems = requiredItems ?? [];
+		AcceptedGroups = acceptedGroups ?? [];
+		RequiredTiles = requiredTiles ?? [];
+		Conditions = conditions ?? [];
 
 		Height.Pixels = 50;
 		Width.Percent = 1;
@@ -40,25 +58,22 @@ public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 
 		appendElement(new UIItemPanel(createItem, 50), 50);
 
-		var conditionStrings =
-			requiredTiles.Select(CraftingStationName)
-			.Concat(conditions.Select(c => c.Description.Value));
-		var conditionText = string.Join(", ", conditionStrings);
+		var conditionText = ConstraintText();
 
-		var constraintTextPanel = new UIText(conditionText, 0.6f);
-		constraintTextPanel.Left.Pixels = offset;
+		_constraintText = new UIText(conditionText, 0.6f);
+		_constraintText.Left.Pixels = offset;
 
-		Append(constraintTextPanel);
+		Append(_constraintText);
 
 		var requiredItemsContainer = new UIAutoExtendGrid();
 		requiredItemsContainer.Width = new StyleDimension(-60, 1);
 		requiredItemsContainer.Top.Pixels = 20;
 		requiredItemsContainer.HAlign = 1;
 
-		foreach (var item in requiredItems)
+		foreach (var item in RequiredItems)
 		{
 			// See if there's a group in the recipe that accepts this item.
-			var maybeGroup = acceptedGroups
+			var maybeGroup = AcceptedGroups
 				.Select(g => {
 					RecipeGroup.recipeGroups.TryGetValue(g, out var rg);
 					return rg;
@@ -79,6 +94,28 @@ public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 		this(recipe.createItem, recipe.requiredItem, recipe.acceptedGroups, recipe.requiredTile,
 			recipe.Conditions)
 	{
+	}
+
+	private string ConstraintText()
+	{
+		var conditionStrings =
+		RequiredTiles.Select(HighlightedCraftingStationName)
+			.Concat(Conditions.Select(c => c.Description.Value));
+		var conditionText = string.Join(", ", conditionStrings);
+		return conditionText;
+	}
+
+	private string HighlightedCraftingStationName(int tileID)
+	{
+		var name = CraftingStationName(tileID);
+		if (!QERConfig.Instance.HighlightClickedItems) { return name; }
+
+		if (HighlightedIngredient is ItemIngredient item && item.Item.createTile == tileID)
+		{
+			return $"[c/{Main.OurFavoriteColor.Hex3()}:{name}]";
+		}
+
+		return name;
 	}
 
 	private static string CraftingStationName(int tileID)
