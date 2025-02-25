@@ -11,22 +11,11 @@ namespace QuiteEnoughRecipes;
 // Displays a recipe; similar to what you might see in the crafting window.
 public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 {
-	public Item CreateItem { get; set; }
-	public List<Item> RequiredItems { get; set; }
-	public List<int> AcceptedGroups { get; set; }
-	public List<int> RequiredTiles { get; set; }
-	public List<Condition> Conditions { get; set; }
-
-	private IIngredient? _highlightedIngredient;
-	public IIngredient? HighlightedIngredient
-	{
-		get => _highlightedIngredient;
-		set
-		{
-			_highlightedIngredient = value;
-			_constraintText?.SetText(ConstraintText());
-		}
-	}
+	protected Item CreateItem { get; }
+	protected List<Item> RequiredItems { get; }
+	protected List<int> AcceptedGroups { get; }
+	protected List<int> RequiredTiles { get; }
+	protected List<Condition> Conditions { get; }
 
 	private readonly UIText _constraintText;
 
@@ -58,7 +47,7 @@ public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 
 		appendElement(new UIItemPanel(createItem, 50), 50);
 
-		var conditionText = ConstraintText();
+		var conditionText = ConstraintText(null);
 
 		_constraintText = new UIText(conditionText, 0.6f);
 		_constraintText.Left.Pixels = offset;
@@ -96,21 +85,26 @@ public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 	{
 	}
 
-	private string ConstraintText()
+	public void Highlight(IIngredient? source)
+	{
+		_constraintText?.SetText(ConstraintText(source));
+	}
+
+	private string ConstraintText(IIngredient? ingredient)
 	{
 		var conditionStrings =
-		RequiredTiles.Select(HighlightedCraftingStationName)
+		RequiredTiles.Select(t => HighlightedCraftingStationName(t, ingredient))
 			.Concat(Conditions.Select(c => c.Description.Value));
 		var conditionText = string.Join(", ", conditionStrings);
 		return conditionText;
 	}
 
-	private string HighlightedCraftingStationName(int tileID)
+	private static string HighlightedCraftingStationName(int tileID, IIngredient? ingredient)
 	{
 		var name = CraftingStationName(tileID);
 		if (!QERConfig.Instance.HighlightClickedItems) { return name; }
 
-		if (HighlightedIngredient is ItemIngredient item && item.Item.createTile == tileID)
+		if (ingredient is ItemIngredient item && item.Item.createTile == tileID)
 		{
 			return $"[c/{Main.OurFavoriteColor.Hex3()}:{name}]";
 		}

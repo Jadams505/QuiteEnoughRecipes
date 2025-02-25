@@ -28,9 +28,9 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 	// The item to show. When this is set to `null`, nothing at all will be drawn.
 	public Item? DisplayedItem;
 
-	public IIngredient? Ingredient => DisplayedItem == null ? null : new ItemIngredient(DisplayedItem);
+	public bool IsHighlighted { get; set; }
 
-	public IIngredient? HighlightedIngredient { get; set; }
+	public IIngredient? Ingredient => DisplayedItem == null ? null : new ItemIngredient(DisplayedItem);
 
 	// The icon will be scaled to fit in a square with side length `width`.
 	public UIItemPanel(Item? displayedItem, float width = DefaultSideLength)
@@ -48,6 +48,11 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 	public void SetDisplayedValue(ItemIngredient i) => DisplayedItem = i.Item;
 
+	public void Highlight(IIngredient? source)
+	{
+		IsHighlighted = Ingredient != null && source != null && Ingredient.IsEquivalent(source);
+	}
+
 	/*
 	 * This is a stripped-down version of the vanilla drawing code. It doesn't have to do any of
 	 * the "fancy" stuff that vanilla has to do to handle item slots in specific contexts.
@@ -58,7 +63,7 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 		var pos = GetDimensions().Position();
 
-		var inventoryBack = QERConfig.Instance.ShouldHighlightMatchingIngredients(HighlightedIngredient, Ingredient)
+		var inventoryBack = IsHighlighted
 			? TextureAssets.InventoryBack14.Value
 			: TextureAssets.InventoryBack.Value;
 

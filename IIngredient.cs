@@ -101,5 +101,5 @@ public record struct NPCIngredient(int ID) : IIngredient
 
 public interface IHighlightableElement
 {
-	public IIngredient? HighlightedIngredient { get; set; }
+	public void Highlight(IIngredient? source);
 }

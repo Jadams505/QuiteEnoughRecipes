@@ -27,7 +27,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 		private int _npcID = 0;
 		private bool _isHovering => Parent?.IsMouseHovering ?? false;
 
-		public IIngredient? HighlightedIngredient { get; set; }
+		public bool IsHighlighted { get; set; }
 		public IIngredient Ingredient => new NPCIngredient(NPCID);
 
 		public BestiaryEntry Entry { get; private set; }
@@ -49,6 +49,11 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 			IgnoresMouseInteraction = true;
 			Width.Percent = 1;
 			Height.Percent = 1;
+		}
+
+		public void Highlight(IIngredient? source)
+		{
+			IsHighlighted = Ingredient != null && source != null && Ingredient.IsEquivalent(source);
 		}
 
 		public override void Update(GameTime t)
@@ -77,7 +82,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 				UnlockState = BestiaryEntryUnlockState.CanShowPortraitOnly_1
 			};
 
-			if (QERConfig.Instance.ShouldHighlightMatchingIngredients(HighlightedIngredient, Ingredient))
+			if (IsHighlighted)
 			{
 				var dim = GetDimensions().ToRectangle();
 				dim.Inflate(-2, -2);

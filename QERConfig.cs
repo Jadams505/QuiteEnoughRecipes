@@ -21,12 +21,4 @@ public class QERConfig : ModConfig
 
 	[DefaultValue(false)]
 	public bool HighlightClickedItems;
-
-	public bool ShouldHighlightMatchingIngredients(IIngredient? first, IIngredient? second)
-	{
-		if (!HighlightClickedItems) { return false; }
-		if (first == null || second == null) { return false; }
-
-		return first.IsEquivalent(second);
-	}
 }

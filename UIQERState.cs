@@ -454,11 +454,13 @@ public class UIQERState : UIState
 
 	private void HighlightRecursive(UIElement element)
 	{
+		if (!QERConfig.Instance.HighlightClickedItems) { return; }
+
 		element.ExecuteRecursively(e =>
 		{
 			if (e is IHighlightableElement highlightable)
 			{
-				highlightable.HighlightedIngredient = _history[_historyIndex].ClickedIngredient;
+				highlightable.Highlight(_history[_historyIndex].ClickedIngredient);
 			}
 		});
 	}

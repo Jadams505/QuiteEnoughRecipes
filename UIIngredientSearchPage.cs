@@ -178,7 +178,7 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHi
 	private UIQERSearchBar _searchBar = new();
 	private string? _searchText = null;
 
-	public IIngredient? HighlightedIngredient { get; set; }
+	private IIngredient? _highlightedIngredient;
 
 	/*
 	 * `squareSideLength` is the side length of the grid squares, and `padding` is the amount of
@@ -262,6 +262,11 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHi
 		_searchBar.SetTakingInput(true);
 	}
 
+	public void Highlight(IIngredient? source)
+	{
+		_highlightedIngredient = source;
+	}
+
 	public void AddFilterGroup(in OptionGroup<Predicate<T>> g)
 	{
 		_filterPanel.AddGroup(g);
@@ -288,11 +293,18 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHi
 
 		_ingredientList.Values = _filteredIngredients;
 
+		HighlightDisplayedIngredients();
+	}
+
+	private void HighlightDisplayedIngredients()
+	{
+		if (!QERConfig.Instance.HighlightClickedItems) { return; }
+
 		ExecuteRecursively(e =>
 		{
 			if (e is IHighlightableElement highlightable)
 			{
-				highlightable.HighlightedIngredient = HighlightedIngredient;
+				highlightable.Highlight(_highlightedIngredient);
 			}
 		});
 	}
