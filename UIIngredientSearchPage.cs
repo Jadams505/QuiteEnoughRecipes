@@ -81,7 +81,7 @@ public class OptionPanelToggleButton : UIElement
  * A page including a scrollable list of ingredients, a search bar, and filter options. This
  * contains a list of type `T`, which are displayed in elements of type `E` in a grid.
  */
-public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHighlightableElement
+public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage
 	where T : IIngredient
 	where E : UIElement, IScrollableGridElement<T>, new()
 {
@@ -178,8 +178,6 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHi
 	private UIQERSearchBar _searchBar = new();
 	private string? _searchText = null;
 
-	private IIngredient? _highlightedIngredient;
-
 	/*
 	 * `squareSideLength` is the side length of the grid squares, and `padding` is the amount of
 	 * padding between grid squares.
@@ -262,11 +260,6 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHi
 		_searchBar.SetTakingInput(true);
 	}
 
-	public void Highlight(IIngredient? source)
-	{
-		_highlightedIngredient = source;
-	}
-
 	public void AddFilterGroup(in OptionGroup<Predicate<T>> g)
 	{
 		_filterPanel.AddGroup(g);
@@ -292,21 +285,6 @@ public class UIIngredientSearchPage<T, E> : UIElement, IFocusableSearchPage, IHi
 		}
 
 		_ingredientList.Values = _filteredIngredients;
-
-		HighlightDisplayedIngredients();
-	}
-
-	private void HighlightDisplayedIngredients()
-	{
-		if (!QERConfig.Instance.HighlightClickedItems) { return; }
-
-		ExecuteRecursively(e =>
-		{
-			if (e is IHighlightableElement highlightable)
-			{
-				highlightable.Highlight(_highlightedIngredient);
-			}
-		});
 	}
 
 	/*

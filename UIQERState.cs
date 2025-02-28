@@ -178,7 +178,6 @@ public class UIQERState : UIState
 		_recipeTabBar.OnTabSelected += page => {
 			recipeContainer.Open(page);
 			_history[_historyIndex].RecipePage = page;
-			HighlightRecursive(page);
 		};
 
 		/*
@@ -224,7 +223,6 @@ public class UIQERState : UIState
 
 			_optionPanelContainer.Close();
 			ingredientListContainer.Open(page);
-			HighlightRecursive(page);
 		};
 
 		ingredientTabBar.OpenTabFor(itemSearchPage);
@@ -238,7 +236,7 @@ public class UIQERState : UIState
 
 	public override void Update(GameTime t)
 	{
-		//HighlightRecursive(this);
+		HighlightRecursive(this);
 		base.Update(t);
 		Main.LocalPlayer.mouseInterface = true;
 	}
@@ -392,8 +390,6 @@ public class UIQERState : UIState
 
 		_recipeTabBar.Activate();
 		_recipeTabBar.OpenTabFor(pagesForIngredient[0]);
-
-		HighlightRecursive(this);
 
 		return true;
 	}

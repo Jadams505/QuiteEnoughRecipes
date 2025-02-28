@@ -85,7 +85,7 @@ public class UIRecipePanel : UIAutoExtend, IHighlightableElement
 	{
 	}
 
-	public void Highlight(IIngredient? source)
+	public virtual void Highlight(IIngredient? source)
 	{
 		_constraintText?.SetText(ConstraintText(source));
 	}

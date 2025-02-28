@@ -51,7 +51,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 			Height.Percent = 1;
 		}
 
-		public void Highlight(IIngredient? source)
+		public virtual void Highlight(IIngredient? source)
 		{
 			IsHighlighted = Ingredient != null && source != null && Ingredient.IsEquivalent(source);
 		}

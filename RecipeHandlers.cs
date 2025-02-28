@@ -138,7 +138,7 @@ public static class RecipeHandlers
 			}
 		}
 
-		static bool MatchesCurrency(Item currency, Item shopEntry)
+		public static bool MatchesCurrency(Item currency, Item shopEntry)
 		{
 			if (CustomCurrencyManager.TryGetCurrencySystem(shopEntry.shopSpecialCurrency, out var customCurrency))
 			{

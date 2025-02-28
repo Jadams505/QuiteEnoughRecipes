@@ -48,7 +48,7 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 	public void SetDisplayedValue(ItemIngredient i) => DisplayedItem = i.Item;
 
-	public void Highlight(IIngredient? source)
+	public virtual void Highlight(IIngredient? source)
 	{
 		IsHighlighted = Ingredient != null && source != null && Ingredient.IsEquivalent(source);
 	}
