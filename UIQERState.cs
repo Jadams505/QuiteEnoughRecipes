@@ -274,6 +274,7 @@ public class UIQERState : UIState
 		AddHandler(new RecipeHandlers.NPCDrops());
 		AddHandler(new RecipeHandlers.GlobalDrops());
 		AddHandler(new ChlorophyteExtractinatorHandler());
+		AddHandler(new ReforgeHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;

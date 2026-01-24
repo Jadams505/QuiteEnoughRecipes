@@ -93,6 +93,7 @@ Tabs: {
 	NPCDrops: 掉落
 	GlobalDrops: 全局掉落
 	// ChlorophyteExtractinator: "{$ItemName.ChlorophyteExtractinator}"
+	// Reforging: Reforging
 }
 
 OptionGroups: {
