@@ -92,6 +92,7 @@ Tabs: {
 	ItemDrops: Item Loot
 	NPCDrops: NPC Loot
 	GlobalDrops: Global Loot
+	ChlorophyteExtractinator: "{$ItemName.ChlorophyteExtractinator}"
 }
 
 OptionGroups: {

@@ -9,6 +9,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria;
+using QuiteEnoughRecipes.ModRecipeHandlers;
 
 namespace QuiteEnoughRecipes;
 
@@ -272,6 +273,7 @@ public class UIQERState : UIState
 		AddHandler(new RecipeHandlers.ItemDrops());
 		AddHandler(new RecipeHandlers.NPCDrops());
 		AddHandler(new RecipeHandlers.GlobalDrops());
+		AddHandler(new ChlorophyteExtractinatorHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
