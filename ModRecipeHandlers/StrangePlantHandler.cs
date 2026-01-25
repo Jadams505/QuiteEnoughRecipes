@@ -22,6 +22,8 @@ public class StrangePlantHandler : IRecipeHandler
 
 	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 	{
+		var chests = Main.chest;
+
 		return (ing, queryType) switch
 		{
 			(ItemIngredient item, QueryType.Uses) when ItemID.Sets.ExoticPlantsForDyeTrade[item.Item.type] => GetUsageRecipes(),
