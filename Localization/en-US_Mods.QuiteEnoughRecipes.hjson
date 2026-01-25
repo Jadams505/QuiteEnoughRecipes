@@ -94,6 +94,7 @@ Tabs: {
 	GlobalDrops: Global Loot
 	ChlorophyteExtractinator: "{$ItemName.ChlorophyteExtractinator}"
 	Reforging: Reforging
+	StrangePlant: Strange Plant Rewards
 }
 
 OptionGroups: {
@@ -169,4 +170,5 @@ Tooltips: {
 Conditions: {
 	BannerDrop: Drops once for every {0} kills
 	Invalid: Invalid drop condition ({0})
+	DyeTrader: Dye Trader
 }
