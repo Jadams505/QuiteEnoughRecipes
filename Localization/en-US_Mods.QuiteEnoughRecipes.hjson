@@ -95,6 +95,7 @@ Tabs: {
 	ChlorophyteExtractinator: "{$ItemName.ChlorophyteExtractinator}"
 	Reforging: Reforging
 	StrangePlant: Strange Plant Rewards
+	ChestLoot: Chest Loot
 }
 
 OptionGroups: {

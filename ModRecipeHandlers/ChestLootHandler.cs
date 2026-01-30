@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
@@ -17,7 +18,7 @@ public class ChestLootHandler : IRecipeHandler
 	internal static Dictionary<int, List<DropRateInfo>> ChestLootCache
 	{
 		get {
-			return GetChestLootRates();
+			return GetChestLootRates(Main.chest);
 		}
 	}
 
@@ -43,40 +44,64 @@ public class ChestLootHandler : IRecipeHandler
 		};
 	}
 
-	public static Dictionary<int, List<IEnumerable<Item>>> GetChestLootLookup()
+	/// <summary>
+	/// Builds a lookup table of chest loot, grouped by the item type that represents each chest.
+	/// </summary>
+	/// <returns>
+	/// A dictionary keyed by chest item type, where each value is a list of loot inventories.
+	/// Each inventory is the set of non-null, non-empty items found in a single chest of that type.
+	/// </returns>
+	public static Dictionary<int, List<IEnumerable<Item>>> GetChestLootLookup(Chest[] chests)
 	{
 		var chestLookup = new Dictionary<int, List<IEnumerable<Item>>>();
 
-		foreach (var chest in Main.chest)
+		foreach (var chest in chests)
 		{
-			if (chest is null || !chest.item.Any(i => i.type != 0))
+			if (chest is null || !chest.item.Any(i => i is not null && i.type != 0))
 				continue;
 
-			var tile = Framing.GetTileSafely(chest.x, chest.y);
-			var style = TileObjectData.GetTileStyle(tile);
+			int chestItem = ChestToItem(chest);
 
-			var item = ContentSamples.ItemsByType.Values.FirstOrDefault(i => i.createTile == tile.TileType && i.placeStyle == style, null);
-			int itemId = ItemID.GoldenKey;
-			if (item is not null)
-				itemId = item.type;
-
-			var loot = chest.item.Where(i => i.type != 0);
-			if (chestLookup.TryGetValue(itemId, out var items))
+			var loot = chest.item.Where(i => i is not null && i.type != 0);
+			if (chestLookup.TryGetValue(chestItem, out var items))
 			{
-				chestLookup[itemId].Add(loot);
+				chestLookup[chestItem].Add(loot);
 			}
 			else
 			{
-				chestLookup[itemId] = [loot];
+				chestLookup[chestItem] = [loot];
 			}
 		}
 
 		return chestLookup;
 	}
 
-	public static Dictionary<int, List<DropRateInfo>> GetChestLootRates()
+	/// <summary>
+	/// Gets the matching item for a particular chest. It does this by using the item that places the
+	/// chest. This does not work for all chests as some chests cannot be placed (locked chests). An 
+	/// alternative to look into is Chest.chestTypeToIcon2 and similar.
+	/// Defaults to the Golden Key.
+	/// </summary>
+	public static int ChestToItem(Chest chest)
 	{
-		var lookup = GetChestLootLookup();
+		var tile = Framing.GetTileSafely(chest.x, chest.y);
+		var style = TileObjectData.GetTileStyle(tile);
+
+		var item = ContentSamples.ItemsByType.Values.FirstOrDefault(i => i.createTile == tile.TileType && i.placeStyle == style, null);
+
+		if (item is not null)
+			return item.type;
+
+		return ItemID.GoldenKey;
+	}
+
+	/// <summary>
+	/// Calculates drop rate statistics for chest loot, grouped by chest item type.
+	/// </summary>
+	/// <returns></returns>
+	public static Dictionary<int, List<DropRateInfo>> GetChestLootRates(Chest[] chests)
+	{
+		var lookup = GetChestLootLookup(chests);
 		var chestLootRates = new Dictionary<int, List<DropRateInfo>>();
 
 		foreach (var chestLoot in lookup)
@@ -103,5 +128,22 @@ public class ChestLootHandler : IRecipeHandler
 			chestLootRates[chestLoot.Key] = lootInfo;
 		}
 		return chestLootRates;
+	}
+
+	// TODO: Vanilla has a packet that can be sent from the Client to the Server to update the
+	// chest contents at a particular tile. The issues is that every tile needs to be checked since the
+	// client does no know if a particular tile has a chest attached to it. (A chest is a multitile, but the actual Chest data is typically stored in the top left). Querying every tile in the world, is horrible for performance.
+	public static void UpdateChestInfoFromServer(int range)
+	{
+		var player = Main.LocalPlayer;
+		var pos = player.position.ToTileCoordinates();
+
+		for (int x = pos.X - range; x < pos.X + range; ++x)
+		{
+			for (int y = pos.Y - range; y < pos.Y + range; ++y)
+			{
+				NetMessage.SendData(MessageID.RequestChestOpen, number: x, number2: y);
+			}
+		}
 	}
 }
