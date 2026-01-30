@@ -40,6 +40,11 @@ public class ChestLootHandler : IRecipeHandler
 					Item = new(entry.Key),
 					Drops = entry.Value
 				}),
+			(ItemIngredient itemIng, QueryType.Uses) when ChestLootCache.TryGetValue(itemIng.Item.type, out var usedLoot) => [new ItemDropsRecipe()
+				{
+					Item = new(itemIng.Item.type),
+					Drops = usedLoot
+				}],
 			_ => []
 		};
 	}
