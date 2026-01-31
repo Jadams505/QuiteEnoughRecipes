@@ -10,12 +10,14 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
+using ChestType = (int TileType, int Style, int IconItem);
+
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
 public class ChestLootHandler : IRecipeHandler
 {
 	private static Dictionary<int, List<DropRateInfo>> _chestLootCache = null!;
-	internal static Dictionary<int, List<DropRateInfo>> ChestLootCache
+	internal static Dictionary<ChestType, List<DropRateInfo>> ChestLootCache
 	{
 		get {
 			return GetChestLootRates(Main.chest);
@@ -29,85 +31,82 @@ public class ChestLootHandler : IRecipeHandler
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 
-	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType) => (ing, queryType) switch
 	{
-		return (ing, queryType) switch
-		{
-			(ItemIngredient itemIng, QueryType.Sources) => ChestLootCache
-				.Where(entry => entry.Value.Any(drop => drop.itemId == itemIng.Item.type))
-				.Select(entry => new ItemDropsRecipe()
-				{
-					Item = new(entry.Key),
-					Drops = entry.Value
-				}),
-			(ItemIngredient itemIng, QueryType.Uses) when ChestLootCache.TryGetValue(itemIng.Item.type, out var usedLoot) => [new ItemDropsRecipe()
-				{
-					Item = new(itemIng.Item.type),
-					Drops = usedLoot
-				}],
-			_ => []
-		};
-	}
+		(ItemIngredient itemIng, QueryType.Sources) => ChestLootCache
+			.Where(entry => entry.Value.Any(drop => drop.itemId == itemIng.Item.type))
+			.Select(entry => new ItemDropsRecipe()
+			{
+				Item = new(entry.Key.IconItem),
+				Drops = entry.Value
+			}),
+		(ItemIngredient itemIng, QueryType.Uses) => ChestLootCache
+			.Where(entry => entry.Key.IconItem == itemIng.Item.type)
+			.Select(entry => new ItemDropsRecipe()
+			{
+				Item = new(entry.Key.IconItem),
+				Drops = entry.Value
+			}),
+		_ => []
+	};
 
 	/// <summary>
-	/// Builds a lookup table of chest loot, grouped by the item type that represents each chest.
+	/// Builds a lookup table of chest loot, grouped by the chest type that represents each chest.
 	/// </summary>
 	/// <returns>
-	/// A dictionary keyed by chest item type, where each value is a list of loot inventories.
+	/// A dictionary keyed by chest type, where each value is a list of loot inventories.
 	/// Each inventory is the set of non-null, non-empty items found in a single chest of that type.
 	/// </returns>
-	public static Dictionary<int, List<IEnumerable<Item>>> GetChestLootLookup(Chest[] chests)
+	public static Dictionary<ChestType, List<IEnumerable<Item>>> GetChestLootLookup(Chest[] chests)
 	{
-		var chestLookup = new Dictionary<int, List<IEnumerable<Item>>>();
+		var chestLookup = new Dictionary<ChestType, List<IEnumerable<Item>>>();
 
 		foreach (var chest in chests)
 		{
 			if (chest is null || !chest.item.Any(i => i is not null && i.type != 0))
 				continue;
 
-			int chestItem = ChestToItem(chest);
+			var chestType = ChestToChestType(chest);
 
 			var loot = chest.item.Where(i => i is not null && i.type != 0);
-			if (chestLookup.TryGetValue(chestItem, out var items))
+			if (chestLookup.TryGetValue(chestType, out var items))
 			{
-				chestLookup[chestItem].Add(loot);
+				chestLookup[chestType].Add(loot);
 			}
 			else
 			{
-				chestLookup[chestItem] = [loot];
+				chestLookup[chestType] = [loot];
 			}
 		}
 
 		return chestLookup;
 	}
 
-	/// <summary>
-	/// Gets the matching item for a particular chest. It does this by using the item that places the
-	/// chest. This does not work for all chests as some chests cannot be placed (locked chests). An 
-	/// alternative to look into is Chest.chestTypeToIcon2 and similar.
-	/// Defaults to the Golden Key.
-	/// </summary>
-	public static int ChestToItem(Chest chest)
+	public static ChestType ChestToChestType(Chest chest)
 	{
 		var tile = Framing.GetTileSafely(chest.x, chest.y);
-		var style = TileObjectData.GetTileStyle(tile);
+		var style = 0;
+		int itemType = 0;
+        if (Main.tileFrameImportant[tile.TileType])
+        {
+			style = TileObjectData.GetTileStyle(tile);
+		}
 
 		var item = ContentSamples.ItemsByType.Values.FirstOrDefault(i => i.createTile == tile.TileType && i.placeStyle == style, null);
-
 		if (item is not null)
-			return item.type;
+			itemType = item.type;
 
-		return ItemID.GoldenKey;
+		return (tile.TileType, style, itemType);
 	}
 
 	/// <summary>
-	/// Calculates drop rate statistics for chest loot, grouped by chest item type.
+	/// Calculates drop rate statistics for chest loot, grouped by chest type.
 	/// </summary>
 	/// <returns></returns>
-	public static Dictionary<int, List<DropRateInfo>> GetChestLootRates(Chest[] chests)
+	public static Dictionary<ChestType, List<DropRateInfo>> GetChestLootRates(Chest[] chests)
 	{
 		var lookup = GetChestLootLookup(chests);
-		var chestLootRates = new Dictionary<int, List<DropRateInfo>>();
+		var chestLootRates = new Dictionary<ChestType, List<DropRateInfo>>();
 
 		foreach (var chestLoot in lookup)
 		{
