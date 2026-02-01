@@ -153,7 +153,7 @@ public static class RecipeHandlers
 		public IEnumerable<Type> GetIngredientTypes() =>
 			[typeof(ItemIngredient), typeof(NPCIngredient)];
 
-		static bool MatchesCurrency(Item currency, Item shopEntry)
+		public static bool MatchesCurrency(Item currency, Item shopEntry)
 		{
 			if (CustomCurrencyManager.TryGetCurrencySystem(shopEntry.shopSpecialCurrency, out var customCurrency))
 			{

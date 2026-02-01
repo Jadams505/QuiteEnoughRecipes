@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria;
 using QuiteEnoughRecipes.ModRecipeHandlers;
+using QuiteEnoughRecipes.ModUIElements;
 
 namespace QuiteEnoughRecipes;
 
@@ -353,6 +354,7 @@ public class UIQERState : UIState
 
 	public override void Update(GameTime t)
 	{
+		HighlightRecursive(this);
 		base.Update(t);
 		Main.LocalPlayer.mouseInterface = true;
 	}
@@ -549,5 +551,18 @@ public class UIQERState : UIState
 			_history.RemoveRange(0, _history.Count - MaxHistorySize);
 			_historyIndex = _history.Count - 1;
 		}
+	}
+
+	private void HighlightRecursive(UIElement element)
+	{
+		//if (!QERConfig.Instance.HighlightClickedItems) { return; }
+
+		element.ExecuteRecursively(e =>
+		{
+			if (e is IHighlightableElement highlightable)
+			{
+				highlightable.Highlight(_history[_historyIndex].ClickedIngredient);
+			}
+		});
 	}
 }

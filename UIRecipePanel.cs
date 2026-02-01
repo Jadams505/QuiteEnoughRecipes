@@ -7,6 +7,7 @@ using Terraria.UI;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.Localization;
+using QuiteEnoughRecipes.ModUIElements;
 
 namespace QuiteEnoughRecipes;
 
@@ -45,7 +46,11 @@ public class UIRecipePanel : UIAutoExtend
 			.Concat(conditions.Select(c => c.Description.Value));
 		var conditionText = string.Join(", ", conditionStrings);
 
-		var constraintTextPanel = new UIText(conditionText, 0.6f);
+		var constraintTextPanel = new UIHighlightableText(conditionText, 0.6f);
+		constraintTextPanel.DoHighlight += source =>
+		{
+			constraintTextPanel.SetText(ConstraintText(requiredTiles, conditions, source));
+		};
 		constraintTextPanel.Left.Pixels = offset;
 
 		Append(constraintTextPanel);
@@ -75,10 +80,32 @@ public class UIRecipePanel : UIAutoExtend
 		Append(requiredItemsContainer);
 	}
 
-	public UIRecipePanel(Recipe recipe) :
+    public UIRecipePanel(Recipe recipe) :
 		this(recipe.createItem, recipe.requiredItem, recipe.acceptedGroups, recipe.requiredTile,
 			recipe.Conditions, recipe.Mod)
 	{
+	}
+
+	private static string ConstraintText(List<int> requiredTiles, List<Condition> conditions, IIngredient? ingredient)
+	{
+		var conditionStrings =
+		requiredTiles.Select(t => HighlightedCraftingStationName(t, ingredient))
+			.Concat(conditions.Select(c => c.Description.Value));
+		var conditionText = string.Join(", ", conditionStrings);
+		return conditionText;
+	}
+
+	private static string HighlightedCraftingStationName(int tileID, IIngredient? ingredient)
+	{
+		var name = CraftingStationName(tileID);
+		//if (!QERConfig.Instance.HighlightClickedItems) { return name; }
+
+		if (ingredient is ItemIngredient item && item.Item.createTile == tileID)
+		{
+			return $"[c/{Main.OurFavoriteColor.Hex3()}:{name}]";
+		}
+
+		return name;
 	}
 
 	private static string CraftingStationName(int tileID)

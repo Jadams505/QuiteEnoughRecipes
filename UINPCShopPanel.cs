@@ -48,6 +48,15 @@ file class UIShopItemPanel : UIItemPanel
 		_conditions = string.Join("\n", conditionDescs);
 	}
 
+	public override void Highlight(IIngredient? source)
+	{
+		base.Highlight(source);
+
+		// shops items should highlight the same way as normal slots, but also highlight matching currency
+		IsHighlighted = IsHighlighted || source is ItemIngredient currency && Ingredient is ItemIngredient shopEntry
+			&& RecipeHandlers.NPCShops.MatchesCurrency(currency.Item, shopEntry.Item);
+	}
+
 	public override void ModifyTooltips(Mod mod, List<TooltipLine> tooltips)
 	{
 		base.ModifyTooltips(mod, tooltips);

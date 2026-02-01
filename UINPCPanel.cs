@@ -12,6 +12,7 @@ using Terraria.ModLoader.UI;
 using Terraria.UI.Chat;
 using Terraria.UI;
 using Terraria;
+using QuiteEnoughRecipes.ModUIElements;
 
 namespace QuiteEnoughRecipes;
 
@@ -22,10 +23,13 @@ namespace QuiteEnoughRecipes;
 public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<NPCIngredient>
 {
 	// This needs to be a child of the panel to handle overflow properly.
-	private class UINPCIcon : UIElement
+	private class UINPCIcon : UIElement, IIngredientElement, IHighlightableElement
 	{
 		private int _npcID = 0;
 		private bool _isHovering => Parent?.IsMouseHovering ?? false;
+
+		public bool IsHighlighted { get; protected set; }
+		public IIngredient Ingredient => new NPCIngredient(NPCID);
 
 		public BestiaryEntry Entry { get; private set; }
 		public required int NPCID
@@ -46,6 +50,11 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 			IgnoresMouseInteraction = true;
 			Width.Percent = 1;
 			Height.Percent = 1;
+		}
+
+		public virtual void Highlight(IIngredient? source)
+		{
+			IsHighlighted = Ingredient is not null && source is not null && Ingredient.IsEquivalent(source);
 		}
 
 		public override void Update(GameTime t)
@@ -78,6 +87,13 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 				OwnerEntry = Entry,
 				UnlockState = BestiaryEntryUnlockState.CanShowPortraitOnly_1
 			};
+
+			if (IsHighlighted)
+			{
+				var dim = GetDimensions().ToRectangle();
+				dim.Inflate(-2, -2);
+				sb.Draw(TextureAssets.MagicPixel.Value, dim, Main.OurFavoriteColor);
+			}
 
 			if (QuiteEnoughRecipes.LoadNPCAsync(NPCID).IsLoaded)
 			{

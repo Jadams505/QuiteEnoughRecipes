@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.UI.Chat;
 using Terraria.UI;
 using Terraria;
+using QuiteEnoughRecipes.ModUIElements;
 
 namespace QuiteEnoughRecipes;
 
@@ -16,7 +17,7 @@ namespace QuiteEnoughRecipes;
  * have any other special behavior when interacted with; this can be achieved by subscribing to the
  * events from `UIElement`.
  */
-public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement<ItemIngredient>
+public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement<ItemIngredient>, IHighlightableElement
 {
 	public const int DefaultSideLength = 52;
 
@@ -27,6 +28,8 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 	// The item to show. When this is set to `null`, nothing at all will be drawn.
 	public Item? DisplayedItem;
+
+	public bool IsHighlighted { get; protected set; }
 
 	public IIngredient? Ingredient => DisplayedItem == null ? null : new ItemIngredient(DisplayedItem);
 
@@ -46,6 +49,11 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 	public void SetDisplayedValue(ItemIngredient i) => DisplayedItem = i.Item;
 
+	public virtual void Highlight(IIngredient? source)
+	{
+		IsHighlighted = Ingredient is not null && source is not null && Ingredient.IsEquivalent(source);
+	}
+
 	/*
 	 * This is a stripped-down version of the vanilla drawing code. It doesn't have to do any of
 	 * the "fancy" stuff that vanilla has to do to handle item slots in specific contexts.
@@ -56,7 +64,10 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 		var pos = GetDimensions().Position();
 
-		var inventoryBack = TextureAssets.InventoryBack.Value;
+		var inventoryBack = IsHighlighted
+			? TextureAssets.InventoryBack14.Value
+			: TextureAssets.InventoryBack.Value;
+
 		sb.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, _scale, 0, 0);
 
 		float oldInventoryScale = Main.inventoryScale;
