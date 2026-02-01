@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria;
 using Terraria.ID;
+using QuiteEnoughRecipes.ModIngredients;
 
 namespace QuiteEnoughRecipes;
 
@@ -110,6 +111,11 @@ public class IngredientRegistry : ModSystem
 			.ToList();
 		AddIngredients(allNPCs);
 
+		var allTiles = Enumerable.Range(0, TileLoader.TileCount)
+			.Select(t => new TileIngredient(t))
+			.ToList();
+		AddIngredients(allTiles);
+
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
@@ -143,6 +149,12 @@ public class IngredientRegistry : ModSystem
 		foreach (var (comp, icon, name) in npcSorts)
 		{
 			AddSort<NPCIngredient>(comp, icon, name, $"{keyParent}.NPCSorts.Name");
+		}
+
+		var tileSorts = IngredientOptions.GetOptionButtons<Comparison<TileIngredient>>("TileSorts");
+		foreach (var (comp, icon, name) in tileSorts)
+		{
+			AddSort<TileIngredient>(comp, icon, name, $"{keyParent}.TileSorts.Name");
 		}
 	}
 

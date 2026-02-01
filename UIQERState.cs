@@ -11,6 +11,7 @@ using Terraria.UI;
 using Terraria;
 using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModUIElements;
+using QuiteEnoughRecipes.ModIngredients;
 
 namespace QuiteEnoughRecipes;
 
@@ -267,6 +268,10 @@ public class UIQERState : UIState
 		var npcSearchPage = new UISearchPage(npcGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.NPCSearchHelp"));
 
+		var tileGrid = new UIQueryableIngredientGrid<TileIngredient, UITilePanel>();
+		var tileSearchPage = new UISearchPage(tileGrid,
+			Language.GetText("Mods.QuiteEnoughRecipes.UI.TileSearchHelp"));
+
 		AddHandler(new RecipeHandlers.Basic());
 		AddHandler(new RecipeHandlers.CraftingStations());
 		AddHandler(new RecipeHandlers.ShimmerTransmutations());
@@ -330,6 +335,8 @@ public class UIQERState : UIState
 			new Item(ItemID.IronBar), itemSearchPage);
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.NPCList"),
 			new Item(ItemID.Bunny), npcSearchPage);
+		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.TileList"),
+			new Item(ItemID.DirtBlock), tileSearchPage);
 
 		ingredientTabBar.OnTabSelected += page => {
 			UIQERSearchBar.UnfocusAll();

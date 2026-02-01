@@ -13,6 +13,7 @@ using Terraria.UI;
 using Terraria;
 
 using ItemGroup = Terraria.ID.ContentSamples.CreativeHelper.ItemGroup;
+using QuiteEnoughRecipes.ModIngredients;
 
 namespace QuiteEnoughRecipes;
 
@@ -258,6 +259,16 @@ static class IngredientOptions
 		int yRare = TryGetNPC(y.ID)?.rarity ?? 0;
 		return xRare.CompareTo(yRare);
 	}
+	#endregion
+
+	#region Tile Sorts
+	public const string TileSortsKey = "TileSorts";
+	[IngredientOption(TileSortsKey, ItemID.AlphabetStatue1)]
+	public static int ByID(TileIngredient x, TileIngredient y) =>
+		x.TileType.CompareTo(y.TileType);
+
+	[IngredientOption(TileSortsKey, ItemID.AlphabetStatueA)]
+	public static int ByName(TileIngredient x, TileIngredient y) => x.Name.CompareTo(y.Name);
 	#endregion
 
 	/*
