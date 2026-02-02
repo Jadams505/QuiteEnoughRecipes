@@ -271,6 +271,17 @@ static class IngredientOptions
 	public static int ByName(TileIngredient x, TileIngredient y) => x.Name.CompareTo(y.Name);
 	#endregion
 
+	#region Tile Filters
+	public const string TileFiltersKey = "TileFilters";
+	[IngredientOption(TileFiltersKey, ItemID.AlphabetStatue0)]
+	public static bool IsDefaultStyle(TileIngredient n) =>
+		n.TileStyle == 0;
+
+	[IngredientOption(TileFiltersKey, ItemID.Solidifier)]
+	public static bool IsSolid(TileIngredient n) =>
+		Main.tileSolid[n.TileType];
+	#endregion
+
 	/*
 	 * Tries to find a low-rarity item to use as an icon for a damage class filter. When applying
 	 * the filter, any weapon that counts for this damage class will be shown, but for the purposes

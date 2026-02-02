@@ -8,6 +8,8 @@ using Terraria.UI;
 using Terraria;
 using Terraria.ID;
 using QuiteEnoughRecipes.ModIngredients;
+using Terraria.ObjectData;
+using System.Runtime.CompilerServices;
 
 namespace QuiteEnoughRecipes;
 
@@ -112,7 +114,7 @@ public class IngredientRegistry : ModSystem
 		AddIngredients(allNPCs);
 
 		var allTiles = Enumerable.Range(0, TileLoader.TileCount)
-			.Select(t => new TileIngredient(t))
+			.SelectMany(TileToIngredients)
 			.ToList();
 		AddIngredients(allTiles);
 
@@ -136,6 +138,12 @@ public class IngredientRegistry : ModSystem
 		foreach (var (pred, icon, name) in npcFilters)
 		{
 			AddFilter<NPCIngredient>(pred, icon, name, $"{keyParent}.NPCFilters.Name");
+		}
+
+		var tileFilters = IngredientOptions.GetOptionButtons<Predicate<TileIngredient>>(IngredientOptions.TileFiltersKey);
+		foreach (var (pred, icon, name) in tileFilters)
+		{
+			AddFilter<TileIngredient>(pred, icon, name, $"{keyParent}.TileFilters.Name");
 		}
 
 		var itemSorts = IngredientOptions.GetOptionButtons<Comparison<ItemIngredient>>(
@@ -327,5 +335,28 @@ public class IngredientRegistry : ModSystem
 		}
 
 		return group;
+	}
+
+	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_SubTiles")]
+	internal static extern List<TileObjectData> TileObjectData_SubTiles(TileObjectData self);
+
+	private static IEnumerable<TileIngredient> TileToIngredients(int tileId)
+	{
+		if (Main.tileFrameImportant[tileId])
+		{
+			if (TileObjectData.GetTileData(tileId, 0) is var data and not null && TileObjectData_SubTiles(data) is var subtiles and not null)
+			{
+				for (int i = 1; i < subtiles.Count; ++i)
+				{
+					yield return new TileIngredient(tileId, i);
+				}
+			}
+
+			yield return new TileIngredient(tileId, 0);
+		}
+		else
+		{
+			yield return new TileIngredient(tileId);
+		}
 	}
 }

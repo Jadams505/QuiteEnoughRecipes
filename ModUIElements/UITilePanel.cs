@@ -18,7 +18,7 @@ namespace QuiteEnoughRecipes.ModUIElements;
 
 public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement<TileIngredient>
 {
-	public static int GridSideLength { get; } = 50;
+	public static int GridSideLength { get; } = 52;
 	public static int GridPadding { get; } = 5;
 
 	public int TileId { get; set; }
