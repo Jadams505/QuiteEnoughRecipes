@@ -283,6 +283,7 @@ public class UIQERState : UIState
 		AddHandler(new ReforgeHandler());
 		AddHandler(new StrangePlantHandler());
 		AddHandler(new ChestLootHandler());
+		AddHandler(new PlacedTilesHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;

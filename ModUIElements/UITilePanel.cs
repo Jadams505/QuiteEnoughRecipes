@@ -61,7 +61,8 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 			? TextureAssets.InventoryBack14.Value
 			: TextureAssets.InventoryBack.Value;
 
-		spriteBatch.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, 1f, 0, 0);
+		var scale = GetDimensions().Width / GridSideLength;
+		spriteBatch.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, scale, 0, 0);
 
 		DrawTile(spriteBatch);
 
