@@ -28,7 +28,9 @@ public class TileDropsHandler : IRecipeHandler
 	{
 		return (ing, queryType) switch
 		{
-			(TileIngredient tileIng, QueryType.Uses) when TileDropsHelper.TileTypeAndTileStyleToItemType.TryGetValue((tileIng.TileType, tileIng.TileStyle), out var item) => [new TileDropsRecipe()
+			(TileIngredient tileIng, QueryType.Uses) when 
+			TileDropsHelper.TileTypeAndTileStyleToItemType.TryGetValue((tileIng.TileType, tileIng.TileStyle), out var item) ||
+			TileDropsHelper.TileTypeAndTileStyleToItemType.TryGetValue((tileIng.TileType, -1), out item) => [new TileDropsRecipe()
 			{
 				TileType = tileIng.TileType,
 				Style = tileIng.TileStyle,

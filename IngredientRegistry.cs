@@ -10,6 +10,7 @@ using Terraria.ID;
 using QuiteEnoughRecipes.ModIngredients;
 using Terraria.ObjectData;
 using System.Runtime.CompilerServices;
+using QuiteEnoughRecipes.ModRecipeHandlers;
 
 namespace QuiteEnoughRecipes;
 
@@ -344,15 +345,27 @@ public class IngredientRegistry : ModSystem
 	{
 		if (Main.tileFrameImportant[tileId])
 		{
+			var ingredientSet = new HashSet<TileIngredient>();
 			if (TileObjectData.GetTileData(tileId, 0) is var data and not null && TileObjectData_SubTiles(data) is var subtiles and not null)
 			{
 				for (int i = 1; i < subtiles.Count; ++i)
 				{
-					yield return new TileIngredient(tileId, i);
+					ingredientSet.Add(new TileIngredient(tileId, i));
 				}
 			}
 
-			yield return new TileIngredient(tileId, 0);
+			foreach (var entry in TileDropsHelper.TileTypeAndTileStyleToItemType)
+			{
+				// -1 means all styles, which isn't useful in trying to enumerate all styles
+				if (entry.Key.Style == -1) continue;
+				if (entry.Key.TileId != tileId) continue;
+
+				ingredientSet.Add(new TileIngredient(entry.Key.TileId, entry.Key.Style));
+			}
+			ingredientSet.Add(new TileIngredient(tileId, 0));
+
+			foreach (var entry in ingredientSet)
+				yield return entry;
 		}
 		else
 		{
