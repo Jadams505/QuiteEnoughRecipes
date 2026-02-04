@@ -14,7 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
-public class TilesHandler : IRecipeHandler
+public class PlacedTilesHandler : IRecipeHandler
 {
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.PlacedTiles");
