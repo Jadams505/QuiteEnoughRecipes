@@ -16,7 +16,7 @@ using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 
-public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement<TileIngredient>
+public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement<TileIngredient>, IHighlightableElement
 {
 	public static int GridSideLength { get; } = 52;
 	public static int GridPadding { get; } = 5;
@@ -27,6 +27,7 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 	public int Border { get; set; }
 	public string HoverText { get; set; } = "";
 	public IIngredient? Ingredient => new TileIngredient(TileId, TileStyle);
+	public bool IsHighlighted { get; protected set; }
 
     public UITilePanel(int tileId, int style = 0, int size = 50)
 	{
@@ -51,13 +52,18 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 		HoverText = TileID.Search.GetName(TileId);
 	}
 
+	public virtual void Highlight(IIngredient? source)
+	{
+		IsHighlighted = Ingredient is not null && source is not null && Ingredient.IsEquivalent(source);
+	}
+
 	protected override void DrawSelf(SpriteBatch spriteBatch)
 	{
 		base.DrawSelf(spriteBatch);
 
 		var pos = GetDimensions().Position();
 
-		var inventoryBack = false
+		var inventoryBack = IsHighlighted
 			? TextureAssets.InventoryBack14.Value
 			: TextureAssets.InventoryBack.Value;
 
