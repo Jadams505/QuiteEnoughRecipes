@@ -290,6 +290,7 @@ public class UIQERState : UIState
 		AddHandler(new PlacedTilesHandler());
 		AddHandler(new TileDropsHandler());
 		AddHandler(new PlacedWallsHandler());
+		AddHandler(new WallDropsHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;

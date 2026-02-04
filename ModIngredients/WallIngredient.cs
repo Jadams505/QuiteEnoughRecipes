@@ -10,7 +10,7 @@ namespace QuiteEnoughRecipes.ModIngredients;
 
 public record struct WallIngredient(int WallType) : IIngredient
 {
-	public string Name => TileID.Search.GetName(WallType);
+	public string Name => WallID.Search.GetName(WallType);
 	public Mod? Mod => WallLoader.GetWall(WallType)?.Mod;
 	public IEnumerable<string> GetTooltipLines() => [];
 
