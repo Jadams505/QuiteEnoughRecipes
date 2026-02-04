@@ -119,6 +119,11 @@ public class IngredientRegistry : ModSystem
 			.ToList();
 		AddIngredients(allTiles);
 
+		var allWalls = Enumerable.Range(0, WallLoader.WallCount)
+			.Select(w => new WallIngredient(w))
+			.ToList();
+		AddIngredients(allWalls);
+
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
@@ -147,6 +152,12 @@ public class IngredientRegistry : ModSystem
 			AddFilter<TileIngredient>(pred, icon, name, $"{keyParent}.TileFilters.Name");
 		}
 
+		var wallFilters = IngredientOptions.GetOptionButtons<Predicate<WallIngredient>>(IngredientOptions.WallFiltersKey);
+		foreach (var (pred, icon, name) in wallFilters)
+		{
+			AddFilter<WallIngredient>(pred, icon, name, $"{keyParent}.{IngredientOptions.WallFiltersKey}.Name");
+		}
+
 		var itemSorts = IngredientOptions.GetOptionButtons<Comparison<ItemIngredient>>(
 			"ItemSorts");
 		foreach (var (comp, icon, name) in itemSorts)
@@ -164,6 +175,12 @@ public class IngredientRegistry : ModSystem
 		foreach (var (comp, icon, name) in tileSorts)
 		{
 			AddSort<TileIngredient>(comp, icon, name, $"{keyParent}.TileSorts.Name");
+		}
+
+		var wallSorts = IngredientOptions.GetOptionButtons<Comparison<WallIngredient>>("WallSorts");
+		foreach (var (comp, icon, name) in wallSorts)
+		{
+			AddSort<WallIngredient>(comp, icon, name, $"{keyParent}.WallSorts.Name");
 		}
 	}
 

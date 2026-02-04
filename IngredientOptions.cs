@@ -271,6 +271,16 @@ static class IngredientOptions
 	public static int ByName(TileIngredient x, TileIngredient y) => x.Name.CompareTo(y.Name);
 	#endregion
 
+	#region Wall Sorts
+	public const string WallSortsKey = "WallSorts";
+	[IngredientOption(WallSortsKey, ItemID.AlphabetStatue1)]
+	public static int ByID(WallIngredient x, WallIngredient y) =>
+		x.WallType.CompareTo(y.WallType);
+
+	[IngredientOption(WallSortsKey, ItemID.AlphabetStatueA)]
+	public static int ByName(WallIngredient x, WallIngredient y) => x.Name.CompareTo(y.Name);
+	#endregion
+
 	#region Tile Filters
 	public const string TileFiltersKey = "TileFilters";
 	[IngredientOption(TileFiltersKey, ItemID.AlphabetStatue0)]
@@ -280,6 +290,13 @@ static class IngredientOptions
 	[IngredientOption(TileFiltersKey, ItemID.Solidifier)]
 	public static bool IsSolid(TileIngredient n) =>
 		Main.tileSolid[n.TileType];
+	#endregion
+
+	#region Wall Filters
+	public const string WallFiltersKey = "WallFilters";
+	[IngredientOption(WallFiltersKey, ItemID.Safe)]
+	public static bool IsSafe(WallIngredient n) =>
+		Main.wallHouse[n.WallType];
 	#endregion
 
 	/*

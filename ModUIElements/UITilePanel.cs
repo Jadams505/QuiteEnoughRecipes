@@ -12,7 +12,6 @@ using Terraria.ID;
 using Terraria.ModLoader.UI;
 using Terraria.ObjectData;
 using Terraria.UI;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 

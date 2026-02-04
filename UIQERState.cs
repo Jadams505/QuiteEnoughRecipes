@@ -272,6 +272,10 @@ public class UIQERState : UIState
 		var tileSearchPage = new UISearchPage(tileGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.TileSearchHelp"));
 
+		var wallGrid = new UIQueryableIngredientGrid<WallIngredient, UIWallPanel>();
+		var wallSearchPage = new UISearchPage(wallGrid,
+			Language.GetText("Mods.QuiteEnoughRecipes.UI.WallSearchHelp"));
+
 		AddHandler(new RecipeHandlers.Basic());
 		AddHandler(new RecipeHandlers.CraftingStations());
 		AddHandler(new RecipeHandlers.ShimmerTransmutations());
@@ -285,6 +289,7 @@ public class UIQERState : UIState
 		AddHandler(new ChestLootHandler());
 		AddHandler(new PlacedTilesHandler());
 		AddHandler(new TileDropsHandler());
+		AddHandler(new PlacedWallsHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
@@ -339,6 +344,8 @@ public class UIQERState : UIState
 			new Item(ItemID.Bunny), npcSearchPage);
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.TileList"),
 			new Item(ItemID.DirtBlock), tileSearchPage);
+		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.WallList"),
+			new Item(ItemID.StoneWall), wallSearchPage);
 
 		ingredientTabBar.OnTabSelected += page => {
 			UIQERSearchBar.UnfocusAll();
