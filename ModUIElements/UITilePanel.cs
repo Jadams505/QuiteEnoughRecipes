@@ -12,6 +12,7 @@ using Terraria.ID;
 using Terraria.ModLoader.UI;
 using Terraria.ObjectData;
 using Terraria.UI;
+using Terraria.UI.Chat;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 
@@ -24,15 +25,15 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 	public int TileStyle { get; set; }
 
 	public int Border { get; set; }
-	public string HoverText { get; set; } = "";
-	public IIngredient? Ingredient => new TileIngredient(TileId, TileStyle);
+	public string HoverText { get; protected set; } = "";
+	public IIngredient Ingredient => new TileIngredient(TileId, TileStyle);
 	public bool IsHighlighted { get; protected set; }
 
     public UITilePanel(int tileId, int style = 0, int size = 50)
 	{
 		TileId = tileId;
 		TileStyle = style;
-		HoverText = TileID.Search.GetName(tileId);
+		UpdateHoverText();
 		Border = 16;
 
 		Width.Pixels = size;
@@ -48,7 +49,7 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 	{
 		TileId = ing.TileType;
 		TileStyle = ing.TileStyle;
-		HoverText = TileID.Search.GetName(TileId);
+		UpdateHoverText();
 	}
 
 	public virtual void Highlight(IIngredient? source)
@@ -214,6 +215,26 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 					color: Color.White, rotation: 0f, origin: Vector2.Zero, scale: drawScale, effects: SpriteEffects.None, layerDepth: 0f);
 				y += drawHeight + tileData.CoordinatePadding;
 			}
+		}
+	}
+
+	private void UpdateHoverText()
+	{
+		var mod = Ingredient.Mod;
+		var modTag = mod is null ? "" : QuiteEnoughRecipes.GetModTagText(mod);
+
+		HoverText = $"{Ingredient.Name}{modTag}";
+		var flavorText = Ingredient.GetTooltipLines();
+
+		foreach(var line in flavorText)
+		{
+			// Match width to the width of the name for long names.
+			float width = ChatManager.GetStringSize(FontAssets.MouseText.Value, HoverText,
+				Vector2.One).X;
+			width = MathF.Max(300, width);
+
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width);
+			HoverText += $"\n{wrappedFlavorText}";
 		}
 	}
 }

@@ -264,8 +264,17 @@ static class IngredientOptions
 	#region Tile Sorts
 	public const string TileSortsKey = "TileSorts";
 	[IngredientOption(TileSortsKey, ItemID.AlphabetStatue1)]
-	public static int ByID(TileIngredient x, TileIngredient y) =>
-		x.TileType.CompareTo(y.TileType);
+	public static int ByID(TileIngredient x, TileIngredient y)
+	{
+		var compareId = x.TileType.CompareTo(y.TileType);
+		if (compareId is 0)
+		{
+			// Although not mentioned in the name, it is natural to sort in order of style as well
+			var compareStyle = x.TileStyle.CompareTo(y.TileStyle);
+			return compareStyle;
+		}
+		return compareId; 
+	}
 
 	[IngredientOption(TileSortsKey, ItemID.AlphabetStatueA)]
 	public static int ByName(TileIngredient x, TileIngredient y) => x.Name.CompareTo(y.Name);
