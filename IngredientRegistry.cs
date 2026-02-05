@@ -7,6 +7,10 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria;
 using Terraria.ID;
+using QuiteEnoughRecipes.ModIngredients;
+using Terraria.ObjectData;
+using System.Runtime.CompilerServices;
+using QuiteEnoughRecipes.ModRecipeHandlers;
 
 namespace QuiteEnoughRecipes;
 
@@ -110,6 +114,16 @@ public class IngredientRegistry : ModSystem
 			.ToList();
 		AddIngredients(allNPCs);
 
+		var allTiles = Enumerable.Range(0, TileLoader.TileCount)
+			.SelectMany(TileToIngredients)
+			.ToList();
+		AddIngredients(allTiles);
+
+		var allWalls = Enumerable.Range(0, WallLoader.WallCount)
+			.Select(w => new WallIngredient(w))
+			.ToList();
+		AddIngredients(allWalls);
+
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
@@ -132,6 +146,18 @@ public class IngredientRegistry : ModSystem
 			AddFilter<NPCIngredient>(pred, icon, name, $"{keyParent}.NPCFilters.Name");
 		}
 
+		var tileFilters = IngredientOptions.GetOptionButtons<Predicate<TileIngredient>>(IngredientOptions.TileFiltersKey);
+		foreach (var (pred, icon, name) in tileFilters)
+		{
+			AddFilter<TileIngredient>(pred, icon, name, $"{keyParent}.TileFilters.Name");
+		}
+
+		var wallFilters = IngredientOptions.GetOptionButtons<Predicate<WallIngredient>>(IngredientOptions.WallFiltersKey);
+		foreach (var (pred, icon, name) in wallFilters)
+		{
+			AddFilter<WallIngredient>(pred, icon, name, $"{keyParent}.{IngredientOptions.WallFiltersKey}.Name");
+		}
+
 		var itemSorts = IngredientOptions.GetOptionButtons<Comparison<ItemIngredient>>(
 			"ItemSorts");
 		foreach (var (comp, icon, name) in itemSorts)
@@ -143,6 +169,18 @@ public class IngredientRegistry : ModSystem
 		foreach (var (comp, icon, name) in npcSorts)
 		{
 			AddSort<NPCIngredient>(comp, icon, name, $"{keyParent}.NPCSorts.Name");
+		}
+
+		var tileSorts = IngredientOptions.GetOptionButtons<Comparison<TileIngredient>>("TileSorts");
+		foreach (var (comp, icon, name) in tileSorts)
+		{
+			AddSort<TileIngredient>(comp, icon, name, $"{keyParent}.TileSorts.Name");
+		}
+
+		var wallSorts = IngredientOptions.GetOptionButtons<Comparison<WallIngredient>>("WallSorts");
+		foreach (var (comp, icon, name) in wallSorts)
+		{
+			AddSort<WallIngredient>(comp, icon, name, $"{keyParent}.WallSorts.Name");
 		}
 	}
 
@@ -315,5 +353,40 @@ public class IngredientRegistry : ModSystem
 		}
 
 		return group;
+	}
+
+	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_SubTiles")]
+	internal static extern List<TileObjectData> TileObjectData_SubTiles(TileObjectData self);
+
+	private static IEnumerable<TileIngredient> TileToIngredients(int tileId)
+	{
+		if (Main.tileFrameImportant[tileId])
+		{
+			var ingredientSet = new HashSet<TileIngredient>();
+			if (TileObjectData.GetTileData(tileId, 0) is var data and not null && TileObjectData_SubTiles(data) is var subtiles and not null)
+			{
+				for (int i = 1; i < subtiles.Count; ++i)
+				{
+					ingredientSet.Add(new TileIngredient(tileId, i));
+				}
+			}
+
+			foreach (var entry in TileDropsHelper.TileTypeAndTileStyleToItemType)
+			{
+				// -1 means all styles, which isn't useful in trying to enumerate all styles
+				if (entry.Key.Style == -1) continue;
+				if (entry.Key.TileId != tileId) continue;
+
+				ingredientSet.Add(new TileIngredient(entry.Key.TileId, entry.Key.Style));
+			}
+			ingredientSet.Add(new TileIngredient(tileId, 0));
+
+			foreach (var entry in ingredientSet)
+				yield return entry;
+		}
+		else
+		{
+			yield return new TileIngredient(tileId);
+		}
 	}
 }

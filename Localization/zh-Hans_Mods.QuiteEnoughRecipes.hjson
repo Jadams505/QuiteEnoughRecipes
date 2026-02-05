@@ -96,6 +96,10 @@ Tabs: {
 	// Reforging: Reforging
 	// StrangePlant: Strange Plant Rewards
 	// ChestLoot: Chest Loot
+	// PlacedTiles: Placed Tiles
+	// TileDrops: Tile Drops
+	// PlacedWalls: Placed Wall
+	// WallDrops: Wall Drops
 }
 
 OptionGroups: {
@@ -155,6 +159,29 @@ OptionGroups: {
 		// ByID: "{$ItemSorts.ByID}"
 		// ByName: "{$ItemSorts.ByName}"
 		// ByRarity: "{$ItemSorts.ByRarity}"
+	}
+
+	TileFilters: {
+		// Name: Tile Filters
+		// IsDefaultStyle: Is Default Style
+		// IsSolid: Solid Tiles
+	}
+
+	TileSorts: {
+		// Name: Tile Sort Orders
+		// ByID: "{$ItemSorts.ByID}"
+		// ByName: "{$ItemSorts.ByName}"
+	}
+
+	WallFilters: {
+		// Name: Wall Filters
+		// IsSafe: Safe Walls
+	}
+
+	WallSorts: {
+		// Name: Wall Sort Orders
+		// ByID: "{$ItemSorts.ByID}"
+		// ByName: "{$ItemSorts.ByName}"
 	}
 
 	Mods: {
