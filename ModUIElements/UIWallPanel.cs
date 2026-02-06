@@ -12,6 +12,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.UI;
 using Terraria.UI;
+using Terraria.UI.Chat;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 
@@ -23,14 +24,14 @@ public class UIWallPanel : UIElement, IIngredientElement, IScrollableGridElement
 	public int WallId { get; set; }
 
 	public int Border { get; set; }
-	public string HoverText { get; set; } = "";
-	public IIngredient? Ingredient => new WallIngredient(WallId);
+	public string HoverText { get; protected set; } = "";
+	public IIngredient Ingredient => new WallIngredient(WallId);
 	public bool IsHighlighted { get; protected set; }
 
 	public UIWallPanel(int wallId, int size = 50)
 	{
 		WallId = wallId;
-		HoverText = WallID.Search.GetName(wallId);
+		UpdateHoverText();
 		Border = 16;
 
 		Width.Pixels = size;
@@ -45,7 +46,7 @@ public class UIWallPanel : UIElement, IIngredientElement, IScrollableGridElement
 	public void SetDisplayedValue(WallIngredient ing)
 	{
 		WallId = ing.WallType;
-		HoverText = WallID.Search.GetName(WallId);
+		UpdateHoverText();
 	}
 
 	public virtual void Highlight(IIngredient? source)
@@ -99,5 +100,25 @@ public class UIWallPanel : UIElement, IIngredientElement, IScrollableGridElement
 		float drawScale = Math.Min((dimensions.Width - Border) / size, (dimensions.Height - Border) / size);
 
 		spriteBatch.Draw(texture.Value, dimensions.Center(), new(startPos.X, startPos.Y, size, size), Color.White, 0f, Vector2.One * (size / 2), drawScale, SpriteEffects.None, 0);
+	}
+
+	private void UpdateHoverText()
+	{
+		var mod = Ingredient.Mod;
+		var modTag = mod is null ? "" : QuiteEnoughRecipes.GetModTagText(mod);
+
+		HoverText = $"{Ingredient.Name}{modTag}";
+		var flavorText = Ingredient.GetTooltipLines();
+
+		foreach (var line in flavorText)
+		{
+			// Match width to the width of the name for long names.
+			float width = ChatManager.GetStringSize(FontAssets.MouseText.Value, HoverText,
+				Vector2.One).X;
+			width = MathF.Max(300, width);
+
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width);
+			HoverText += $"\n{wrappedFlavorText}";
+		}
 	}
 }

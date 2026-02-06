@@ -11,7 +11,7 @@ namespace QuiteEnoughRecipes.ModIngredients;
 
 public record struct TileIngredient(int TileType, int TileStyle = 0) : IIngredient
 {
-	private string _name = null;
+	private string? _name = null;
 	public string Name => _name ??= GetName();
 	public Mod? Mod => TileLoader.GetTile(TileType)?.Mod;
 	public IEnumerable<string> GetTooltipLines()
