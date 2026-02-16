@@ -27,8 +27,12 @@ public class CaptureItemRecipe : IRecipe
 	public IEnumerable<IIngredient> GetIngredients()
 	{
 		yield return new ItemIngredient(new(Result));
-		
-		foreach (var item in CatchingTools())
+
+		var group = CatchingTools();
+		if (ItemID.Sets.IsLavaBait[Result])
+			group = LavaCatchingTools();
+
+		foreach (var item in group)
 		{
 			yield return new ItemIngredient(new(item));
 		}
@@ -37,6 +41,11 @@ public class CaptureItemRecipe : IRecipe
 	}
 
 	public static IEnumerable<int> CatchingTools() => ItemID.Sets.CatchingTool
+		.Select((value, index) => (value, index))
+		.Where(entry => entry.value)
+		.Select(entry => entry.index);
+
+	public static IEnumerable<int> LavaCatchingTools() => ItemID.Sets.LavaproofCatchingTool
 		.Select((value, index) => (value, index))
 		.Where(entry => entry.value)
 		.Select(entry => entry.index);

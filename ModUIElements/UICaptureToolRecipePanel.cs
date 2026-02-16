@@ -7,20 +7,28 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 
 public class UICaptureToolRecipePanel : UIElement
 {
-	public static RecipeGroup? AnyBugNet;
+	public static RecipeGroup? AnyCaptureTool;
+	public static RecipeGroup? AnyLavaProofCaptureTool;
 
 	public UICaptureToolRecipePanel(int catchItem, int npcId)
 	{
-		AnyBugNet ??= new
+		AnyCaptureTool ??= new
 		(
-			() => "Any Bug Net",
-			CatchingTools().ToArray()
+			() => Language.GetTextValue("Mods.QuiteEnoughRecipes.RecipeGroups.AnyCaptureTool"),
+			CaptureItemRecipe.CatchingTools().ToArray()
+		);
+
+		AnyLavaProofCaptureTool ??= new
+		(
+			() => Language.GetTextValue("Mods.QuiteEnoughRecipes.RecipeGroups.AnyLavaCaptureTool"),
+			CaptureItemRecipe.LavaCatchingTools().ToArray()
 		);
 
 		var result = new Item(catchItem);
@@ -42,7 +50,11 @@ public class UICaptureToolRecipePanel : UIElement
 		};
 		appendElement(createItem, 52);
 
-		var bugNets = new UIRecipeGroupPanel(AnyBugNet, width: 30)
+		var group = AnyCaptureTool;
+		if (ItemID.Sets.IsLavaBait[catchItem])
+			group = AnyLavaProofCaptureTool;
+
+		var bugNets = new UIRecipeGroupPanel(group, width: 30)
 		{
 			VAlign = 0.5f
 		};
@@ -55,9 +67,4 @@ public class UICaptureToolRecipePanel : UIElement
 		};
 		appendElement(npcElement, 72);
 	}
-
-	public static IEnumerable<int> CatchingTools() => ItemID.Sets.CatchingTool
-		.Select((value, index) => (value, index))
-		.Where(entry => entry.value)
-		.Select(entry => entry.index);
 }

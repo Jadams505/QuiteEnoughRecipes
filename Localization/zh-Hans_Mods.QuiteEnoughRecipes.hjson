@@ -203,3 +203,8 @@ Conditions: {
 	// Invalid: Invalid drop condition ({0})
 	// DyeTrader: Dye Trader
 }
+
+RecipeGroups: {
+	// AnyCaptureTool: Any Capturing Tool
+	// AnyLavaCaptureTool: Any Lava Proof Capturing Tool
+}
