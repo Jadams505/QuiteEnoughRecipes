@@ -84,7 +84,11 @@ public record struct NPCIngredient(int ID) : IIngredient
 
 	public IEnumerable<string> GetTooltipLines()
 	{
-		var elem = Main.BestiaryDB.FindEntryByNPCID(ID).Info
+		var entry = Main.BestiaryDB.FindEntryByNPCID(ID);
+		if (entry.Info is null)
+			return [];
+
+		var elem = entry.Info
 			.OfType<FlavorTextBestiaryInfoElement>()
 			.FirstOrDefault();
 

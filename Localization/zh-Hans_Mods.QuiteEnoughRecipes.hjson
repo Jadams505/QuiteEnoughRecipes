@@ -102,6 +102,7 @@ Tabs: {
 	// TileDrops: Mining
 	// PlacedWalls: Placed Walls
 	// WallDrops: Hammering
+	// Catching: Capturing
 }
 
 OptionGroups: {

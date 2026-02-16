@@ -32,6 +32,11 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 		public IIngredient Ingredient => new NPCIngredient(NPCID);
 
 		public BestiaryEntry Entry { get; private set; }
+
+		private IEntryIcon _icon;
+		// some npcs have entries that are removed from the bestiary so their Icon is null
+		// this ensures that those entries are drawn anyway.
+		public IEntryIcon Icon => _icon ??= (Entry.Icon ?? new UnlockableNPCEntryIcon(NPCID));
 		public required int NPCID
 		{
 			get => _npcID;
@@ -41,6 +46,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 			{
 				_npcID = value;
 				Entry = Main.BestiaryDB.FindEntryByNPCID(_npcID);
+				_icon = null!; // forces reinitialization
 			}
 		}
 
@@ -59,8 +65,6 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 		public override void Update(GameTime t)
 		{
-			if (Entry.Icon == null) { return; }
-
 			var rect = GetDimensions().ToRectangle();
 			var collectionInfo = new BestiaryUICollectionInfo(){
 				OwnerEntry = Entry,
@@ -69,7 +73,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 			if (QuiteEnoughRecipes.LoadNPCAsync(NPCID).IsLoaded)
 			{
-				Entry.Icon.Update(collectionInfo, rect,
+				Icon.Update(collectionInfo, rect,
 				new EntryIconDrawSettings()
 				{
 					iconbox = rect,
@@ -81,8 +85,6 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 		protected override void DrawSelf(SpriteBatch sb)
 		{
-			if (Entry.Icon == null) { return; }
-
 			var collectionInfo = new BestiaryUICollectionInfo(){
 				OwnerEntry = Entry,
 				UnlockState = BestiaryEntryUnlockState.CanShowPortraitOnly_1
@@ -97,10 +99,11 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 			if (QuiteEnoughRecipes.LoadNPCAsync(NPCID).IsLoaded)
 			{
-				Entry.Icon.Draw(collectionInfo, sb,
+				var dim = GetDimensions().ToRectangle();
+				Icon.Draw(collectionInfo, sb,
 				new EntryIconDrawSettings()
 				{
-					iconbox = GetDimensions().ToRectangle(),
+					iconbox = dim,
 					IsHovered = _isHovering,
 					IsPortrait = false
 				});
@@ -116,12 +119,12 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 	public IIngredient Ingredient => new NPCIngredient(_icon.NPCID);
 
-	public UINPCPanel(int npcID)
+	public UINPCPanel(int npcID, int size = 72)
 	{
 		_icon = new UINPCIcon{ NPCID = npcID};
 		UpdateHoverText();
 
-		Width.Pixels = Height.Pixels = 72;
+		Width.Pixels = Height.Pixels = size;
 		OverflowHidden = true;
 
 		var slotBack = new UIImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Slot_Back")){

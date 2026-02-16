@@ -241,8 +241,16 @@ static class IngredientOptions
 	[IngredientOption("NPCSorts", ItemID.TreeStatue)]
 	public static int ByBestiary(NPCIngredient x, NPCIngredient y)
 	{
-		int xid = ContentSamples.NpcBestiarySortingId[x.ID];
-		int yid = ContentSamples.NpcBestiarySortingId[y.ID];
+		int xid, yid;
+		bool validX = ContentSamples.NpcBestiarySortingId.TryGetValue(x.ID, out xid);
+		bool validY = ContentSamples.NpcBestiarySortingId.TryGetValue(y.ID, out yid);
+
+		// some npcs don't have bestiary entries, so we put them at the end
+		if (!validX)
+			xid = int.MaxValue;
+		if (!validY)
+			yid = int.MaxValue;
+
 		return xid.CompareTo(yid);
 	}
 

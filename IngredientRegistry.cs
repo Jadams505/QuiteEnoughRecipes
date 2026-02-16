@@ -11,6 +11,7 @@ using QuiteEnoughRecipes.ModIngredients;
 using Terraria.ObjectData;
 using System.Runtime.CompilerServices;
 using QuiteEnoughRecipes.ModRecipeHandlers;
+using QuiteEnoughRecipes.ModRecipes;
 
 namespace QuiteEnoughRecipes;
 
@@ -109,7 +110,8 @@ public class IngredientRegistry : ModSystem
 		AddIngredients(allItems);
 
 		var allNPCs = Enumerable.Range(0, NPCLoader.NPCCount)
-			.Where(n => Main.BestiaryDB.FindEntryByNPCID(n).Icon != null)
+			.Where(n => Main.BestiaryDB.FindEntryByNPCID(n).Icon != null || 
+				NpcCapturingHandler.GetAllCatchableNpcs().Any(npc => npc.type == n))
 			.Select(n => new NPCIngredient(n))
 			.ToList();
 		AddIngredients(allNPCs);
