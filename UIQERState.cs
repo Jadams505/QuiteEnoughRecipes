@@ -571,15 +571,19 @@ public class UIQERState : UIState
 		}
 	}
 
+	private class DummyIngredient : IIngredient;
+	private readonly DummyIngredient _dummyIngredient = new();
+
 	private void HighlightRecursive(UIElement element)
 	{
-		//if (!QERConfig.Instance.HighlightClickedItems) { return; }
-
 		element.ExecuteRecursively(e =>
 		{
 			if (e is IHighlightableElement highlightable)
 			{
-				highlightable.Highlight(_history[_historyIndex].ClickedIngredient);
+				IIngredient highlightIng = QERConfig.Instance.HighlightClickedItems
+					? _history[_historyIndex].ClickedIngredient
+					: _dummyIngredient; 
+				highlightable.Highlight(highlightIng);
 			}
 		});
 	}

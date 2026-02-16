@@ -18,4 +18,7 @@ public class QERConfig : ModConfig
 
 	[DefaultValue(false)]
 	public bool ShowDropChancesInTooltips;
+
+	[DefaultValue(false)]
+	public bool HighlightClickedItems;
 }
