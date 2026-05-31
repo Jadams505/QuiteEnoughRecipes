@@ -9,6 +9,8 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria;
+using Terraria.GameContent;
+using System.Runtime.CompilerServices;
 
 namespace QuiteEnoughRecipes;
 
@@ -89,15 +91,45 @@ public static class RecipeHandlers
 						};
 					}
 				}
+
+				for (int id = 0; id < ItemID.Sets.CraftingRecipeIndices.Length; ++id)
+				{
+					var item = new Item(id);
+
+					var decraftRecipes = DecraftVanillaRecipes(item)
+						.Where(r => ResultsContainItem(r.customShimmerResults ?? r.requiredItem, i.Item))
+						.ToDecraftBasicRecipes()
+						.DeduplicateDecraftRecipes();
+
+					foreach (var recipe in decraftRecipes)
+					{
+						InsertDecraftCondition(recipe);
+						yield return recipe;
+					}
+				}
 			}
 			else
 			{
 				int id = ShimmerTransformResult(i.Item.type);
-				if (id == -1) { yield break; }
-				yield return new BasicRecipe{
-					Result = new(id),
-					RequiredItems = [new(i.Item.type)]
-				};
+				if (id != -1)
+				{
+					yield return new BasicRecipe
+					{
+						Result = new(id),
+						RequiredItems = [new(i.Item.type)]
+					};
+				}
+				else
+				{
+					var decraftRecipes = DecraftVanillaRecipes(i.Item)
+						.ToDecraftBasicRecipes()
+						.DeduplicateDecraftRecipes();
+					foreach (var recipe in decraftRecipes)
+					{
+						InsertDecraftCondition(recipe);
+						yield return recipe;
+					}
+				}
 			}
 		}
 
@@ -305,6 +337,106 @@ public static class RecipeHandlers
 		int id = ItemID.Sets.ShimmerCountsAsItem[inputItem];
 		if (id == -1) { id = inputItem; }
 		return ItemID.Sets.ShimmerTransformToItem[id];
+	}
+
+	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "GetShimmerEquivalentType")]
+	internal static extern int Item_GetShimmerEquivalentType(Item self);
+
+	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "FindDecraftAmount")]
+	internal static extern int Item_FindDecraftAmount(Item self);
+
+	/*
+	 * Given an input item, returns all the recipes that are used to craft that item with respect to decrafting
+	 * Disabled recipes are omitted.
+	 */
+	private static IEnumerable<Recipe> DecraftVanillaRecipes(Item inputItem)
+	{
+		int shimmerEquivalentType = Item_GetShimmerEquivalentType(inputItem);
+		foreach (int recipeIndex in ItemID.Sets.CraftingRecipeIndices[shimmerEquivalentType])
+		{
+			var recipe = Main.recipe[recipeIndex];
+			if (!recipe.DecraftDisabled)
+				yield return recipe;
+		}
+	}
+
+	/*
+	 * Applies the TML decraft ingredient consumption logic to a target recipe.
+	 * The list of items contains the modified stack sizes.
+	 */
+	private static List<Item> ConsumedShimmerItems(Recipe shimmerRecipe)
+	{
+		// this is Item.FindDecraftAmount() in vanilla, but stack size should always be 1 for QER?
+		int decraftAmount = 1;
+		var requiredItems = shimmerRecipe.customShimmerResults ?? shimmerRecipe.requiredItem;
+
+		List<Item> decraftItems = [];
+		foreach (var item in requiredItems)
+		{
+			if (item.type <= 0) break;
+
+			int stack = decraftAmount * item.stack;
+			RecipeLoader.ConsumeIngredient(shimmerRecipe, item.type, ref stack, isDecrafting: true);
+
+			decraftItems.Add(new(item.type, stack));
+		}
+		return decraftItems;
+	}
+
+	private static bool ResultsContainItem(List<Item> results, Item item) => results.Any(i => i.type == item.type);
+
+	/*
+	 * Converts a list of vanilla Recipes into QER BasicRecipes and modifies the result to include shimmer decrafting logic.
+	 */
+	private static IEnumerable<BasicRecipe> ToDecraftBasicRecipes(this IEnumerable<Recipe> vanillaRecipes)
+	{
+		foreach (var recipe in vanillaRecipes)
+		{
+			// some decrafts are locked behind progression, mostly for vanilla since decraft conditions exist
+			// need to use createItem instead of inputItem since stack information could fail shimmer check
+			// TODO: Perhaps exclude recipes that have decraft conditions for user awareness?
+			if (!recipe.createItem.CanShimmer())
+				continue;
+
+			List<Item> decraftItems = ConsumedShimmerItems(recipe);
+
+			yield return new BasicRecipe()
+			{
+				RequiredItems = decraftItems,
+				Result = new(recipe.createItem.type, stack: recipe.createItem.stack),
+				Conditions = recipe.DecraftConditions,
+				SourceMod = recipe.Mod
+			};
+		}
+	}
+
+	/*
+	 * Vanilla will pick the first recipe where the conditions are met. For awareness any recipe that has conditions should be listed.
+	 * Vanilla recipes include mutually exclusive conditions like crimson/corruption, but mutual exclusion can not be relied upon.
+	 * Thus listing all conditional recipes and the first unconditional recipe, should cover all possible results from shimmer decrafting.
+	 */
+	private static IEnumerable<BasicRecipe> DeduplicateDecraftRecipes(this IEnumerable<BasicRecipe> inputRecipes)
+	{
+		bool foundUnconditionalRecipe = false;
+		foreach (var recipe in inputRecipes)
+		{
+			if (recipe.Conditions.Count > 0)
+			{
+				yield return recipe;
+			}
+			else if (!foundUnconditionalRecipe)
+			{
+				yield return recipe;
+				foundUnconditionalRecipe = true;
+			}
+		}
+	}
+
+	public static readonly Condition Decrafting = new Condition("Mods.QuiteEnoughRecipes.Conditions.Decrafting", () => true);
+	private static void InsertDecraftCondition(BasicRecipe recipe)
+	{
+		recipe.Conditions = new(recipe.Conditions);
+		recipe.Conditions.Insert(0, Decrafting);
 	}
 
 	// Get items that can be dropped when using the item with ID `itemID`.

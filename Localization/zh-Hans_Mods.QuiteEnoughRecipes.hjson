@@ -211,6 +211,7 @@ Conditions: {
 	BannerDrop: 每击杀{0}次掉落一个
 	// Invalid: Invalid drop condition ({0})
 	// DyeTrader: Dye Trader
+	// Decrafting: Decrafting
 }
 
 RecipeGroups: {

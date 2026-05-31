@@ -211,6 +211,7 @@ Conditions: {
 	BannerDrop: Drops once for every {0} kills
 	Invalid: Invalid drop condition ({0})
 	DyeTrader: Dye Trader
+	Decrafting: Decrafting
 }
 
 RecipeGroups: {
