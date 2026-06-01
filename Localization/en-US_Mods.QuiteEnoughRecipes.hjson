@@ -212,6 +212,7 @@ Conditions: {
 	Invalid: Invalid drop condition ({0})
 	DyeTrader: Dye Trader
 	Decrafting: Decrafting
+	CoinLuck: Provides {0} Coin Luck
 }
 
 RecipeGroups: {

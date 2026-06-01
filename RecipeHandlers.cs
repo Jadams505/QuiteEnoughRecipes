@@ -81,6 +81,12 @@ public static class RecipeHandlers
 
 			if (queryType == QueryType.Sources)
 			{
+				// coin luck takes precedence over other shimmer transforms.
+				// short circuited to prevent coins from show up as part of decrafting
+				var coinLuck = ItemID.Sets.CoinLuckValue[i.Item.type];
+				if (coinLuck > 0)
+					yield break;
+
 				for (int id = 0; id < ItemID.Sets.ShimmerTransformToItem.Length; ++id)
 				{
 					if (ShimmerTransformResult(id) == i.Item.type)
@@ -110,8 +116,16 @@ public static class RecipeHandlers
 			}
 			else
 			{
-				int id = ShimmerTransformResult(i.Item.type);
-				if (id != -1)
+				var coinLuck = ItemID.Sets.CoinLuckValue[i.Item.type];
+				if (coinLuck > 0)
+				{
+					yield return new BasicRecipe
+					{
+						Result = new(i.Item.type),
+						Conditions = [CoinLuckCondition(coinLuck)]
+					};
+				}
+				else if (ShimmerTransformResult(i.Item.type) is int id and not -1)
 				{
 					yield return new BasicRecipe
 					{
@@ -502,4 +516,7 @@ public static class RecipeHandlers
 		var killRequirement = ItemID.Sets.KillsToBanner[bannerItem];
 		return new DropRateInfo(bannerItem, 1, 1, 1, [new BannerDropCondition(killRequirement)]);
 	}
+
+	private static Condition CoinLuckCondition(int amount) =>
+		new(Language.GetText("Mods.QuiteEnoughRecipes.Conditions.CoinLuck").WithFormatArgs(amount.ToString("N0")), () => true);
 }
