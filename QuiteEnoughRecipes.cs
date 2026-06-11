@@ -47,6 +47,10 @@ public class QuiteEnoughRecipes : Mod
 	public static Asset<Texture2D> LoadWallAsync(int i) =>
 		LoadTextureAsync(TextureAssets.Wall[i]);
 
+	// Buffs might actually already be loaded, not sure
+	public static Asset<Texture2D> LoadBuffAsync(int i) =>
+		LoadTextureAsync(TextureAssets.Buff[i]);
+
 	/*
 	 * When displaying the name of an ingredient that comes from a mod, this should be appended
 	 * immediately after the name so that it's clear what mod the ingredient came from.
