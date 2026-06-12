@@ -81,7 +81,7 @@ public class UIBuffPanel : UIElement, IIngredientElement, IScrollableGridElement
 		var dimensions = GetInnerDimensions();
 		var size = asset.Size();
 		float drawScale = Math.Min((dimensions.Width - Border) / size.X, (dimensions.Height - Border) / size.Y);
-		spriteBatch.Draw(asset.Value, dimensions.Center(), new(0, 0, (int)size.X, (int)size.Y), Color.White, 0f, size * drawScale / 2f, drawScale, SpriteEffects.None, 0f);
+		spriteBatch.Draw(asset.Value, dimensions.Center(), new(0, 0, (int)size.X, (int)size.Y), Color.White, 0f, size / 2f, drawScale, SpriteEffects.None, 0f);
 	}
 
 	private void UpdateHoverText()

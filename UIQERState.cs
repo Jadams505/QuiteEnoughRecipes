@@ -296,6 +296,7 @@ public class UIQERState : UIState
 		AddHandler(new PlacedWallsHandler());
 		AddHandler(new WallDropsHandler());
 		AddHandler(new NpcCapturingHandler());
+		AddHandler(new BuffingHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
