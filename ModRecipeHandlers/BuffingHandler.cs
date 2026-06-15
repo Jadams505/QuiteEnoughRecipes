@@ -15,7 +15,7 @@ public class BuffingHandler : IRecipeHandler
 		Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Buffing");
 	public Item TabItem { get; } = new(ItemID.ShinePotion);
 
-	public IEnumerable<Type> GetIngredientTypes() => [typeof(BuffIngredient)];
+	public IEnumerable<Type> GetIngredientTypes() => [typeof(BuffIngredient), typeof(ItemIngredient)];
 
 	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType) => (ing, queryType) switch
 	{

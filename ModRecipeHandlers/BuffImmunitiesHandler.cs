@@ -17,7 +17,7 @@ public class BuffImmunitiesHandler : IRecipeHandler
 		Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Immunities");
 	public Item TabItem { get; } = new(ItemID.AdhesiveBandage);
 
-	public IEnumerable<Type> GetIngredientTypes() => [typeof(BuffIngredient)];
+	public IEnumerable<Type> GetIngredientTypes() => [typeof(BuffIngredient), typeof(NPCIngredient)];
 
 	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType) => (ing, queryType) switch
 	{
