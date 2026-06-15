@@ -12,6 +12,7 @@ using Terraria;
 using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModUIElements;
 using QuiteEnoughRecipes.ModIngredients;
+using System.Diagnostics;
 
 namespace QuiteEnoughRecipes;
 
@@ -67,7 +68,11 @@ public class UIQERState : UIState
 
 		public bool ShowRecipes(IIngredient ingredient, QueryType queryType)
 		{
+			Stopwatch timer = new();
+			timer.Start();
 			var recipes = Handler.GetRecipes(ingredient, queryType).ToList();
+			timer.Stop();
+			Main.NewText($"{Handler.GetType().Name} took {timer.ElapsedMilliseconds} ms");
 			if (recipes.Count == 0) { return false; }
 			SetRecipes(recipes);
 			return true;

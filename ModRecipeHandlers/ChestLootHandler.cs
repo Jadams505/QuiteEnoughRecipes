@@ -63,12 +63,16 @@ public class ChestLootHandler : IRecipeHandler
 
 		foreach (var chest in chests)
 		{
-			if (chest is null || !chest.item.Any(i => i is not null && i.type != 0))
+			if (chest is null)
 				continue;
 
 			var chestType = ChestToChestType(chest);
-
 			var loot = chest.item.Where(i => i is not null && i.type != 0);
+
+			// skip empty chests
+			if (!loot.Any())
+				continue;
+
 			if (chestLookup.TryGetValue(chestType, out var items))
 			{
 				chestLookup[chestType].Add(loot);
@@ -86,15 +90,11 @@ public class ChestLootHandler : IRecipeHandler
 	{
 		var tile = Framing.GetTileSafely(chest.x, chest.y);
 		var style = 0;
-		int itemType = 0;
         if (Main.tileFrameImportant[tile.TileType])
         {
 			style = TileObjectData.GetTileStyle(tile);
 		}
-
-		var item = ContentSamples.ItemsByType.Values.FirstOrDefault(i => i.createTile == tile.TileType && i.placeStyle == style, null);
-		if (item is not null)
-			itemType = item.type;
+		int itemType = TileLoader.GetItemDropFromTypeAndStyle(tile.TileType, style);
 
 		return (tile.TileType, style, itemType);
 	}

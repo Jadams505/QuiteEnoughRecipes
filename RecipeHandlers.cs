@@ -96,21 +96,18 @@ public static class RecipeHandlers
 							RequiredItems = [new(id)]
 						};
 					}
-				}
-
-				for (int id = 0; id < ItemID.Sets.CraftingRecipeIndices.Length; ++id)
-				{
-					var item = new Item(id);
-
-					var decraftRecipes = DecraftVanillaRecipes(item)
-						.Where(r => ResultsContainItem(r.customShimmerResults ?? r.requiredItem, i.Item))
-						.ToDecraftBasicRecipes()
-						.DeduplicateDecraftRecipes();
-
-					foreach (var recipe in decraftRecipes)
+					else
 					{
-						InsertDecraftCondition(recipe);
-						yield return recipe;
+						var decraftRecipes = DecraftVanillaRecipes(id)
+							.Where(r => ResultsContainItem(r.customShimmerResults ?? r.requiredItem, i.Item))
+							.ToDecraftBasicRecipes()
+							.DeduplicateDecraftRecipes();
+
+						foreach (var recipe in decraftRecipes)
+						{
+							InsertDecraftCondition(recipe);
+							yield return recipe;
+						}
 					}
 				}
 			}
@@ -135,7 +132,7 @@ public static class RecipeHandlers
 				}
 				else
 				{
-					var decraftRecipes = DecraftVanillaRecipes(i.Item)
+					var decraftRecipes = DecraftVanillaRecipes(i.Item.type)
 						.ToDecraftBasicRecipes()
 						.DeduplicateDecraftRecipes();
 					foreach (var recipe in decraftRecipes)
@@ -223,16 +220,13 @@ public static class RecipeHandlers
 
 			if (queryType == QueryType.Sources)
 			{
-				var item = new Item();
 				for (int itemID = 0; itemID < ItemLoader.ItemCount; ++itemID)
 				{
-					item.SetDefaults(itemID);
-
-					var droppedItems = GetItemDrops(item.type);
+					var droppedItems = GetItemDrops(itemID);
 					if (droppedItems.Any(info => info.itemId == i.Item.type))
 					{
 						yield return new ItemDropsRecipe{
-							Item = item.Clone(),
+							Item = new(itemID),
 							Drops = droppedItems
 						};
 					}
@@ -353,19 +347,24 @@ public static class RecipeHandlers
 		return ItemID.Sets.ShimmerTransformToItem[id];
 	}
 
-	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "GetShimmerEquivalentType")]
-	internal static extern int Item_GetShimmerEquivalentType(Item self);
+	/*
+	 * Copy of Item.GetShimmerEquivalentType() but using item type instead
+	 */
+	private static int GetShimmerEquivalentType(int itemType)
+	{
+		if (ItemID.Sets.ShimmerCountsAsItem[itemType] != -1)
+			return ItemID.Sets.ShimmerCountsAsItem[itemType];
 
-	[UnsafeAccessor(UnsafeAccessorKind.Method, Name = "FindDecraftAmount")]
-	internal static extern int Item_FindDecraftAmount(Item self);
+		return itemType;
+	}
 
 	/*
 	 * Given an input item, returns all the recipes that are used to craft that item with respect to decrafting
 	 * Disabled recipes are omitted.
 	 */
-	private static IEnumerable<Recipe> DecraftVanillaRecipes(Item inputItem)
+	private static IEnumerable<Recipe> DecraftVanillaRecipes(int inputItemType)
 	{
-		int shimmerEquivalentType = Item_GetShimmerEquivalentType(inputItem);
+		int shimmerEquivalentType = GetShimmerEquivalentType(inputItemType);
 		foreach (int recipeIndex in ItemID.Sets.CraftingRecipeIndices[shimmerEquivalentType])
 		{
 			var recipe = Main.recipe[recipeIndex];
@@ -378,13 +377,12 @@ public static class RecipeHandlers
 	 * Applies the TML decraft ingredient consumption logic to a target recipe.
 	 * The list of items contains the modified stack sizes.
 	 */
-	private static List<Item> ConsumedShimmerItems(Recipe shimmerRecipe)
+	private static IEnumerable<Item> ConsumedShimmerItems(Recipe shimmerRecipe)
 	{
 		// this is Item.FindDecraftAmount() in vanilla, but stack size should always be 1 for QER?
 		int decraftAmount = 1;
 		var requiredItems = shimmerRecipe.customShimmerResults ?? shimmerRecipe.requiredItem;
 
-		List<Item> decraftItems = [];
 		foreach (var item in requiredItems)
 		{
 			if (item.type <= 0) break;
@@ -392,9 +390,8 @@ public static class RecipeHandlers
 			int stack = decraftAmount * item.stack;
 			RecipeLoader.ConsumeIngredient(shimmerRecipe, item.type, ref stack, isDecrafting: true);
 
-			decraftItems.Add(new(item.type, stack));
+			yield return new(item.type, stack);
 		}
-		return decraftItems;
 	}
 
 	private static bool ResultsContainItem(List<Item> results, Item item) => results.Any(i => i.type == item.type);
@@ -412,11 +409,11 @@ public static class RecipeHandlers
 			if (!recipe.createItem.CanShimmer())
 				continue;
 
-			List<Item> decraftItems = ConsumedShimmerItems(recipe);
+			IEnumerable<Item> decraftItems = ConsumedShimmerItems(recipe);
 
 			yield return new BasicRecipe()
 			{
-				RequiredItems = decraftItems,
+				RequiredItems = decraftItems.ToList(),
 				Result = new(recipe.createItem.type, stack: recipe.createItem.stack),
 				Conditions = recipe.DecraftConditions,
 				SourceMod = recipe.Mod
