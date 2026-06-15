@@ -126,6 +126,11 @@ public class IngredientRegistry : ModSystem
 			.ToList();
 		AddIngredients(allWalls);
 
+		var allBuffs = Enumerable.Range(1, BuffLoader.BuffCount - 1)
+			.Select(b => new BuffIngredient(b))
+			.ToList();
+		AddIngredients(allBuffs);
+
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
@@ -160,6 +165,12 @@ public class IngredientRegistry : ModSystem
 			AddFilter<WallIngredient>(pred, icon, name, $"{keyParent}.{IngredientOptions.WallFiltersKey}.Name");
 		}
 
+		var buffFilters = IngredientOptions.GetOptionButtons<Predicate<BuffIngredient>>(IngredientOptions.BuffFiltersKey);
+		foreach (var (pred, icon, name) in buffFilters)
+		{
+			AddFilter<BuffIngredient>(pred, icon, name, $"{keyParent}.{IngredientOptions.BuffFiltersKey}.Name");
+		}
+
 		var itemSorts = IngredientOptions.GetOptionButtons<Comparison<ItemIngredient>>(
 			"ItemSorts");
 		foreach (var (comp, icon, name) in itemSorts)
@@ -183,6 +194,12 @@ public class IngredientRegistry : ModSystem
 		foreach (var (comp, icon, name) in wallSorts)
 		{
 			AddSort<WallIngredient>(comp, icon, name, $"{keyParent}.WallSorts.Name");
+		}
+
+		var buffSorts = IngredientOptions.GetOptionButtons<Comparison<BuffIngredient>>(IngredientOptions.BuffSortsKey);
+		foreach (var (comp, icon, name) in buffSorts)
+		{
+			AddSort<BuffIngredient>(comp, icon, name, $"{keyParent}.{IngredientOptions.BuffSortsKey}.Name");
 		}
 	}
 

@@ -96,6 +96,7 @@ Tabs: {
 	NPCList: NPCs
 	TileList: Tiles
 	WallList: Walls
+	BuffList: Buffs
 	Recipes: Recipes
 	Tiles: Recipes Requiring this Crafting Station
 	Shimmer: Shimmer Transmutations
@@ -112,6 +113,8 @@ Tabs: {
 	PlacedWalls: Placed Walls
 	WallDrops: Hammering
 	Catching: Capturing
+	Buffing: Buffing
+	Immunities: Immunities
 }
 
 OptionGroups: {
@@ -192,6 +195,17 @@ OptionGroups: {
 
 	WallSorts: {
 		Name: Wall Sort Orders
+		ByID: "{$ItemSorts.ByID}"
+		ByName: "{$ItemSorts.ByName}"
+	}
+
+	BuffFilters: {
+		Name: Buff Filters
+		IsDebuff: Is Debuff
+	}
+
+	BuffSorts: {
+		Name: Buff Sort Orders
 		ByID: "{$ItemSorts.ByID}"
 		ByName: "{$ItemSorts.ByName}"
 	}

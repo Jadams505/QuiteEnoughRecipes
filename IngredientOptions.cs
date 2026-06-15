@@ -298,6 +298,16 @@ static class IngredientOptions
 	public static int ByName(WallIngredient x, WallIngredient y) => x.Name.CompareTo(y.Name);
 	#endregion
 
+	#region Buff Sorts
+	public const string BuffSortsKey = "BuffSorts";
+	[IngredientOption(BuffSortsKey, ItemID.AlphabetStatue1)]
+	public static int ByID(BuffIngredient x, BuffIngredient y) =>
+		x.BuffType.CompareTo(y.BuffType);
+
+	[IngredientOption(BuffSortsKey, ItemID.AlphabetStatueA)]
+	public static int ByName(BuffIngredient x, BuffIngredient y) => x.Name.CompareTo(y.Name);
+	#endregion
+
 	#region Tile Filters
 	public const string TileFiltersKey = "TileFilters";
 	[IngredientOption(TileFiltersKey, ItemID.AlphabetStatue0)]
@@ -314,6 +324,13 @@ static class IngredientOptions
 	[IngredientOption(WallFiltersKey, ItemID.Safe)]
 	public static bool IsSafe(WallIngredient n) =>
 		Main.wallHouse[n.WallType];
+	#endregion
+
+	#region Buff Filters
+	public const string BuffFiltersKey = "BuffFilters";
+	[IngredientOption(BuffFiltersKey, ItemID.Ichor)]
+	public static bool IsDebuff(BuffIngredient i) =>
+		Main.debuff[i.BuffType];
 	#endregion
 
 	/*

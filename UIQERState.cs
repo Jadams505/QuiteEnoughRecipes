@@ -276,6 +276,10 @@ public class UIQERState : UIState
 		var wallSearchPage = new UISearchPage(wallGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.WallSearchHelp"));
 
+		var buffGrid = new UIQueryableIngredientGrid<BuffIngredient, UIBuffPanel>();
+		var buffSearchPage = new UISearchPage(buffGrid,
+			Language.GetText("Mods.QuiteEnoughRecipes.UI.BuffSearchHelp"));
+
 		AddHandler(new RecipeHandlers.Basic());
 		AddHandler(new RecipeHandlers.CraftingStations());
 		AddHandler(new RecipeHandlers.ShimmerTransmutations());
@@ -292,6 +296,8 @@ public class UIQERState : UIState
 		AddHandler(new PlacedWallsHandler());
 		AddHandler(new WallDropsHandler());
 		AddHandler(new NpcCapturingHandler());
+		AddHandler(new BuffingHandler());
+		AddHandler(new BuffImmunitiesHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
@@ -348,6 +354,8 @@ public class UIQERState : UIState
 			new Item(ItemID.DirtBlock), tileSearchPage);
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.WallList"),
 			new Item(ItemID.StoneWall), wallSearchPage);
+		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.BuffList"),
+			new Item(ItemID.HealingPotion), buffSearchPage);
 
 		ingredientTabBar.OnTabSelected += page => {
 			UIQERSearchBar.UnfocusAll();
