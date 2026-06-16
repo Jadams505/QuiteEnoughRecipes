@@ -12,6 +12,7 @@ using Terraria.ObjectData;
 using System.Runtime.CompilerServices;
 using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModRecipes;
+using Terraria.GameContent.Bestiary;
 
 namespace QuiteEnoughRecipes;
 
@@ -130,6 +131,12 @@ public class IngredientRegistry : ModSystem
 			.Select(b => new BuffIngredient(b))
 			.ToList();
 		AddIngredients(allBuffs);
+
+		var allBiomes = Enumerable.Range(0, NPCLoader.NPCCount)
+			.SelectMany(GetBiomes)
+			.DistinctBy(info => info.GetDisplayNameKey())
+			.Select(b => new BiomeIngredient(b));
+		AddIngredients(allBiomes);
 
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
@@ -407,5 +414,27 @@ public class IngredientRegistry : ModSystem
 		{
 			yield return new TileIngredient(tileId);
 		}
+	}
+
+	private static IEnumerable<IFilterInfoProvider> GetBiomes(int npc)
+	{
+		var entry = Main.BestiaryDB.FindEntryByNPCID(npc);
+		return GetBiomes(entry.Info);
+	}
+
+	private static IEnumerable<IFilterInfoProvider> GetBiomes(IEnumerable<IBestiaryInfoElement> infos)
+	{
+		foreach (var info in infos)
+		{
+			if (info is ModBestiaryInfoElement modBiome and not ModSourceBestiaryInfoElement)
+			{
+				yield return modBiome;
+			}
+			else if (info is FilterProviderInfoElement filter)
+			{
+				yield return filter;
+			}
+		}
+
 	}
 }
