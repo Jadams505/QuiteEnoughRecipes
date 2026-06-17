@@ -133,7 +133,7 @@ public class IngredientRegistry : ModSystem
 		AddIngredients(allBuffs);
 
 		var allBiomes = Enumerable.Range(0, NPCLoader.NPCCount)
-			.SelectMany(GetBiomes)
+			.SelectMany(BiomeHandler.GetBiomes)
 			.DistinctBy(info => info.GetDisplayNameKey())
 			.Select(b => new BiomeIngredient(b));
 		AddIngredients(allBiomes);
@@ -414,27 +414,5 @@ public class IngredientRegistry : ModSystem
 		{
 			yield return new TileIngredient(tileId);
 		}
-	}
-
-	private static IEnumerable<IFilterInfoProvider> GetBiomes(int npc)
-	{
-		var entry = Main.BestiaryDB.FindEntryByNPCID(npc);
-		return GetBiomes(entry.Info);
-	}
-
-	private static IEnumerable<IFilterInfoProvider> GetBiomes(IEnumerable<IBestiaryInfoElement> infos)
-	{
-		foreach (var info in infos)
-		{
-			if (info is ModBestiaryInfoElement modBiome and not ModSourceBestiaryInfoElement)
-			{
-				yield return modBiome;
-			}
-			else if (info is FilterProviderInfoElement filter)
-			{
-				yield return filter;
-			}
-		}
-
 	}
 }

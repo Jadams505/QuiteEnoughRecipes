@@ -44,6 +44,11 @@ public class UIBiomePanel : UIElement, IIngredientElement, IScrollableGridElemen
 			RemoveChild(_iconElement);
 
 		var image = InfoId.GetFilterImage();
+
+		// this is need for nested elements since it is not an IIngredientElement
+		// which is a required check for usage/source clicks.
+		image.IgnoresMouseInteraction = true;
+
 		_iconElement = image;
 		Append(_iconElement);
 	}

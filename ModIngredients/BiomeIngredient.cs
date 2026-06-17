@@ -20,6 +20,6 @@ public record struct BiomeIngredient(IFilterInfoProvider InfoType, Mod? Mod = nu
 	public bool IsEquivalent(IIngredient other)
 	{
 		return other is BiomeIngredient bOther &&
-			other.Name == other.Name;
+			Name == bOther.Name;
 	}
 }
