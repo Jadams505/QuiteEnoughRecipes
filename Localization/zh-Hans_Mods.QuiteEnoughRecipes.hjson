@@ -97,6 +97,7 @@ Tabs: {
 	// TileList: Tiles
 	// WallList: Walls
 	// BuffList: Buffs
+	// BiomeList: Environments
 	Recipes: 合成获得
 	Tiles: 合成所需合成站
 	Shimmer: 微光转化
@@ -115,6 +116,7 @@ Tabs: {
 	// Catching: Capturing
 	// Buffing: Buffing
 	// Immunities: Immunities
+	// Biome: Tags
 }
 
 OptionGroups: {
@@ -206,6 +208,12 @@ OptionGroups: {
 
 	BuffSorts: {
 		// Name: Buff Sort Orders
+		// ByID: "{$ItemSorts.ByID}"
+		// ByName: "{$ItemSorts.ByName}"
+	}
+
+	BiomeSorts: {
+		// Name: Biome Sort Orders
 		// ByID: "{$ItemSorts.ByID}"
 		// ByName: "{$ItemSorts.ByName}"
 	}

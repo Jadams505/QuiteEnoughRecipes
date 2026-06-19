@@ -308,6 +308,28 @@ static class IngredientOptions
 	public static int ByName(BuffIngredient x, BuffIngredient y) => x.Name.CompareTo(y.Name);
 	#endregion
 
+	#region Biome Sorts
+	public const string BiomeSortsKey = "BiomeSorts";
+	[IngredientOption(BiomeSortsKey, ItemID.AlphabetStatue1)]
+	public static int ByID(BiomeIngredient x, BiomeIngredient y)
+	{
+		var order = BestiaryDatabaseNPCsPopulator.CommonTags.GetCommonInfoElementsForFilters();
+		int xIndex = x.InfoType is IBestiaryInfoElement xBestiary 
+			? order.IndexOf(xBestiary)
+			: -1;
+
+		int yIndex = y.InfoType is IBestiaryInfoElement yBestiary
+			? order.IndexOf(yBestiary)
+			: -1;
+
+		return xIndex.CompareTo(yIndex);
+	}
+		
+
+	[IngredientOption(BiomeSortsKey, ItemID.AlphabetStatueA)]
+	public static int ByName(BiomeIngredient x, BiomeIngredient y) => x.Name.CompareTo(y.Name);
+	#endregion
+
 	#region Tile Filters
 	public const string TileFiltersKey = "TileFilters";
 	[IngredientOption(TileFiltersKey, ItemID.AlphabetStatue0)]
