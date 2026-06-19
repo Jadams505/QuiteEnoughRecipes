@@ -12,6 +12,7 @@ using Terraria.ObjectData;
 using System.Runtime.CompilerServices;
 using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModRecipes;
+using Terraria.GameContent.Bestiary;
 
 namespace QuiteEnoughRecipes;
 
@@ -131,6 +132,14 @@ public class IngredientRegistry : ModSystem
 			.ToList();
 		AddIngredients(allBuffs);
 
+		// This is another option and maybe better since Blizzard is ignored with this:
+		// BestiaryDatabaseNPCsPopulator.CommonTags.GetCommonInfoElementsForFilters();
+		var allBiomes = Enumerable.Range(0, NPCLoader.NPCCount)
+			.SelectMany(BiomeHandler.GetBiomes)
+			.DistinctBy(info => info.GetDisplayNameKey())
+			.Select(b => new BiomeIngredient(b));
+		AddIngredients(allBiomes);
+
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
@@ -200,6 +209,12 @@ public class IngredientRegistry : ModSystem
 		foreach (var (comp, icon, name) in buffSorts)
 		{
 			AddSort<BuffIngredient>(comp, icon, name, $"{keyParent}.{IngredientOptions.BuffSortsKey}.Name");
+		}
+
+		var biomeSorts = IngredientOptions.GetOptionButtons<Comparison<BiomeIngredient>>(IngredientOptions.BiomeSortsKey);
+		foreach (var (comp, icon, name) in biomeSorts)
+		{
+			AddSort<BiomeIngredient>(comp, icon, name, $"{keyParent}.{IngredientOptions.BiomeSortsKey}.Name");
 		}
 	}
 

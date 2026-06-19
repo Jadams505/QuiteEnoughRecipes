@@ -281,6 +281,10 @@ public class UIQERState : UIState
 		var buffSearchPage = new UISearchPage(buffGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.BuffSearchHelp"));
 
+		var biomeGrid = new UIQueryableIngredientGrid<BiomeIngredient, UIBiomePanel>();
+		var biomeSearchPage = new UISearchPage(biomeGrid,
+			Language.GetText("Mods.QuiteEnoughRecipes.UI.BiomeSearchHelp"));
+
 		AddHandler(new RecipeHandlers.Basic());
 		AddHandler(new RecipeHandlers.CraftingStations());
 		AddHandler(new RecipeHandlers.ShimmerTransmutations());
@@ -299,6 +303,7 @@ public class UIQERState : UIState
 		AddHandler(new NpcCapturingHandler());
 		AddHandler(new BuffingHandler());
 		AddHandler(new BuffImmunitiesHandler());
+		AddHandler(new BiomeHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
@@ -357,6 +362,8 @@ public class UIQERState : UIState
 			new Item(ItemID.StoneWall), wallSearchPage);
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.BuffList"),
 			new Item(ItemID.HealingPotion), buffSearchPage);
+		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.BiomeList"),
+			new Item(ItemID.WorldGlobe), biomeSearchPage);
 
 		ingredientTabBar.OnTabSelected += page => {
 			UIQERSearchBar.UnfocusAll();
