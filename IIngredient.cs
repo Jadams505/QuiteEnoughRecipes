@@ -39,20 +39,23 @@ public record struct ItemIngredient(Item Item) : IIngredient
 
 	public IEnumerable<string> GetTooltipLines()
 	{
+		int tooltipCount = 30 + Item.ToolTip?.Lines ?? 0; // TML uses this logic
 		int yoyoLogo = -1;
 		int researchLine = -1;
 		int numLines = 1;
-		var tooltipNames = new string[30];
-		var tooltipLines = new string[30];
-		var prefixLines = new bool[30];
-		var badPrefixLines = new bool[30];
+		var tooltipNames = new string[tooltipCount];
+		var tooltipLines = new string[tooltipCount];
+		var lineColors = new Color[tooltipCount];
+		var prefixLines = new bool[tooltipCount];
+		var badPrefixLines = new bool[tooltipCount];
 
-		Main.MouseText_DrawItemTooltip_GetLinesInfo(Item, ref yoyoLogo, ref researchLine,
-			Item.knockBack, ref numLines, tooltipLines, prefixLines, badPrefixLines, tooltipNames,
+		// 1.4.5 changed this overload need to verify that it is working
+		Main.MouseText_DrawItemTooltip_GetLinesInfo(Item, ref yoyoLogo,
+			Item.knockBack, ref numLines, tooltipLines, lineColors, tooltipNames,
 			out var p);
 
-		var lines = ItemLoader.ModifyTooltips(Item, ref numLines, tooltipNames, ref tooltipLines,
-			ref prefixLines, ref badPrefixLines, ref yoyoLogo, out Color?[] o, p);
+		var lines = ItemLoader.ModifyTooltips(Item, ref numLines, tooltipNames, ref tooltipLines, ref lineColors,
+			ref yoyoLogo, p);
 
 		var qerName = ModContent.GetInstance<QuiteEnoughRecipes>().Name;
 
