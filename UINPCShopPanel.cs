@@ -65,13 +65,13 @@ file class UIShopItemPanel : UIItemPanel
 
 		var buyPriceText = QuiteEnoughRecipes.GetBuyPriceText(DisplayedItem);
 		tooltips.Add(new(mod, "QER: buy price", buyPriceText){
-			OverrideColor = Main.OurFavoriteColor
+			Color = Main.OurFavoriteColor
 		});
 
 		if (!string.IsNullOrWhiteSpace(_conditions))
 		{
 			tooltips.Add(new(mod, "QER: buy conditions", _conditions){
-				OverrideColor = Main.OurFavoriteColor
+				Color = Main.OurFavoriteColor
 			});
 		}
 	}

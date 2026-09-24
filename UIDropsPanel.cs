@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +71,7 @@ file class UILootItemPanel : UIItemPanel
 				var line = Language.GetText("Mods.QuiteEnoughRecipes.Tooltips.DropChance")
 					.Format(percent);
 				tooltips.Add(new(mod, "QER: drop chance", line){
-					OverrideColor = Main.OurFavoriteColor
+					Color = Main.OurFavoriteColor
 				});
 			}
 		}
@@ -79,7 +79,7 @@ file class UILootItemPanel : UIItemPanel
 		if (!string.IsNullOrWhiteSpace(_conditions))
 		{
 			tooltips.Add(new(mod, "QER: drop conditions", _conditions){
-				OverrideColor = Main.OurFavoriteColor
+				Color = Main.OurFavoriteColor
 			});
 		}
 	}

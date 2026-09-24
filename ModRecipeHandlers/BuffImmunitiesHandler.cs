@@ -22,7 +22,7 @@ public class BuffImmunitiesHandler : IRecipeHandler
 	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType) => (ing, queryType) switch
 	{
 		(NPCIngredient npcIng, QueryType.Uses) => ContentSamples.NpcsByNetId
-			.Where(n => n.Key > 0 && npcIng.ID == n.Key && !NPCID.Sets.ImmuneToAllBuffs[n.Key] && !NPCID.Sets.ImmuneToRegularBuffs[n.Key] && n.Value.buffImmune.Any(immune => immune))
+			.Where(n => n.Key > 0 && npcIng.ID == n.Key && !NPCID.Sets.ImmuneToWhipTags[n.Key] && !NPCID.Sets.ImmuneToRegularBuffs[n.Key] && n.Value.buffImmune.Any(immune => immune))
 			.Select(entry => new ResultDropsRecipe<UINPCPanel, UIBuffPanel>
 			{
 				Result = new UINPCPanel(entry.Key, 72),
@@ -33,7 +33,7 @@ public class BuffImmunitiesHandler : IRecipeHandler
 			}),
 		(BuffIngredient buffIng, QueryType.Uses) => ContentSamples.NpcsByNetId
 			.Select(entry => (npcId: entry.Key, immunities: ImmuneBuffs(entry.Value)))
-			.Where(entry => entry.npcId > 0 && !NPCID.Sets.ImmuneToAllBuffs[entry.npcId] && !NPCID.Sets.ImmuneToRegularBuffs[entry.npcId] && entry.immunities.Contains(buffIng.BuffType))
+			.Where(entry => entry.npcId > 0 && !NPCID.Sets.ImmuneToWhipTags[entry.npcId] && !NPCID.Sets.ImmuneToRegularBuffs[entry.npcId] && entry.immunities.Contains(buffIng.BuffType))
 			.Select(entry => new ResultDropsRecipe<UINPCPanel, UIBuffPanel> 
 			{
 				Result = new UINPCPanel(entry.npcId, 72),

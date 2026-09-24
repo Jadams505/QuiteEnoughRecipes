@@ -56,7 +56,7 @@ public class UISystem : ModSystem
 		 * This has to be handled here to work even when autopaused. This is (I think) the same set
 		 * of conditions under which `ModPlayer::ProcessTriggers` is called.
 		 */
-		if (Main.hasFocus && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest
+		if (FocusHelper.IsSelectedApplication/* tModPorter Suggestion: Also consider FocusHelper.AllowInputProcessing, FocusHelper.GameplayActive, FocusHelper.UpdateVisualEffects, or others */ && !Main.drawingPlayerChat && !Main.editSign && !Main.editChest
 				&& !Main.blockInput)
 		{
 			HandleInput();

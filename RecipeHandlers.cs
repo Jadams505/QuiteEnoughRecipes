@@ -332,7 +332,7 @@ public static class RecipeHandlers
 	{
 		return r.requiredItem.Any(x => x.type == i.type)
 			|| r.acceptedGroups.Any(
-				g => RecipeGroup.recipeGroups.TryGetValue(g, out var rg) && rg.ContainsItem(i.type)
+				g => RecipeGroup.recipeGroups.TryGetValue(g, out var rg) && rg.Contains(i.type)
 			);
 	}
 
@@ -507,9 +507,9 @@ public static class RecipeHandlers
 	}
 	private static DropRateInfo? GetBannerDrop(int id)
 	{
-		var banner = Item.NPCtoBanner(id);
+		var banner = BannerSystem.NPCtoBanner(id);
 		if (banner == 0) return null;
-		var bannerItem = Item.BannerToItem(banner);
+		var bannerItem = BannerSystem.BannerToItem(banner);
 		var killRequirement = ItemID.Sets.KillsToBanner[bannerItem];
 		return new DropRateInfo(bannerItem, 1, 1, 1, [new BannerDropCondition(killRequirement)]);
 	}

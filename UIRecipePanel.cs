@@ -68,7 +68,7 @@ public class UIRecipePanel : UIAutoExtend
 					RecipeGroup.recipeGroups.TryGetValue(g, out var rg);
 					return rg;
 				})
-			.FirstOrDefault(rg => rg?.ContainsItem(item.type) ?? false);
+			.FirstOrDefault(rg => rg?.Contains(item.type) ?? false);
 
 			var elem = maybeGroup == null
 					? new UIItemPanel(item, 30)
@@ -134,7 +134,7 @@ public class UIRecipeResultPanel : UIItemPanel
 			var line = Language.GetText("Mods.QuiteEnoughRecipes.Tooltips.RecipeAddedBy").Format(AddByMod.DisplayNameClean);
 			tooltips.Add(new TooltipLine(mod, "QER: recipe added", line)
 			{
-				OverrideColor = Main.OurFavoriteColor
+				Color = Main.OurFavoriteColor
 			});
 		}
 	}

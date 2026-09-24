@@ -213,7 +213,7 @@ public class UIRecipeGroupPanel : UIItemPanel
 
 		if (tooltips.Count <= 0) { return; }
 		tooltips.Insert(0, new(mod, "QER: recipe group", _displayedGroup.GetText()){
-			OverrideColor = Main.OurFavoriteColor
+			Color = Main.OurFavoriteColor
 		});
 	}
 }

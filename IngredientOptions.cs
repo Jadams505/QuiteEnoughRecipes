@@ -71,7 +71,7 @@ static class IngredientOptions
 	#region Item Filters
 	[IngredientOption("ItemFilters.Misc", ItemID.StoneBlock)]
 	public static bool IsTile(ItemIngredient i) => IsInGroup(i, ItemGroup.CraftingObjects,
-		ItemGroup.Torches, ItemGroup.Wood, ItemGroup.Crates, ItemGroup.PlacableObjects,
+		ItemGroup.Torches, ItemGroup.Wood, ItemGroup.Crates, ItemGroup.PlaceableObjects,
 		ItemGroup.Blocks, ItemGroup.Rope, ItemGroup.Walls);
 
 	[IngredientOption("ItemFilters.Misc", ItemID.Furnace)]
