@@ -1,18 +1,19 @@
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using QuiteEnoughRecipes.ModUIElements;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System;
-using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.UI.Elements;
-using Terraria.GameContent.UI;
-using Terraria.GameContent;
-using Terraria.ID;
-using Terraria.ModLoader.UI;
-using Terraria.UI.Chat;
-using Terraria.UI;
 using Terraria;
-using QuiteEnoughRecipes.ModUIElements;
+using Terraria.GameContent;
+using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.UI;
+using Terraria.GameContent.UI.Elements;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader.UI;
+using Terraria.UI;
+using Terraria.UI.Chat;
 
 namespace QuiteEnoughRecipes;
 
@@ -193,7 +194,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 				Vector2.One).X;
 			width = MathF.Max(300, width);
 
-			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(flavorText, width);
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(flavorText, width, Language.ActiveCulture.CultureInfo);
 			_hoverText += $"\n{wrappedFlavorText}";
 		}
 	}

@@ -29,7 +29,7 @@ public class ChlorophyteExtractinatorHandler : IRecipeHandler
 
 		foreach (var option in options)
 		{
-			if ((option.GivingITemType == item.Item.type && queryType is QueryType.Sources) ||
+			if ((option.GivingItemType == item.Item.type && queryType is QueryType.Sources) ||
 				(option.TakingItemType == item.Item.type && queryType is QueryType.Uses) ||
 				(item.Item.type == ItemID.ChlorophyteExtractinator && queryType is QueryType.Uses))
 			{
@@ -51,7 +51,7 @@ public class ChlorophyteExtractinatorHandler : IRecipeHandler
 	private static (Item taking, Item giving) ChlorophyteExtracinatorTrade(ItemTrader.TradeOption option)
 	{
 		var input = new Item(option.TakingItemType, option.TakingItemStack);
-		var output = new Item(option.GivingITemType, option.GivingItemStack);
+		var output = new Item(option.GivingItemType, option.GivingItemStack);
 		return (input, output);
 	}
 }

@@ -4,6 +4,7 @@ using QuiteEnoughRecipes.ModIngredients;
 using System;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.UI;
 using Terraria.UI;
@@ -101,7 +102,7 @@ public class UIBiomePanel : UIElement, IIngredientElement, IScrollableGridElemen
 				Vector2.One).X;
 			width = MathF.Max(300, width);
 
-			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width);
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width, GameCulture.FromCultureName(GameCulture.CultureName.English).CultureInfo);
 			HoverText += $"\n{wrappedFlavorText}";
 		}
 	}

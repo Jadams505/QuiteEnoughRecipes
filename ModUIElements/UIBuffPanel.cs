@@ -4,6 +4,7 @@ using QuiteEnoughRecipes.ModIngredients;
 using System;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.UI;
 using Terraria.UI;
@@ -99,7 +100,7 @@ public class UIBuffPanel : UIElement, IIngredientElement, IScrollableGridElement
 				Vector2.One).X;
 			width = MathF.Max(300, width);
 
-			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width);
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width, Language.ActiveCulture.CultureInfo);
 			HoverText += $"\n{wrappedFlavorText}";
 		}
 	}

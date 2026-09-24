@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader.UI;
 using Terraria.ObjectData;
 using Terraria.UI;
@@ -233,7 +234,7 @@ public class UITilePanel : UIElement, IIngredientElement, IScrollableGridElement
 				Vector2.One).X;
 			width = MathF.Max(300, width);
 
-			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width);
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width, Language.ActiveCulture.CultureInfo);
 			HoverText += $"\n{wrappedFlavorText}";
 		}
 	}
