@@ -24,10 +24,12 @@ public class UIQERSearchBar : UIPanel
 	 * We just want to treat this element as if it's the search bar itself, so we forward event
 	 * subscriptions to the search bar.
 	 */
-	public event Action OnCanceledTakingInput
+
+	// 1.4.5 OnCanceledTakingInput was removed and replaced? with OnNeedingVirtualKeyboard
+	public event Action OnNeedingVirtualKeyboard
 	{
-		add { _search.OnCanceledTakingInput += value; }
-		remove { _search.OnCanceledTakingInput -= value; }
+		add { _search.OnNeedingVirtualKeyboard += value; }
+		remove { _search.OnNeedingVirtualKeyboard -= value; }
 	}
 	public event Action<string> OnContentsChanged
 	{

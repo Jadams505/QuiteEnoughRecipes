@@ -41,7 +41,7 @@ public class UIReforgePanel : UIAutoExtend
 	 */
 	private static long GetReforgePrice(Item item)
 	{
-		int price = item.value;
+		long price = item.value;
 		price *= item.stack; // Added by TML should always be 1 in this case
 
 		bool canApplyDiscount = false;

@@ -102,7 +102,7 @@ public class UIBiomePanel : UIElement, IIngredientElement, IScrollableGridElemen
 				Vector2.One).X;
 			width = MathF.Max(300, width);
 
-			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width, GameCulture.FromCultureName(GameCulture.CultureName.English).CultureInfo);
+			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(line, width, Language.ActiveCulture.CultureInfo);
 			HoverText += $"\n{wrappedFlavorText}";
 		}
 	}
