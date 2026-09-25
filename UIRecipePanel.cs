@@ -111,7 +111,7 @@ public class UIRecipePanel : UIAutoExtend
 	private static string CraftingStationName(int tileID)
 	{
 		return tileID == -1
-			? "?"
+			? ""
 			: Lang.GetMapObjectName(MapHelper.TileToLookup(tileID, Recipe.GetRequiredTileStyle(tileID)));
 	}
 }
