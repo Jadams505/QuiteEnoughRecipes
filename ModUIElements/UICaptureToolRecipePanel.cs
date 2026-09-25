@@ -1,4 +1,5 @@
-﻿using QuiteEnoughRecipes.ModRecipes;
+﻿using QuiteEnoughRecipes.ModRecipeGroups;
+using QuiteEnoughRecipes.ModRecipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +15,21 @@ namespace QuiteEnoughRecipes.ModUIElements;
 
 public class UICaptureToolRecipePanel : UIElement
 {
-	public static RecipeGroup? AnyCaptureTool;
-	public static RecipeGroup? AnyLavaProofCaptureTool;
+	public static IRecipeGroup? AnyCaptureTool;
+	public static IRecipeGroup? AnyLavaProofCaptureTool;
 
 	public UICaptureToolRecipePanel(int catchItem, int npcId)
 	{
-		AnyCaptureTool ??= new
+		AnyCaptureTool ??= new SimpleRecipeGroup
 		(
 			() => Language.GetTextValue("Mods.QuiteEnoughRecipes.RecipeGroups.AnyCaptureTool"),
-			CaptureItemRecipe.CatchingTools().ToArray()
+			CaptureItemRecipe.CatchingTools().ToHashSet()
 		);
 
-		AnyLavaProofCaptureTool ??= new
+		AnyLavaProofCaptureTool ??= new SimpleRecipeGroup
 		(
 			() => Language.GetTextValue("Mods.QuiteEnoughRecipes.RecipeGroups.AnyLavaCaptureTool"),
-			CaptureItemRecipe.LavaCatchingTools().ToArray()
+			CaptureItemRecipe.LavaCatchingTools().ToHashSet()
 		);
 
 		var result = new Item(catchItem);

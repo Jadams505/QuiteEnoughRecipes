@@ -9,6 +9,7 @@ using Terraria.UI.Chat;
 using Terraria.UI;
 using Terraria;
 using QuiteEnoughRecipes.ModUIElements;
+using QuiteEnoughRecipes.ModRecipeGroups;
 
 namespace QuiteEnoughRecipes;
 
@@ -175,17 +176,24 @@ public class UIRecipeGroupPanel : UIItemPanel
 	private static readonly TimeSpan TimePerCycle = new(0, 0, 0, 1);
 
 	private TimeSpan _timeSinceLastCycle = new(0);
-	private RecipeGroup _displayedGroup;
+	private IRecipeGroup _displayedGroup;
 	private List<int> _itemsInGroup;
 	private int _curItemIndex = 0;
 
 	public UIRecipeGroupPanel(RecipeGroup displayedGroup, int stack = 1,
 		float width = DefaultSideLength) :
+		this(displayedGroup.ToSimpleRecipeGroup(), stack, width)
+	{
+
+	}
+
+	public UIRecipeGroupPanel(IRecipeGroup displayedGroup, int stack = 1,
+		float width = DefaultSideLength) :
 		base(null, width)
 	{
 		_displayedGroup = displayedGroup;
-		DisplayedItem = new Item(displayedGroup.IconicItemId, stack);
-		_itemsInGroup = new(displayedGroup.ValidItems);
+		DisplayedItem = new Item(displayedGroup.IconItem, stack);
+		_itemsInGroup = new(displayedGroup.ValidItems());
 	}
 
 	public override void Update(GameTime t)
