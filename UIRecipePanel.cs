@@ -81,7 +81,7 @@ public class UIRecipePanel : UIAutoExtend
 	}
 
     public UIRecipePanel(Recipe recipe) :
-		this(recipe.createItem, recipe.requiredItem, recipe.acceptedGroups, recipe.requiredTile,
+		this(recipe.createItem, recipe.requiredItem, recipe.acceptedGroups, [recipe.requiredTile],
 			recipe.Conditions, recipe.Mod)
 	{
 	}

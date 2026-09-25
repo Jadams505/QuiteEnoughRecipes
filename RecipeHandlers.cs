@@ -58,7 +58,7 @@ public static class RecipeHandlers
 
 			foreach (var r in Main.recipe)
 			{
-				if (r.requiredTile.Contains(i.Item.createTile))
+				if (r.requiredTile == i.Item.createTile)
 				{
 					yield return new BasicRecipe(r);
 				}
