@@ -43,7 +43,7 @@ public class BasicRecipe : IRecipe
 		Result = recipe.createItem;
 		RequiredItems = recipe.requiredItem;
 		AcceptedGroups = recipe.acceptedGroups;
-		RequiredTiles = [recipe.requiredTile]; // 1.4.5 removed multiple tile recipes
+		RequiredTiles = recipe.requiredTile == -1 ? [] : [recipe.requiredTile]; // 1.4.5 removed multiple tile recipes. -1 is the default so treat like []
 		Conditions = recipe.Conditions;
 		SourceMod = recipe.Mod;
 	}

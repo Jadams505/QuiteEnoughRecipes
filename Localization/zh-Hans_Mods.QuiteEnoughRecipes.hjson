@@ -117,6 +117,8 @@ Tabs: {
 	// Buffing: Buffing
 	// Immunities: Immunities
 	// Biome: Tags
+	// FishLoot: Fishing
+	// QuestFish: Angler Quests
 }
 
 OptionGroups: {
@@ -227,6 +229,8 @@ OptionGroups: {
 Tooltips: {
 	// DropChance: "{0} drop chance"
 	// RecipeAddedBy: Recipe added by {0}
+	// OtherConditions: And {0} other conditions
+	// Rarity: Rarity: {0}
 }
 
 Conditions: {
@@ -235,9 +239,56 @@ Conditions: {
 	// DyeTrader: Dye Trader
 	// Decrafting: Decrafting
 	// CoinLuck: Provides {0} Coin Luck
+	// InLava: In Lava
+	// InHoney: In Honey
+	// Junk: Junk
+	// Crate: Crate
+	// AnyEnemies: Enemies
+	// CanFishInLava: Can Fish in Lava
+	// Dungeon: Dungeon
+	// Beach: Beach
+	// Hallow: Hallow
+	// GlowingMushrooms: Glowing Mushrooms
+	// TrueDesert: True Desert
+	// TrueSnow: True Snow
+	// Remix: Remix
+	// Height1: Surface
+	// Height1And2: Surface or Underground
+	// HeightAbove1: Underground and below
+	// HeightAboveAnd1: Surface and below
+	// HeightUnder2: Surface and above
+	// HeightAbove2: Caverns and below
+	// Height0: Space
+	// Height2: Underground
+	// Height3: Caverns
+	// UnderRockLayer: Below Caverns
+	// Corruption: Corruption
+	// Crimson: Crimson
+	// Jungle: Jungle
+	// Snow: Snow
+	// Desert: Desert
+	// RolledHallowDesert: Rolled Hallow Desert
+	// OriginalOcean: Original Ocean
+	// RemixOcean: Remix Ocean
+	// Ocean: Ocean
+	// Water1000: > 1000 Water tiles
+	// BloodMoon: Blood Moon
+	// DidNotUseCombatBook: Did Not Use Combat Book
+	// QuestFishCondition: While fishing quest is active
+	// QuestRemixFishCondition: While in remix world and fishing quest is active
+	// AnyRarity: Plentiful
+	// LegendaryRarity: Extremely Rare
+	// VeryRareRarity: Very Rare
+	// RareRarity: Rare
+	// UncommonRarity: Uncommon
+	// CommonRarity: Common
+	// BombRarityOfNotLegendaryAndNotVeryRareAndUncommon: Uncommon and Not Extremely Rare and Not Very Rare
+	// UncommonOrCommonRarity: Uncommon or Common
+	// Unknown: Unknown Condition
 }
 
 RecipeGroups: {
 	// AnyCaptureTool: Any Capturing Tool
 	// AnyLavaCaptureTool: Any Lava Proof Capturing Tool
+	// AllFishingRods: Any Fishing Rod
 }

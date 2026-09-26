@@ -100,7 +100,7 @@ public class UIRecipePanel : UIAutoExtend
 		var name = CraftingStationName(tileID);
 		//if (!QERConfig.Instance.HighlightClickedItems) { return name; }
 
-		if (ingredient is ItemIngredient item && item.Item.createTile == tileID)
+		if (ingredient is ItemIngredient item && name != "" && item.Item.createTile != -1 && item.Item.createTile == tileID)
 		{
 			return $"[c/{Main.OurFavoriteColor.Hex3()}:{name}]";
 		}
@@ -111,7 +111,7 @@ public class UIRecipePanel : UIAutoExtend
 	private static string CraftingStationName(int tileID)
 	{
 		return tileID == -1
-			? ""
+			? "" // this could also be considered "By Hand"
 			: Lang.GetMapObjectName(MapHelper.TileToLookup(tileID, Recipe.GetRequiredTileStyle(tileID)));
 	}
 }

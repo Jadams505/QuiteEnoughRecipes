@@ -58,7 +58,7 @@ public static class RecipeHandlers
 
 			foreach (var r in Main.recipe)
 			{
-				if (r.requiredTile == i.Item.createTile)
+				if (i.Item.createTile != -1 && r.requiredTile == i.Item.createTile)
 				{
 					yield return new BasicRecipe(r);
 				}
