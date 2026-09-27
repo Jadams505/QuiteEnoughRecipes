@@ -1,4 +1,5 @@
 ﻿using QuiteEnoughRecipes.ModRecipes;
+using QuiteEnoughRecipes.ModUIElements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +31,10 @@ public class ArmorSetHandler : IRecipeHandler
 			foreach (var set in sets)
 			{
 				IEnumerable<int> armor = [set.Head, set.Body, set.Legs];
-				yield return new ResultDropsRecipe<UIItemPanel, UIItemPanel>()
+				yield return new ResultDropsRecipe<UIArmorSetPanel, UIItemPanel>()
 				{
 					Drops = armor.Where(a => a > 0).Select(a => new UIItemPanel(new(a))),
-					Result = new UIItemPanel(new(armor.First()))
+					Result = new UIArmorSetPanel(set)
 				};
 			}
 		}
