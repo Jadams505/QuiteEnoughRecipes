@@ -307,6 +307,7 @@ public class UIQERState : UIState
 		AddHandler(new FishLootHandler());
 		AddHandler(new QuestFishHandler());
 		AddHandler(new ArmorSetHandler());
+		AddHandler(new ExtractinatorHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
