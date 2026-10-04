@@ -1,10 +1,7 @@
 ﻿using QuiteEnoughRecipes.ModIngredients;
-using QuiteEnoughRecipes.ModRecipes;
-using QuiteEnoughRecipes.ModUIElements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
@@ -12,11 +9,13 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
+using DropCountInfo = (int MinStack, int MaxStack, int Count);
+
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
 public class ExtractinatorHandler : IRecipeHandler
 {
-	internal Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, (int MinStack, int MaxStack, float Chance)>> ExtractinatorDropsCache
+	internal Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, DropRateInfo>> ExtractinatorDropsCache
 	{
 		get => field ??= CreateDropsCache();
 	}
@@ -37,7 +36,7 @@ public class ExtractinatorHandler : IRecipeHandler
 				{
 					yield return new ItemDropsRecipe()
 					{
-						Drops = drops.Select(e => new DropRateInfo(e.Key, e.Value.MinStack, e.Value.MaxStack, e.Value.Chance)).ToList(),
+						Drops = drops.Select(e => e.Value).ToList(),
 						Item = new(itemIng.Item.type)
 					};
 				}
@@ -48,7 +47,7 @@ public class ExtractinatorHandler : IRecipeHandler
 					{
 						yield return new ItemDropsRecipe()
 						{
-							Drops = entry.Value.Select(e => new DropRateInfo(e.Key, e.Value.MinStack, e.Value.MaxStack, e.Value.Chance)).ToList(),
+							Drops = entry.Value.Select(e => e.Value).ToList(),
 							Item = new(entry.Key)
 						};
 					}
@@ -63,7 +62,7 @@ public class ExtractinatorHandler : IRecipeHandler
 					{
 						yield return new ItemDropsRecipe()
 						{
-							Drops = entry.Value.Select(e => new DropRateInfo(e.Key, e.Value.MinStack, e.Value.MaxStack, e.Value.Chance)).ToList(),
+							Drops = entry.Value.Select(e => e.Value).ToList(),
 							Item = new(entry.Key)
 						};
 					}
@@ -82,16 +81,16 @@ public class ExtractinatorHandler : IRecipeHandler
 			{
 				yield return new ItemDropsRecipe()
 				{
-					Drops = entry.Value.Select(e => new DropRateInfo(e.Key, e.Value.MinStack, e.Value.MaxStack, e.Value.Chance)).ToList(),
+					Drops = entry.Value.Select(e => e.Value).ToList(),
 					Item = new(entry.Key)
 				};
 			}
 		}
 	}
 
-	internal Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, (int MinStack, int MaxStack, float Chance)>> CreateDropsCache()
+	internal Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, DropRateInfo>> CreateDropsCache()
 	{
-		var cache = new Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, (int MinStack, int MaxStack, float Chance)>>();
+		var cache = new Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, DropRateInfo>>();
 		for (int i = 0; i < ItemID.Sets.ExtractinatorMode.Length; ++i)
 		{
 			int mode = ItemID.Sets.ExtractinatorMode[i];
@@ -105,29 +104,29 @@ public class ExtractinatorHandler : IRecipeHandler
 			int totalCount = stats[i].Sum(e => e.Value.Count);
 			cache[i] = stats[i].ToDictionary(
 				e => e.Key,
-				e => (e.Value.MinStack, e.Value.MaxStack, (float)e.Value.Count / totalCount)
+				e => new DropRateInfo(e.Key, e.Value.MinStack, e.Value.MaxStack, (float)e.Value.Count / totalCount)
 			);
 
 		}
 		return cache;
 	}
 
-	public static Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, (int MinStack, int MaxStack, int Count)>> GetItemStatistics(int inputItem, int extractinatorBlockType, int numberOfRuns)
+	internal static Dictionary<int /*Input Item*/, Dictionary<int /*Output Item*/, DropCountInfo>> GetItemStatistics(int inputItem, int extractinatorBlockType, int numberOfRuns)
 	{
-		var finalResult = new Dictionary<int, Dictionary<int, (int MinStack, int MaxStack, int Count)>>();
+		var finalResult = new Dictionary<int, Dictionary<int, DropCountInfo>>();
 
 		for (int i = 0; i < numberOfRuns; i++)
 		{
 			var extractionMode = ItemID.Sets.ExtractinatorMode[inputItem];
 			var result = GetExtractinatorDrop(extractionMode, extractinatorBlockType);
 
-			if (!finalResult.TryGetValue(inputItem, out Dictionary<int, (int MinStack, int MaxStack, int Count)>? modeStats))
+			if (!finalResult.TryGetValue(inputItem, out Dictionary<int, DropCountInfo>? modeStats))
 			{
-				modeStats = new Dictionary<int, (int MinStack, int MaxStack, int Count)>();
+				modeStats = new Dictionary<int, DropCountInfo>();
 				finalResult[inputItem] = modeStats;
 			}
 
-			if (!modeStats.TryGetValue(result.ItemType, out (int MinStack, int MaxStack, int Count) existingStats))
+			if (!modeStats.TryGetValue(result.ItemType, out DropCountInfo existingStats))
 			{
 				modeStats[result.ItemType] = (result.Stack, result.Stack, 1);
 			}

@@ -292,6 +292,7 @@ public class UIQERState : UIState
 		AddHandler(new RecipeHandlers.ItemDrops());
 		AddHandler(new RecipeHandlers.NPCDrops());
 		AddHandler(new RecipeHandlers.GlobalDrops());
+		AddHandler(new ExtractinatorHandler());
 		AddHandler(new ChlorophyteExtractinatorHandler());
 		AddHandler(new ReforgeHandler());
 		AddHandler(new StrangePlantHandler());
@@ -307,7 +308,6 @@ public class UIQERState : UIState
 		AddHandler(new FishLootHandler());
 		AddHandler(new QuestFishHandler());
 		AddHandler(new ArmorSetHandler());
-		AddHandler(new ExtractinatorHandler());
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
