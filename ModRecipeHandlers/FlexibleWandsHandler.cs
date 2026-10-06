@@ -61,9 +61,12 @@ public static class FlexibleTileWandExtensions
 		public Dictionary<int, FlexibleTileWand_OptionBucket> Options()
 		{
 			if (FlexibleTileWand_optionsFieldInfo is null)
-			{
-				return null;
-			}
+				return [];
+			if (FlexibleTileWand_OptionBucket_ItemTypeToConsume is null)
+				return [];
+			if (FlexibleTileWand_OptionBucket_Options is null)
+				return [];
+
 			var dictionary = FlexibleTileWand_optionsFieldInfo.GetValue(wand) as IDictionary;
 			var typedDictionary = new Dictionary<int, FlexibleTileWand_OptionBucket>(dictionary.Count);
 			foreach (var entry in dictionary)
@@ -71,7 +74,7 @@ public static class FlexibleTileWandExtensions
 				DictionaryEntry kvp = (DictionaryEntry)entry;
 				int key = (int)kvp.Key;
 				var option = kvp.Value;
-				var itemType = (int)FlexibleTileWand_OptionBucket_ItemTypeToConsume.GetValue(option);
+				int itemType = (int)FlexibleTileWand_OptionBucket_ItemTypeToConsume.GetValue(option);
 				var placementOptions = FlexibleTileWand_OptionBucket_Options.GetValue(option) as List<PlacementOption>;
 				var wrapper = new FlexibleTileWand_OptionBucket
 				{
