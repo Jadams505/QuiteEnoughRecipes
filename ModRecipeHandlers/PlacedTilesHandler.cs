@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
@@ -28,7 +29,7 @@ public class PlacedTilesHandler : IRecipeHandler
 	{
 		return (ing, queryType) switch
 		{
-			(ItemIngredient itemIng, QueryType.Uses) when itemIng.Item.createTile != -1 => [new TileDropsRecipe() 
+			(ItemIngredient itemIng, QueryType.Uses) when itemIng.Item.createTile != -1 && itemIng.Item.GetFlexibleTileWand() is not FlexibleTileWand _ => [new TileDropsRecipe() 
 			{ 
 				TileType = itemIng.Item.createTile,
 				Style = itemIng.Item.placeStyle,
