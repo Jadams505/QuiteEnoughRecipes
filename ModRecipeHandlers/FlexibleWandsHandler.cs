@@ -1,20 +1,16 @@
-﻿using Microsoft.CodeAnalysis.Options;
-using QuiteEnoughRecipes.ModIngredients;
+﻿using QuiteEnoughRecipes.ModIngredients;
 using QuiteEnoughRecipes.ModRecipes;
 using QuiteEnoughRecipes.ModUIElements;
-using Steamworks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 using static Terraria.GameContent.FlexibleTileWand;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
@@ -40,17 +36,22 @@ public class FlexibleWandsHandler : IRecipeHandler
 					var options = wand.Options();
 					foreach (var option in options)
 					{
-						yield return option.Value.ToResultDropsRecipe();
+						yield return option.Value.ToWandRecipe(itemIng.Item.type);
 					}
 					yield break;
 				}
 
 				// Include all the items the wand consumes
-				var allOptionsWithItem = FlexibleTileWandSystem.Instance.AllWands.Values.SelectMany(wand => wand.Options().Values).Where(options => options.ContainsItem(itemIng.Item.type));
-				foreach (var options in allOptionsWithItem)
+				foreach (var wandPair in FlexibleTileWandSystem.Instance.AllWands)
 				{
-					yield return options.ToResultDropsRecipe();
+					var wandItem = wandPair.Key;
+					var allOptionsWithItem = wandPair.Value.Options().Values.Where(options => options.ContainsItem(itemIng.Item.type));
+					foreach (var options in allOptionsWithItem)
+					{
+						yield return options.ToWandRecipe(wandItem);
+					}
 				}
+				
 			}
 		}
 
@@ -60,16 +61,13 @@ public class FlexibleWandsHandler : IRecipeHandler
 			{
 				foreach (var wand in FlexibleTileWandSystem.Instance.AllWands)
 				{
+					var wandItem = wand.Key;
 					var options = wand.Value.Options();
-					foreach (var option in options)
+					foreach (var option in options.Values)
 					{
-						if (option.Value.Options.Any(e => e.TileIdToPlace == tileIng.TileType && e.TileStyleToPlace == tileIng.TileStyle))
+						if (option.ContainsTile(tileIng))
 						{
-							yield return new ResultDropsRecipe<UIItemPanel, UITilePanel>()
-							{
-								Result = new UIItemPanel(new(option.Value.ItemTypeToConsume), width: 70),
-								Drops = option.Value.Options.Select(e => new UITilePanel(e.TileIdToPlace, e.TileStyleToPlace, size: 50))
-							};
+							yield return option.ToWandRecipe(wandItem);
 						}
 					}
 				}
@@ -131,6 +129,8 @@ public static class FlexibleTileWandExtensions
 				Drops = optionBucket.Options.Select(e => new UITilePanel(e.TileIdToPlace, e.TileStyleToPlace, size: 50))
 			};
 		}
+
+		public WandsRecipe ToWandRecipe(int wandItem) => new WandsRecipe(wandItem, optionBucket);
 
 		public bool ContainsItem(int item)
 		{
