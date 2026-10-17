@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModRecipes;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent;
 
 namespace QuiteEnoughRecipes;
 
@@ -119,6 +120,8 @@ public class IngredientRegistry : ModSystem
 
 		var allTiles = Enumerable.Range(0, TileLoader.TileCount)
 			.SelectMany(TileToIngredients)
+			.Concat(FlexibleTileWandSystem.Instance.AllWands.SelectMany(wand => WandToTileIngredients(wand.Value)))
+			.Distinct(EqualityComparer<TileIngredient>.Create((a, b) => a.IsEquivalent(b), t => 0))
 			.ToList();
 		AddIngredients(allTiles);
 
@@ -421,6 +424,18 @@ public class IngredientRegistry : ModSystem
 		else
 		{
 			yield return new TileIngredient(tileId);
+		}
+	}
+
+	// Tile styles can not be enumerated easily, but wands include a few explicitly that should be included in the browser
+	private static IEnumerable<TileIngredient> WandToTileIngredients(FlexibleTileWand wand)
+	{
+		foreach (var bucket in wand.Options().Values)
+		{
+			foreach (var option in bucket.Options)
+			{
+				yield return new TileIngredient(option.TileIdToPlace, option.TileStyleToPlace);
+			}
 		}
 	}
 }
