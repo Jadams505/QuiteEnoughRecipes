@@ -262,37 +262,6 @@ public class UIQERState : UIState
 
 	public UIQERState()
 	{
-		/*
-		var itemGrid = new UIQueryableIngredientGrid<ItemIngredient, UIItemPanel>();
-		var itemSearchPage = new UISearchPage(itemGrid,
-			Language.GetText("Mods.QuiteEnoughRecipes.UI.ItemSearchHelp"));
-
-		var npcGrid = new UIQueryableIngredientGrid<NPCIngredient, UINPCPanel>();
-		var npcSearchPage = new UISearchPage(npcGrid,
-			Language.GetText("Mods.QuiteEnoughRecipes.UI.NPCSearchHelp"));
-
-		var tileGrid = new UIQueryableIngredientGrid<TileIngredient, UITilePanel>();
-		var tileSearchPage = new UISearchPage(tileGrid,
-			Language.GetText("Mods.QuiteEnoughRecipes.UI.TileSearchHelp"));
-
-		var wallGrid = new UIQueryableIngredientGrid<WallIngredient, UIWallPanel>();
-		var wallSearchPage = new UISearchPage(wallGrid,
-			Language.GetText("Mods.QuiteEnoughRecipes.UI.WallSearchHelp"));
-
-		var buffGrid = new UIQueryableIngredientGrid<BuffIngredient, UIBuffPanel>();
-		var buffSearchPage = new UISearchPage(buffGrid,
-			Language.GetText("Mods.QuiteEnoughRecipes.UI.BuffSearchHelp"));
-
-		var biomeGrid = new UIQueryableIngredientGrid<BiomeIngredient, UIBiomePanel>();
-		var biomeSearchPage = new UISearchPage(biomeGrid,
-			Language.GetText("Mods.QuiteEnoughRecipes.UI.BiomeSearchHelp"));
-		*/
-
-		foreach (var handler in RecipeHandlerLoader.OrderedRecipeHandlers)
-		{
-			AddHandler(handler);
-		}
-
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
 		recipePanel.Width.Percent = 0.45f;
@@ -340,26 +309,6 @@ public class UIQERState : UIState
 		ingredientTabBar.Height.Pixels = TabHeight;
 		ingredientTabBar.Left = new StyleDimension(5, 0.51f);
 		ingredientTabBar.Top = new StyleDimension(-TabHeight, 0.1f);
-		/*
-		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ItemList"),
-			new Item(ItemID.IronBar), itemSearchPage);
-		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.NPCList"),
-			new Item(ItemID.Bunny), npcSearchPage);
-		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.TileList"),
-			new Item(ItemID.DirtBlock), tileSearchPage);
-		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.WallList"),
-			new Item(ItemID.StoneWall), wallSearchPage);
-		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.BuffList"),
-			new Item(ItemID.HealingPotion), buffSearchPage);
-		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.BiomeList"),
-			new Item(ItemID.WorldGlobe), biomeSearchPage);
-		*/
-
-		foreach (var handler in IngredientHandlerLoader.OrderedIngredientHandlers)
-		{
-			var page = IngredientHandlerLoader.CreateSearchPage(handler);
-			ingredientTabBar.AddTab(handler.HoverName, handler.TabItem, page);
-		}
 
 		ingredientTabBar.OnTabSelected += page => {
 			UIQERSearchBar.UnfocusAll();
@@ -372,6 +321,17 @@ public class UIQERState : UIState
 
 			ingredientListContainer.Open(page);
 		};
+
+		foreach (var handler in IngredientHandlerLoader.OrderedIngredientHandlers)
+		{
+			var page = IngredientHandlerLoader.CreateSearchPage(handler);
+			ingredientTabBar.AddTab(handler.HoverName, handler.TabItem, page);
+		}
+
+		foreach (var handler in RecipeHandlerLoader.OrderedRecipeHandlers)
+		{
+			AddHandler(handler);
+		}
 
 		ingredientTabBar.OpenFirstTab();
 
