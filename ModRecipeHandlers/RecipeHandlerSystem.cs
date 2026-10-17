@@ -13,5 +13,6 @@ public class RecipeHandlerSystem : ModSystem
 	public override void ResizeArrays()
 	{
 		RecipeHandlerLoader.ResizeArrays();
+		IngredientHandlerLoader.ResizeArrays();
 	}
 }

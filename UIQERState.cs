@@ -262,6 +262,7 @@ public class UIQERState : UIState
 
 	public UIQERState()
 	{
+		/*
 		var itemGrid = new UIQueryableIngredientGrid<ItemIngredient, UIItemPanel>();
 		var itemSearchPage = new UISearchPage(itemGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.ItemSearchHelp"));
@@ -285,6 +286,7 @@ public class UIQERState : UIState
 		var biomeGrid = new UIQueryableIngredientGrid<BiomeIngredient, UIBiomePanel>();
 		var biomeSearchPage = new UISearchPage(biomeGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.BiomeSearchHelp"));
+		*/
 
 		foreach (var handler in RecipeHandlerLoader.OrderedRecipeHandlers)
 		{
@@ -338,6 +340,7 @@ public class UIQERState : UIState
 		ingredientTabBar.Height.Pixels = TabHeight;
 		ingredientTabBar.Left = new StyleDimension(5, 0.51f);
 		ingredientTabBar.Top = new StyleDimension(-TabHeight, 0.1f);
+		/*
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ItemList"),
 			new Item(ItemID.IronBar), itemSearchPage);
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.NPCList"),
@@ -350,6 +353,13 @@ public class UIQERState : UIState
 			new Item(ItemID.HealingPotion), buffSearchPage);
 		ingredientTabBar.AddTab(Language.GetText("Mods.QuiteEnoughRecipes.Tabs.BiomeList"),
 			new Item(ItemID.WorldGlobe), biomeSearchPage);
+		*/
+
+		foreach (var handler in IngredientHandlerLoader.OrderedIngredientHandlers)
+		{
+			var page = IngredientHandlerLoader.CreateSearchPage(handler);
+			ingredientTabBar.AddTab(handler.HoverName, handler.TabItem, page);
+		}
 
 		ingredientTabBar.OnTabSelected += page => {
 			UIQERSearchBar.UnfocusAll();
@@ -363,7 +373,7 @@ public class UIQERState : UIState
 			ingredientListContainer.Open(page);
 		};
 
-		ingredientTabBar.OpenTabFor(itemSearchPage);
+		ingredientTabBar.OpenFirstTab();
 
 		Append(ingredientListPanel);
 		Append(ingredientTabBar);

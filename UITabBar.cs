@@ -127,6 +127,13 @@ public class UITabBar<T> : UIElement
 		return true;
 	}
 
+	public bool OpenFirstTab()
+	{
+		if (_tabs.Count == 0) { return false; }
+		MakeTabCurrent(_tabs[0]);
+		return true;
+	}
+
 	private void MakeTabCurrent(Tab t)
 	{
 		foreach (var tab in _tabs) { tab.Selected = false; }

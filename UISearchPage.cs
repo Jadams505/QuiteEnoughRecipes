@@ -32,6 +32,11 @@ public interface IQueryable
 	public IEnumerable<IOptionGroup> GetSortGroups();
 }
 
+public interface IQueryableSource<out T> : IQueryable
+{
+	public IEnumerable<T> Source { get; }
+}
+
 // A page containing a search bar that can automatically be focused.
 public interface IFocusableSearchPage
 {

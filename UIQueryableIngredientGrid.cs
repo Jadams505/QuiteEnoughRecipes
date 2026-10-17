@@ -3,15 +3,17 @@ using System.Linq;
 using System;
 using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
+using QuiteEnoughRecipes.ModIngredientHandlers;
 
 namespace QuiteEnoughRecipes;
 
 // A wrapper around `UIScrollableGrid` that can be queried.
-public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryable
+public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 	where T : IIngredient
 	where E : UIElement, IScrollableGridElement<T>, new()
 {
-	
+	public IEnumerable<T> Source => _allIngredients;
+
 	private List<T> _allIngredients;
 	private List<T> _filteredIngredients;
 
@@ -27,11 +29,11 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryable
 	public int TotalResultCount => _allIngredients.Count;
 	public int DisplayedResultCount => _filteredIngredients.Count;
 
-	public UIQueryableIngredientGrid()
+	public UIQueryableIngredientGrid(List<T> ingredients)
 	{
 		const float ScrollBarWidth = 30;
 
-		_allIngredients = IngredientRegistry.Instance.GetIngredients<T>();
+		_allIngredients = ingredients;
 		_filteredIngredients = new(_allIngredients);
 
 		foreach (var f in _filterGroups) { f.OnFiltersChanged += UpdateDisplayedIngredients; }
@@ -50,6 +52,11 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryable
 
 		Append(_grid);
 		Append(scroll);
+	}
+
+	public UIQueryableIngredientGrid() : this(IngredientRegistry.Instance.GetIngredients<T>())
+	{
+
 	}
 
 	public void SetSearchText(string text)

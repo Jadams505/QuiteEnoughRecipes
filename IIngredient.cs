@@ -32,7 +32,7 @@ public interface IIngredientElement
 	public IIngredient? Ingredient { get; }
 }
 
-public record struct ItemIngredient(Item Item) : IIngredient
+public record ItemIngredient(Item Item) : IIngredient
 {
 	public string Name => Item.Name;
 	public Mod? Mod => Item.ModItem?.Mod;
