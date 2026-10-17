@@ -11,20 +11,21 @@ using Terraria.UI;
 using Terraria;
 using Terraria.GameContent;
 using System.Runtime.CompilerServices;
+using QuiteEnoughRecipes.ModAPI;
 
 namespace QuiteEnoughRecipes;
 
 public static class RecipeHandlers
 {
 	// Normal recipes.
-	public class Basic : IRecipeHandler
+	public class Basic : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Recipes");
 
-		public Item TabItem { get; } = new(ItemID.WorkBench);
+		public override Item TabItem { get; } = new(ItemID.WorkBench);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			if (!(ing is ItemIngredient i)) { yield break; }
 
@@ -38,18 +39,18 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
+		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	// Recipes requiring a crafting station.
-	public class CraftingStations : IRecipeHandler
+	public class CraftingStations : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Tiles");
 
-		public Item TabItem { get; } = new(ItemID.Furnace);
+		public override Item TabItem { get; } = new(ItemID.Furnace);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			if (!(queryType == QueryType.Uses && ing is ItemIngredient i))
 			{
@@ -65,17 +66,17 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
+		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
-	public class ShimmerTransmutations : IRecipeHandler
+	public class ShimmerTransmutations : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Shimmer");
 		
-		public Item TabItem { get; } = new(ItemID.BottomlessShimmerBucket);
+		public override Item TabItem { get; } = new(ItemID.BottomlessShimmerBucket);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			if (!(ing is ItemIngredient i)) { yield break; }
 
@@ -144,17 +145,17 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
+		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
-	public class NPCShops : IRecipeHandler
+	public class NPCShops : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Shops");
 
-		public Item TabItem { get; } = new(ItemID.GoldCoin);
+		public override Item TabItem { get; } = new(ItemID.GoldCoin);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			switch (ing, queryType)
 			{
@@ -193,7 +194,7 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() =>
+		public override IEnumerable<Type> GetIngredientTypes() =>
 			[typeof(ItemIngredient), typeof(NPCIngredient)];
 
 		public static bool MatchesCurrency(Item currency, Item shopEntry)
@@ -207,14 +208,14 @@ public static class RecipeHandlers
 	}
 
 	// Result of opening loot items like treasure bags and goodie bags.
-	public class ItemDrops : IRecipeHandler
+	public class ItemDrops : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ItemDrops");
 
-		public Item TabItem { get; } = new(ItemID.CultistBossBag);
+		public override Item TabItem { get; } = new(ItemID.CultistBossBag);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			if (!(ing is ItemIngredient i)) { yield break; }
 
@@ -245,18 +246,18 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
+		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	// Items dropped by NPCs when they are killed.
-	public class NPCDrops : IRecipeHandler
+	public class NPCDrops : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.NPCDrops");
 
-		public Item TabItem { get; } = new(ItemID.ZombieArm);
+		public override Item TabItem { get; } = new(ItemID.ZombieArm);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			switch (ing, queryType)
 			{
@@ -299,19 +300,19 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() =>
+		public override IEnumerable<Type> GetIngredientTypes() =>
 			[typeof(ItemIngredient), typeof(NPCIngredient)];
 	}
 
 	// If the item can be dropped from *any* NPC, this tab will show.
-	public class GlobalDrops : IRecipeHandler
+	public class GlobalDrops : QERRecipeHandler
 	{
-		public LocalizedText HoverName { get; }
+		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.GlobalDrops");
 
-		public Item TabItem { get; } = new(ItemID.Heart);
+		public override Item TabItem { get; } = new(ItemID.Heart);
 
-		public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
+		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
 			if (!(queryType == QueryType.Sources && ing is ItemIngredient i))
 			{
@@ -325,7 +326,7 @@ public static class RecipeHandlers
 			}
 		}
 
-		public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
+		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	private static bool RecipeAcceptsItem(Recipe r, Item i)

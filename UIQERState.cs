@@ -13,6 +13,7 @@ using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModUIElements;
 using QuiteEnoughRecipes.ModIngredients;
 using System.Diagnostics;
+using QuiteEnoughRecipes.ModAPI;
 
 namespace QuiteEnoughRecipes;
 
@@ -285,30 +286,10 @@ public class UIQERState : UIState
 		var biomeSearchPage = new UISearchPage(biomeGrid,
 			Language.GetText("Mods.QuiteEnoughRecipes.UI.BiomeSearchHelp"));
 
-		AddHandler(new RecipeHandlers.Basic());
-		AddHandler(new RecipeHandlers.CraftingStations());
-		AddHandler(new RecipeHandlers.ShimmerTransmutations());
-		AddHandler(new RecipeHandlers.NPCShops());
-		AddHandler(new RecipeHandlers.ItemDrops());
-		AddHandler(new RecipeHandlers.NPCDrops());
-		AddHandler(new RecipeHandlers.GlobalDrops());
-		AddHandler(new ExtractinatorHandler());
-		AddHandler(new ChlorophyteExtractinatorHandler());
-		AddHandler(new ReforgeHandler());
-		AddHandler(new StrangePlantHandler());
-		AddHandler(new ChestLootHandler());
-		AddHandler(new PlacedTilesHandler());
-		AddHandler(new TileDropsHandler());
-		AddHandler(new PlacedWallsHandler());
-		AddHandler(new WallDropsHandler());
-		AddHandler(new NpcCapturingHandler());
-		AddHandler(new BuffingHandler());
-		AddHandler(new BuffImmunitiesHandler());
-		AddHandler(new BiomeHandler());
-		AddHandler(new FishLootHandler());
-		AddHandler(new QuestFishHandler());
-		AddHandler(new ArmorSetHandler());
-		AddHandler(new FlexibleWandsHandler());
+		foreach (var handler in RecipeHandlerLoader.OrderedRecipeHandlers)
+		{
+			AddHandler(handler);
+		}
 
 		var recipePanel = new UIPanel();
 		recipePanel.Left.Percent = 0.04f;
