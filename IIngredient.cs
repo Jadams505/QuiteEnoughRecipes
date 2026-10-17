@@ -76,7 +76,7 @@ public record ItemIngredient(Item Item) : IIngredient
 	}
 }
 
-public record struct NPCIngredient(int ID) : IIngredient
+public record NPCIngredient(int ID) : IIngredient
 {
 	public string Name => Lang.GetNPCNameValue(ID);
 	public Mod? Mod => NPCLoader.GetNPC(ID)?.Mod;
