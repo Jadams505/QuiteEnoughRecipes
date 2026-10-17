@@ -120,6 +120,7 @@ Tabs: {
 	FishLoot: Fishing
 	QuestFish: Angler Quests
 	Extractinator: Extractinator
+	Wands: Wands
 }
 
 OptionGroups: {
