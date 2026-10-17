@@ -153,10 +153,34 @@ public class FlexibleTileWand_OptionBucket
 public class FlexibleTileWandSystem : ModSystem
 {
 	public static FlexibleTileWandSystem Instance => field ??= ModContent.GetInstance<FlexibleTileWandSystem>();
-	public Dictionary<int, FlexibleTileWand> AllWands => field ??= ContentSamples.ItemsByType
-		.Where(entry => entry.Value.GetFlexibleTileWand() is not null)
-		.ToDictionary(
-			keySelector: entry => entry.Key, 
-			elementSelector: entry => entry.Value.GetFlexibleTileWand()
-		);
+	public Dictionary<int, FlexibleTileWand> AllWands => field ??= FlexibleWands()
+		.Concat(OtherWands())
+		.ToDictionary(kvp => kvp.WandItem, kvp => kvp.Wand);
+
+	public IEnumerable<(int WandItem, FlexibleTileWand Wand)> FlexibleWands()
+	{
+		foreach (var entry in ContentSamples.ItemsByType)
+		{
+			var item = entry.Value;
+			if (item.GetFlexibleTileWand() is FlexibleTileWand wand)
+			{
+				yield return (entry.Key, wand);
+			}
+		}
+	}
+
+	// These are not FlexibleTileWand as defined in vanilla.
+	// Instead tileWand is used to create a FlexibleTileWand with a single option for the tile and style defined in the item.
+	public IEnumerable<(int WandItem, FlexibleTileWand Wand)> OtherWands()
+	{
+		foreach (var entry in ContentSamples.ItemsByType)
+		{
+			var item = entry.Value;
+			if (item.tileWand > 0)
+			{
+				var wand = CreateSingleTileWand(item.tileWand, item.createTile, item.placeStyle);
+				yield return (entry.Key, wand);
+			}
+		}
+	}
 }

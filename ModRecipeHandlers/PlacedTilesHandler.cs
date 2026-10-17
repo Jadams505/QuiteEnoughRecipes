@@ -29,14 +29,17 @@ public class PlacedTilesHandler : IRecipeHandler
 	{
 		return (ing, queryType) switch
 		{
-			(ItemIngredient itemIng, QueryType.Uses) when itemIng.Item.createTile != -1 && itemIng.Item.GetFlexibleTileWand() is not FlexibleTileWand _ => [new TileDropsRecipe() 
+			(ItemIngredient itemIng, QueryType.Uses) when itemIng.Item.createTile != -1 && !FlexibleTileWandSystem.Instance.AllWands.ContainsKey(itemIng.Item.type) => [new TileDropsRecipe() 
 			{ 
 				TileType = itemIng.Item.createTile,
 				Style = itemIng.Item.placeStyle,
 				Drops = [new DropRateInfo(itemIng.Item.type, 1, 1, 1)]
 			}],
 			(TileIngredient tileIng, QueryType.Sources) => ContentSamples.ItemsByType
-				.Where(entry => entry.Value.createTile == tileIng.TileType && entry.Value.placeStyle == tileIng.TileStyle)
+				.Where(
+					entry => entry.Value.createTile == tileIng.TileType && entry.Value.placeStyle == tileIng.TileStyle 
+					&& !FlexibleTileWandSystem.Instance.AllWands.ContainsKey(entry.Key) // if the item is a wand createTile should not apply (mostly for tileWand)
+				)
 				.Select(entry => new TileDropsRecipe()
 				{
 					TileType = tileIng.TileType,
