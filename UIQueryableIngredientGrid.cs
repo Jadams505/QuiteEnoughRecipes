@@ -35,6 +35,11 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 
 		_allIngredients = ingredients;
 		_filteredIngredients = new(_allIngredients);
+		_filterGroups = [
+			IngredientRegistry.Instance.GetFilterGroups(_allIngredients),
+			//IngredientRegistry.Instance.MakeFilterGroup<T>(),
+			IngredientRegistry.Instance.MakeModFilterGroup<T>()
+		];
 
 		foreach (var f in _filterGroups) { f.OnFiltersChanged += UpdateDisplayedIngredients; }
 		_sortGroup.OnSortChanged += UpdateDisplayedIngredients;

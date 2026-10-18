@@ -14,6 +14,8 @@ using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModRecipes;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent;
+using QuiteEnoughRecipes.ModAPI;
+using QuiteEnoughRecipes.ModFilters;
 
 namespace QuiteEnoughRecipes;
 
@@ -49,6 +51,8 @@ public class IngredientRegistry : ModSystem
 	private class IngredientFilter<T> : AbstractGenericOption<Predicate<IIngredient>>
 		where T : IIngredient
 	{
+		public required Predicate<T> Applies;
+
 		public required Predicate<T> Predicate;
 		public override Predicate<IIngredient> Value => i => i is T t && Predicate(t);
 		public override Type IngredientType => typeof(T);
@@ -84,6 +88,7 @@ public class IngredientRegistry : ModSystem
 	}
 
 	private List<AbstractGenericOption<Predicate<IIngredient>>> _filters = [];
+	//private List<IngredientFilter<IIngredient>> _filters = [];
 	private List<AbstractGenericOption<Comparison<IIngredient>>> _sorts = [];
 
 	// Map ingredient types to master lists of ingredients of that type.
@@ -145,6 +150,11 @@ public class IngredientRegistry : ModSystem
 
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
+		foreach (var filter in FilterHandlerLoader.OrderedFilterHandlers)
+		{
+			AddFilterGroup(filter);
+		}
+		/*
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
 			"ItemFilters.Misc");
 		foreach (var (pred, icon, name) in miscItemFilters)
@@ -182,6 +192,7 @@ public class IngredientRegistry : ModSystem
 		{
 			AddFilter<BuffIngredient>(pred, icon, name, $"{keyParent}.{IngredientOptions.BuffFiltersKey}.Name");
 		}
+		*/
 
 		var itemSorts = IngredientOptions.GetOptionButtons<Comparison<ItemIngredient>>(
 			"ItemSorts");
@@ -220,16 +231,34 @@ public class IngredientRegistry : ModSystem
 			AddSort<BiomeIngredient>(comp, icon, name, $"{keyParent}.{IngredientOptions.BiomeSortsKey}.Name");
 		}
 	}
-
+	/*
 	public void AddFilter<T>(Predicate<T> pred, int iconItemID, LocalizedText name,
 		string sectionNameKey = "") where T : IIngredient
 	{
-		_filters.Add(new IngredientFilter<T>{
+		_filters.Add(new IngredientFilter<T>
+		{
 			Predicate = pred,
 			Name = name,
 			ElementFunc = () => new UIItemIcon(new(iconItemID), false),
 			SectionNameKey = sectionNameKey,
+			Applies = t => t.GetType() == typeof(T)
 		});
+	}*/
+
+	public void AddFilterGroup<T>(IFilterHandler<T> handler)
+		where T : IIngredient
+	{
+		foreach (var filter in handler.GetFilters([]))
+		{
+			_filters.Add(new IngredientFilter<T>
+			{
+				Predicate = filter.Filter,
+				Name = filter.HoverName,
+				ElementFunc = () => filter.TabElement,
+				SectionNameKey = handler.FilterGroupText.Key,
+				Applies = handler.ShouldShowInUI
+			});
+		}
 	}
 
 	public void AddSort<T>(Comparison<T> comp, int iconItemID, LocalizedText name,
@@ -277,6 +306,27 @@ public class IngredientRegistry : ModSystem
 	{
 		var group = new UIFilterGroup<T>();
 		foreach (var opt in _filters.OfType<IngredientFilter<T>>())
+		{
+			group.AddFilter(opt.Predicate, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
+		}
+
+		return group;
+	}
+
+	public UIFilterGroup<T> MakeFilterGroup<T>(IFilterHandler<T> handler)
+		where T : IIngredient
+	{
+		var group = new UIFilterGroup<T>();
+		group.AddFilters(handler);
+
+		return group;
+	}
+	
+	public UIFilterGroup<T> GetFilterGroups<T>(IEnumerable<T> ingredients)
+		where T : IIngredient
+	{
+		var group = new UIFilterGroup<T>();
+		foreach (var opt in _filters.OfType<IngredientFilter<T>>().Where(f => ingredients.Any(x => f.Applies(x))))
 		{
 			group.AddFilter(opt.Predicate, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
 		}

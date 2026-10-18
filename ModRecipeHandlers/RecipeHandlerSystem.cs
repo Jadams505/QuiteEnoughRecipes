@@ -14,5 +14,6 @@ public class RecipeHandlerSystem : ModSystem
 	{
 		RecipeHandlerLoader.ResizeArrays();
 		IngredientHandlerLoader.ResizeArrays();
+		FilterHandlerLoader.ResizeArrays();
 	}
 }

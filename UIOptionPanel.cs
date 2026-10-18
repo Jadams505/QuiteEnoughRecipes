@@ -10,6 +10,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.UI;
 using Terraria;
+using QuiteEnoughRecipes.ModFilters;
 
 namespace QuiteEnoughRecipes;
 
@@ -143,6 +144,25 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 		});
 
 		AddToSection(_optionButtons[_optionButtons.Count - 1], sectionNameKey);
+	}
+
+	public void AddFilter(IFilterTab<T> filter, string sectionNameKey)
+	{
+		_optionButtons.Add(new(filter.TabElement)
+		{
+			Value = new() { Pred = filter.Filter },
+			HoverText = filter.HoverName,
+		});
+
+		AddToSection(_optionButtons[_optionButtons.Count - 1], sectionNameKey);
+	}
+
+	public void AddFilters(IFilterHandler<T> handler)
+	{
+		foreach (var filter in handler.GetFilters([]))
+		{
+			AddFilter(filter, handler.FilterGroupText.Key);
+		}
 	}
 
 	public void Reset()
