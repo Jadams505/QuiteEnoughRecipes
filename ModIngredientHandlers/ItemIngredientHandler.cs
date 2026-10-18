@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Terraria;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModIngredientHandlers;
 
@@ -15,7 +17,7 @@ public class ItemIngredientHandler : QERIngredientHandler
 {
 	public override LocalizedText HoverName { get; } = Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ItemList");
 	public override LocalizedText SearchHelp { get; } = Language.GetText("Mods.QuiteEnoughRecipes.UI.ItemSearchHelp");
-	public override Item TabItem { get; } = new Item(ItemID.IronBar);
+	public override UIElement TabElement { get; } = ITab.ItemIcon(new Item(ItemID.IronBar));
 
 	public override IQueryableSource<IIngredient> GetIngredients()
 	{

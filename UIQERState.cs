@@ -325,7 +325,7 @@ public class UIQERState : UIState
 		foreach (var handler in IngredientHandlerLoader.OrderedIngredientHandlers)
 		{
 			var page = IngredientHandlerLoader.CreateSearchPage(handler);
-			ingredientTabBar.AddTab(handler.HoverName, handler.TabItem, page);
+			ingredientTabBar.AddTab(handler, page);
 		}
 
 		foreach (var handler in RecipeHandlerLoader.OrderedRecipeHandlers)

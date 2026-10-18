@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuiteEnoughRecipes.ModIngredientHandlers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Terraria;
@@ -8,7 +9,7 @@ using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModAPI;
 
-public abstract class QERIngredientHandler : ModType
+public abstract class QERIngredientHandler : ModType, IIngredientHandler, ITab
 {
 	public int Type { get; internal set; }
 
@@ -18,11 +19,11 @@ public abstract class QERIngredientHandler : ModType
 	// The text that will be shown when the help icon is hovered
 	public abstract LocalizedText SearchHelp { get; }
 
-	// Item icon that will be displayed in the tab.
-	public abstract Item TabItem { get; }
+	// The icon that will be displayed in the tab.
+	public abstract UIElement TabElement { get; }
 
 	/*
-	 * Returns a queryable list of ingredients that should be displayed ia tab
+	 * Returns a queryable list of ingredients that should be displayed in a tab
 	 */
 	public abstract IQueryableSource<IIngredient> GetIngredients();
 

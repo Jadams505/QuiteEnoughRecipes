@@ -34,6 +34,18 @@ public class UITabBar<T> : UIElement
 			Append(new UIItemIcon(item, false){ IgnoresMouseInteraction = true, VAlign = 0.5f });
 		}
 
+		public Tab(ITab tab, T value)
+		{
+			_text = tab.HoverName;
+			Value = value;
+			var icon = tab.TabElement;
+			icon.IgnoresMouseInteraction = true;
+			icon.VAlign = 0.5f;
+			icon.Width.Set(32f, 0f);
+			icon.Height.Set(32f, 0f);
+			Append(icon);
+		}
+
 		protected override void DrawSelf(SpriteBatch sb)
 		{
 			BackgroundColor = Selected ? SelectedBackgroundColor : UnselectedBackgroundColor;
@@ -77,6 +89,19 @@ public class UITabBar<T> : UIElement
 		var tab = new Tab(text, item, v);
 		_tabs.Add(tab);
 		Append(tab);
+		Recalculate();
+		return _tabs.Count - 1;
+	}
+
+	/*
+	 * Add a tab. This tab will be associated with the value `v`; when this tab is clicked, `OnTabSelected`
+	 * will be activated with `v` as the argument.
+	 */
+	public int AddTab(ITab tab, T v)
+	{
+		var uiTab = new Tab(tab, v);
+		_tabs.Add(uiTab);
+		Append(uiTab);
 		Recalculate();
 		return _tabs.Count - 1;
 	}
@@ -139,5 +164,19 @@ public class UITabBar<T> : UIElement
 		foreach (var tab in _tabs) { tab.Selected = false; }
 		t.Selected = true;
 		OnTabSelected?.Invoke(t.Value);
+	}
+}
+
+public interface ITab
+{
+	// The name that will be shown when this tab is hovered.
+	public abstract LocalizedText HoverName { get; }
+
+	// The icon that will be displayed in the tab.
+	public UIElement TabElement { get; }
+
+	public static UIElement ItemIcon(Item item)
+	{
+		return new UIItemIcon(item, false);
 	}
 }
