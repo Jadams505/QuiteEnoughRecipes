@@ -12,20 +12,29 @@ public interface IFilterTab<in T> : ITab
 	public Predicate<T> Filter { get; }
 }
 
-public interface IFilterTab : ITab
-{
-	public Predicate<object> Filter { get; }
-}
-
-public record SimpleFilterTab<T>(LocalizedText HoverName, UIElement TabElement, Predicate<T> Filter) : IFilterTab<T>, IFilterTab
+public record SimpleFilterTab<T>(LocalizedText HoverName, UIElement TabElement, Predicate<T> Filter) : IFilterTab<T>
 {
 	public SimpleFilterTab(LocalizedText HoverName, int tabItem, Predicate<T> Filter) 
 		: this(HoverName, ITab.ItemIcon(new(tabItem)), Filter)
 	{
 
 	}
+}
 
-	Predicate<object> IFilterTab.Filter => o => Filter((T)o);
+public record SimpleIngredientFilterTab<T> : SimpleFilterTab<IIngredient>
+	where T : IIngredient
+{
+	public SimpleIngredientFilterTab(LocalizedText HoverName, UIElement TabElement, Predicate<T> Filter)
+		: base(HoverName, TabElement, o => o is T oIng ? Filter(oIng) : false)
+	{
+
+	}
+
+	public SimpleIngredientFilterTab(LocalizedText HoverName, int tabItem, Predicate<T> Filter)
+		: this(HoverName, ITab.ItemIcon(new(tabItem)), Filter)
+	{
+
+	}
 }
 
 public interface IFilterHandler<T>
@@ -36,14 +45,4 @@ public interface IFilterHandler<T>
 	public bool ShouldShowInUI(T obj);
 
 	public IEnumerable<IFilterTab<T>> GetFilters(IEnumerable<T> items);
-}
-
-public interface IFilterHandler
-{
-	// The name of the filter group that will be shown in the UI.
-	public abstract LocalizedText FilterGroupText { get; }
-
-	public bool ShouldShowInUI(IIngredient obj);
-
-	public IEnumerable<IFilterTab<IIngredient>> GetFilters(IEnumerable<IIngredient> items);
 }

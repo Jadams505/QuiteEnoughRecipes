@@ -26,7 +26,7 @@ namespace QuiteEnoughRecipes;
 public class IngredientRegistry : ModSystem
 {
 	// Maybe there's a built-in interface for this, but I don't know what it is.
-	private interface IGenericValue<T>
+	private interface IGenericValue<out T>
 	{
 		public T Value { get; }
 	}
@@ -56,6 +56,16 @@ public class IngredientRegistry : ModSystem
 		public required Predicate<T> Predicate;
 		public override Predicate<IIngredient> Value => i => i is T t && Predicate(t);
 		public override Type IngredientType => typeof(T);
+
+		public static implicit operator IngredientFilter<IIngredient>(IngredientFilter<T> self) =>
+			new IngredientFilter<IIngredient>()
+			{
+				Applies = o => o is T oIng ? self.Applies(oIng) : false,
+				ElementFunc = self.ElementFunc,
+				Name = self.Name,
+				Predicate = o => o is T oIng ? self.Predicate(oIng) : false,
+				SectionNameKey = self.SectionNameKey
+			};
 	}
 
 	private class IngredientSort<T> : AbstractGenericOption<Comparison<IIngredient>>
@@ -256,7 +266,7 @@ public class IngredientRegistry : ModSystem
 				Name = filter.HoverName,
 				ElementFunc = () => filter.TabElement,
 				SectionNameKey = handler.FilterGroupText.Key,
-				Applies = handler.ShouldShowInUI
+				Applies = x => handler.ShouldShowInUI(x)
 			});
 		}
 	}
@@ -326,9 +336,9 @@ public class IngredientRegistry : ModSystem
 		where T : IIngredient
 	{
 		var group = new UIFilterGroup<T>();
-		foreach (var opt in _filters.OfType<IngredientFilter<T>>().Where(f => ingredients.Any(x => f.Applies(x))))
+		foreach (var opt in _filters.OfType<IngredientFilter<IIngredient>>().Where(f => ingredients.Any(x => f.Applies(x))))
 		{
-			group.AddFilter(opt.Predicate, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
+			group.AddFilter(x => x is T t ? opt.Predicate(t) : false, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
 		}
 
 		return group;
