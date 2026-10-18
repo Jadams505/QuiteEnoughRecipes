@@ -11,6 +11,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 using static Terraria.GameContent.FlexibleTileWand;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
@@ -20,7 +21,7 @@ public class FlexibleWandsHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Wands");
 
-	public Item TabItem { get; } = new Item(ItemID.LeafWand);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.LeafWand));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

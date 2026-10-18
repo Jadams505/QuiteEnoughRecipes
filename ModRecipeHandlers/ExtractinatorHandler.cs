@@ -8,7 +8,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-
+using Terraria.UI;
 using DropCountInfo = (int MinStack, int MaxStack, int Count);
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
@@ -22,7 +22,7 @@ public class ExtractinatorHandler : IRecipeHandler
 
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Extractinator");
-	public Item TabItem { get; } = new Item(ItemID.Extractinator);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.Extractinator));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

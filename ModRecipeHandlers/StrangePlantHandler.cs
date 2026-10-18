@@ -8,6 +8,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -16,7 +17,7 @@ public class StrangePlantHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.StrangePlant");
 
-	public Item TabItem { get; } = new Item(ItemID.StrangePlant1);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.StrangePlant1));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

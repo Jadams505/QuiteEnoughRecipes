@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -17,7 +18,7 @@ public class PlacedWallsHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.PlacedWalls");
 
-	public Item TabItem { get; } = new(ItemID.StoneWall);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.StoneWall));
 
 	public IEnumerable<Type> GetIngredientTypes() =>
 		[typeof(WallIngredient)];

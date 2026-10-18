@@ -12,6 +12,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader.IO;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -20,7 +21,7 @@ public class PlacedTilesHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.PlacedTiles");
 
-	public Item TabItem { get; } = new(ItemID.StoneBlock);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.StoneBlock));
 
 	public IEnumerable<Type> GetIngredientTypes() =>
 		[typeof(TileIngredient)];

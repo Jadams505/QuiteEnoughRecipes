@@ -9,14 +9,8 @@ namespace QuiteEnoughRecipes;
  * Represents a tab in the recipe panel. This can be used for sources, uses, or both; the
  * distinction is made by the `QueryType` passed to `GetRecipeDisplays`.
  */
-public interface IRecipeHandler
+public interface IRecipeHandler : ITab
 {
-	// The name that will be shown when this tab is hovered.
-	public LocalizedText HoverName { get; }
-
-	// Item icon that will be displayed in the tab.
-	public Item TabItem { get; }
-
 	/*
 	 * Given an ingredient, returns a sequence of UI elements showing recipes that either use or
 	 * result in that ingredient.

@@ -9,7 +9,7 @@ using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModAPI;
 
-public abstract class QERIngredientHandler : ModType, IIngredientHandler, ITab
+public abstract class QERIngredientHandler : ModType, IIngredientHandler
 {
 	public int Type { get; internal set; }
 

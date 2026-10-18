@@ -12,6 +12,7 @@ using Terraria.GameContent.FishDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -24,7 +25,7 @@ public class FishLootHandler : IRecipeHandler
 
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.FishLoot");
-	public Item TabItem { get; } = new(ItemID.ReinforcedFishingPole);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.ReinforcedFishingPole));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

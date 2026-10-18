@@ -6,6 +6,7 @@ using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -13,7 +14,7 @@ public class QuestFishHandler : IRecipeHandler
 {
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.QuestFish");
-	public Item TabItem { get; } = new Item(ItemID.Bunnyfish);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.Bunnyfish));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient), typeof(NPCIngredient)];
 

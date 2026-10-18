@@ -11,6 +11,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -19,7 +20,7 @@ public class TileDropsHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.TileDrops");
 
-	public Item TabItem { get; } = new(ItemID.TinPickaxe);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.TinPickaxe));
 
 	public IEnumerable<Type> GetIngredientTypes() =>
 		[typeof(TileIngredient), typeof(ItemIngredient)];

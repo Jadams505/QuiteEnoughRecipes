@@ -157,8 +157,7 @@ public class UIQERState : UIState
 
 		private UIRecipeList _list;
 
-		public LocalizedText HoverName => _list.Handler.HoverName;
-		public Item TabItem => _list.Handler.TabItem;
+		public IRecipeHandler Handler => _list.Handler;
 
 		private UIRecipePage(UIRecipeList list) : base(list)
 		{
@@ -476,7 +475,7 @@ public class UIQERState : UIState
 		_recipeTabBar.ClearTabs();
 		foreach (var page in pagesForIngredient)
 		{
-			_recipeTabBar.AddTab(page.HoverName, page.TabItem, page);
+			_recipeTabBar.AddTab(page.Handler, page);
 		}
 
 		_recipeTabBar.Activate();

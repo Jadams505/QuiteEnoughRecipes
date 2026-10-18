@@ -9,6 +9,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -16,7 +17,7 @@ public class NpcCapturingHandler : IRecipeHandler
 {
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Catching");
-	public Item TabItem { get; } = new(ItemID.BugNet);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.BugNet));
 
 	public IEnumerable<Type> GetIngredientTypes() =>
 		[typeof(ItemIngredient)];

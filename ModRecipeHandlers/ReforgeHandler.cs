@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -17,7 +18,7 @@ public class ReforgeHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Reforging");
 
-	public Item TabItem { get; } = new(ItemID.IronHammer);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.IronHammer));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

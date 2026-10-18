@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -16,7 +17,7 @@ public class ChlorophyteExtractinatorHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ChlorophyteExtractinator");
 
-	public Item TabItem { get; } = new(ItemID.ChlorophyteExtractinator);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.ChlorophyteExtractinator));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

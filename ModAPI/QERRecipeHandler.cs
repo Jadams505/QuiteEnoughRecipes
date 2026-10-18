@@ -4,6 +4,7 @@ using System.Text;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModAPI;
 
@@ -11,7 +12,7 @@ public abstract class QERRecipeHandler : ModType, IRecipeHandler
 {
 	public int Type { get; internal set; }
 	public abstract LocalizedText HoverName { get; }
-	public abstract Item TabItem { get; }
+	public abstract UIElement TabElement { get; }
 
 	public abstract IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType);
 

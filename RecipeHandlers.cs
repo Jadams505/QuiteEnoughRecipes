@@ -23,7 +23,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Recipes");
 
-		public override Item TabItem { get; } = new(ItemID.WorkBench);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.WorkBench));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
@@ -48,7 +48,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Tiles");
 
-		public override Item TabItem { get; } = new(ItemID.Furnace);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.Furnace));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
@@ -74,7 +74,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Shimmer");
 		
-		public override Item TabItem { get; } = new(ItemID.BottomlessShimmerBucket);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.BottomlessShimmerBucket));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
@@ -153,7 +153,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Shops");
 
-		public override Item TabItem { get; } = new(ItemID.GoldCoin);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.GoldCoin));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
@@ -213,7 +213,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ItemDrops");
 
-		public override Item TabItem { get; } = new(ItemID.CultistBossBag);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.CultistBossBag));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
@@ -255,7 +255,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.NPCDrops");
 
-		public override Item TabItem { get; } = new(ItemID.ZombieArm);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.ZombieArm));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{
@@ -310,7 +310,7 @@ public static class RecipeHandlers
 		public override LocalizedText HoverName { get; }
 			= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.GlobalDrops");
 
-		public override Item TabItem { get; } = new(ItemID.Heart);
+		public override UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.Heart));
 
 		public override IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType)
 		{

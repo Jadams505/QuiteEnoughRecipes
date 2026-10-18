@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -16,7 +17,7 @@ public class ArmorSetHandler : IRecipeHandler
 {
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ArmorSet");
-	public Item TabItem { get; } = new Item(ItemID.IronChainmail);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.IronChainmail));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

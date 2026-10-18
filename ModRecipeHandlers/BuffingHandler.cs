@@ -7,13 +7,14 @@ using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 public class BuffingHandler : IRecipeHandler
 {
 	public LocalizedText HoverName { get; } =
 		Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Buffing");
-	public Item TabItem { get; } = new(ItemID.ShinePotion);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.ShinePotion));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(BuffIngredient), typeof(ItemIngredient)];
 

@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 public class BuffImmunitiesHandler : IRecipeHandler
 {
 	public LocalizedText HoverName { get; } =
 		Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Immunities");
-	public Item TabItem { get; } = new(ItemID.AdhesiveBandage);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.AdhesiveBandage));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(BuffIngredient), typeof(NPCIngredient)];
 

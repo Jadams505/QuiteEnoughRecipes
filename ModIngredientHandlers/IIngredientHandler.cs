@@ -5,7 +5,7 @@ using Terraria.Localization;
 
 namespace QuiteEnoughRecipes.ModIngredientHandlers;
 
-public interface IIngredientHandler
+public interface IIngredientHandler : ITab
 {
 	// The text that will be shown when the help icon is hovered
 	public LocalizedText SearchHelp { get; }

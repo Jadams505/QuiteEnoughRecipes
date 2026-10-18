@@ -9,7 +9,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-
+using Terraria.UI;
 using ChestType = (int TileType, int Style, int IconItem);
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
@@ -27,7 +27,7 @@ public class ChestLootHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.ChestLoot");
 
-	public Item TabItem { get; } = new(ItemID.GoldChest);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.GoldChest));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 

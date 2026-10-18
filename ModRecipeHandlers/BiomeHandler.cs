@@ -9,6 +9,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 public class BiomeHandler : IRecipeHandler
@@ -16,7 +17,7 @@ public class BiomeHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.Biome");
 
-	public Item TabItem { get; } = new(ItemID.WorldGlobe);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.WorldGlobe));
 
 	public IEnumerable<Type> GetIngredientTypes() => [typeof(BiomeIngredient), typeof(NPCIngredient)];
 

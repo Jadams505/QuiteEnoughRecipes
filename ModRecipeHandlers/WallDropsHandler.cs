@@ -13,6 +13,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
+using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModRecipeHandlers;
 
@@ -21,7 +22,7 @@ public class WallDropsHandler : IRecipeHandler
 	public LocalizedText HoverName { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.Tabs.WallDrops");
 
-	public Item TabItem { get; } = new(ItemID.TinHammer);
+	public UIElement TabElement { get; } = ITab.ItemIcon(new(ItemID.TinHammer));
 
 	public IEnumerable<Type> GetIngredientTypes() =>
 		[typeof(WallIngredient), typeof(ItemIngredient)];
