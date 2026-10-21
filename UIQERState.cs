@@ -49,12 +49,15 @@ public class UIQERState : UIState
 		public UIRecipeList(IRecipeHandler handler)
 		{
 			Handler = handler;
+			_filterGroups = [IngredientRegistry.Instance.GetFilterGroup<IIngredient>()];
+			/*
 			_filterGroups = Handler.GetIngredientTypes()
 				.Select(t => IngredientRegistry.Instance.MakeFilterGroup(t))
 				.Concat([
 					IngredientRegistry.Instance.MakeModFilterGroup(Handler.GetIngredientTypes())
 				])
 				.ToList();
+			*/
 			_sortGroup = IngredientRegistry.Instance.MakeSortGroup(Handler.GetIngredientTypes());
 
 			foreach (var f in _filterGroups) { f.OnFiltersChanged += UpdateDisplayedRecipes; }
@@ -101,6 +104,23 @@ public class UIQERState : UIState
 
 		private void UpdateDisplayedRecipes()
 		{
+			foreach (var filter in _filterGroups)
+			{
+				foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
+				{
+					bool shouldShow = false;
+					foreach (var entry in _entries)
+					{
+						if (entry.Ingredients.Any(e => handler.ShouldShowInUI(e)))
+						{
+							shouldShow = true;
+							break;
+						}
+						//shouldShow ^= entry.Ingredients.Any(e => handler.ShouldShowInUI(e));
+					}
+					filter.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
+				}
+			}
 			var query = SearchQuery.FromSearchText(_searchText);
 			var positiveFilters = _filterGroups.SelectMany(f => f.GetPositiveFilters()).ToList();
 			var negativeFilters = _filterGroups.SelectMany(f => f.GetNegativeFilters()).ToList();

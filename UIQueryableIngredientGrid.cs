@@ -4,6 +4,7 @@ using System;
 using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
 using QuiteEnoughRecipes.ModIngredientHandlers;
+using QuiteEnoughRecipes.ModAPI;
 
 namespace QuiteEnoughRecipes;
 
@@ -18,10 +19,7 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 	private List<T> _filteredIngredients;
 
 	private string _searchText = "";
-	private List<UIFilterGroup<T>> _filterGroups = [
-		IngredientRegistry.Instance.MakeFilterGroup<T>(),
-		IngredientRegistry.Instance.MakeModFilterGroup<T>()
-	];
+	private List<UIFilterGroup<T>> _filterGroups = [];
 	private UISortGroup<T> _sortGroup = IngredientRegistry.Instance.MakeSortGroup<T>();
 
 	private UIScrollableGrid<T, E> _grid = new();
@@ -37,7 +35,6 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 		_filteredIngredients = new(_allIngredients);
 		_filterGroups = [
 			IngredientRegistry.Instance.GetFilterGroups(_allIngredients),
-			//IngredientRegistry.Instance.MakeFilterGroup<T>(),
 			IngredientRegistry.Instance.MakeModFilterGroup<T>()
 		];
 
@@ -83,6 +80,15 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 	// Update what ingredients are being displayed based on the search bar and filters.
 	private void UpdateDisplayedIngredients()
 	{
+		foreach(var filter in _filterGroups)
+		{
+			foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
+			{
+				bool shouldShow = handler.ShouldShowInUI(_allIngredients[0]);
+				//shouldShow = true;
+				filter.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
+			}
+		}
 		var query = SearchQuery.FromSearchText(_searchText ?? "");
 		var positiveFilters = _filterGroups.SelectMany(f => f.GetPositiveFilters()).ToList();
 		var negativeFilters = _filterGroups.SelectMany(f => f.GetNegativeFilters()).ToList();

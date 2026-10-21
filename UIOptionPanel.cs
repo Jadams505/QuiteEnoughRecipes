@@ -11,6 +11,8 @@ using Terraria.Localization;
 using Terraria.UI;
 using Terraria;
 using QuiteEnoughRecipes.ModFilters;
+using QuiteEnoughRecipes.ModUIElements;
+using Steamworks;
 
 namespace QuiteEnoughRecipes;
 
@@ -49,50 +51,69 @@ public interface IDoNotClearTag {}
  */
 public class UIAutoExtendSectionGrid : UIAutoExtendGrid
 {
-	private class Section
+	protected class Section
 	{
 		public required string Key;
 		public List<UIElement> Elems = [];
 		public required UIText HeaderElem;
+		public bool Visible { get; set; }
 	}
 
 	private bool _hasChanged = false;
 	private List<Section> _sections = [];
+	private Dictionary<string, Section> _sectionsLookup = [];
 
 	public void AddToSection(UIElement e, string sectionNameKey)
 	{
-		var section = _sections.FirstOrDefault(s => s.Key == sectionNameKey);
-
-		if (section is null)
+		if (_sectionsLookup.TryGetValue(sectionNameKey, out var existing))
+		{
+			existing.Elems.Add(e);
+		}
+		else
 		{
 			var text = Language.Exists(sectionNameKey)
 				? Language.GetText(sectionNameKey)
 				: Language.GetText("");
 
-			section = new(){
+			Section section = new()
+			{
 				Key = sectionNameKey,
-				HeaderElem = new(text){
+				HeaderElem = new(text)
+				{
 					Width = new(0, 1),
 
 					// Sections after the first one have extra space at the top.
-					PaddingTop = _sections.Count == 0 ? 0 : 20,
+					PaddingTop = _sectionsLookup.Count == 0 ? 0 : 20,
 					TextOriginX = 0,
 					TextOriginY = 1
 				}
 			};
-			_sections.Add(section);
+			section.Elems.Add(e);
+			_sectionsLookup[sectionNameKey] = section;
 		}
 
-		section.Elems.Add(e);
 		_hasChanged = true;
 	}
+
+	public virtual void SetSectionVisibility(string key, bool isVisible)
+	{
+		var section = _sectionsLookup.GetValueOrDefault(key);
+		
+		if (section is not null)
+		{
+			_hasChanged = true;
+			section.Visible = isVisible;
+		}
+	}
+
+	protected Section? GetSection(string key) => _sectionsLookup.GetValueOrDefault(key);
 
 	public override void Recalculate()
 	{
 		if (_hasChanged)
 		{
 			RemoveAllChildren();
-			foreach (var s in _sections)
+			foreach (var s in _sectionsLookup.Values.Where(s => s.Visible))
 			{
 				Append(s.HeaderElem);
 				foreach (var elem in s.Elems) { Append(elem); }
@@ -121,12 +142,16 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 		public bool Locked = false;
 	}
 
-	private List<UIOptionButton<FilterData>> _optionButtons = [];
+	//private List<UIOptionButton<FilterData>> _optionButtons = [];
+	private Dictionary<string, List<UIOptionButton<FilterData>>> _optionButtonsLookup = [];
+	private IEnumerable<UIOptionButton<FilterData>> _optionButtons => _optionButtonsLookup.Values.SelectMany(x => x);
 
 	public bool IsDefaulted =>
 		_optionButtons.All(b => b.Value.State == FilterState.Unselected || b.IsLocked);
 	public bool HasLocks => _optionButtons.Any(b => b.IsLocked);
 	public UIElement Element => this;
+
+	public bool Visible { get; set; } = true;
 
 	// Activated when any filters are changed.
 	public event Action? OnFiltersChanged;
@@ -136,25 +161,29 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 		Width.Percent = 1;
 	}
 
+	//public Predicate<T> ShouldShowInUI { get; set; } = o => true;
+
 	public void AddFilter(Predicate<T> pred, LocalizedText name, UIElement icon, string sectionNameKey)
 	{
-		_optionButtons.Add(new(icon){
+		UIOptionButton<FilterData> button = new(icon){
 			Value = new(){ Pred = pred },
 			HoverText = name,
-		});
+		};
 
-		AddToSection(_optionButtons[_optionButtons.Count - 1], sectionNameKey);
+		AddButton(sectionNameKey, button);
+		AddToSection(button, sectionNameKey);
 	}
 
 	public void AddFilter(IFilterTab<T> filter, string sectionNameKey)
 	{
-		_optionButtons.Add(new(filter.TabElement)
+		UIOptionButton<FilterData> button = new(filter.TabElement)
 		{
 			Value = new() { Pred = filter.Filter },
 			HoverText = filter.HoverName,
-		});
+		};
 
-		AddToSection(_optionButtons[_optionButtons.Count - 1], sectionNameKey);
+		AddButton(sectionNameKey, button);
+		AddToSection(button, sectionNameKey);
 	}
 
 	public void AddFilters(IFilterHandler<T> handler)
@@ -183,6 +212,20 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 		{
 			button.IsLocked = false;
 		}
+	}
+
+	public override void SetSectionVisibility(string key, bool isVisible)
+	{
+		if (_optionButtonsLookup.TryGetValue(key, out var existing))
+		{
+			if (existing.Any(e => e.IsLocked))
+			{
+				// sections with locked entries should still show?
+				base.SetSectionVisibility(key, true);
+				return;
+			}
+		}
+		base.SetSectionVisibility(key, isVisible);
 	}
 
 	public override void LeftClick(UIMouseEvent e)
@@ -266,6 +309,18 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 			_ => (FilterState.Unselected, false),
 		};
 	}
+
+	private void AddButton(string sectionNameKey, UIOptionButton<FilterData> button)
+	{
+		if (_optionButtonsLookup.TryGetValue(sectionNameKey, out var existing))
+		{
+			existing.Add(button);
+		}
+		else
+		{
+			_optionButtonsLookup[sectionNameKey] = [button];
+		}
+	}
 }
 
 public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
@@ -276,6 +331,8 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 	public bool IsDefaulted => _activeSortIndex == 0;
 	public bool HasLocks => false;
 	public UIElement Element => this;
+
+	public bool Visible { get; set; } = true;
 
 	public event Action? OnSortChanged;
 
@@ -436,6 +493,18 @@ public class UIOptionPanel : UIPanel, IOptionGroup
 
 		Append(_list);
 		Append(scroll);
+	}
+
+	public override void Update(GameTime gameTime)
+	{
+		base.Update(gameTime);
+		/*
+		_list.Clear();
+		foreach (var group in _groups.Where(g => g.Visible))
+		{
+			AddGroup(group);
+		}
+		*/
 	}
 
 	public void AddGroup(IOptionGroup group)

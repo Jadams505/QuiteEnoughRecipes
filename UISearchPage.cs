@@ -181,8 +181,8 @@ public class UISearchPage : UIElement, IFocusableSearchPage
 
 		float offset = 0;
 
-		var filters = queryElement.GetFilterGroups().ToList();
-		if (filters.Count > 0)
+		var filters = queryElement.GetFilterGroups();
+		if (filters.Any())
 		{
 			_filterPanel.Width.Percent = 1;
 			_filterPanel.Height.Percent = 1;

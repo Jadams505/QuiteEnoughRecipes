@@ -51,7 +51,7 @@ public class IngredientRegistry : ModSystem
 	private class IngredientFilter<T> : AbstractGenericOption<Predicate<IIngredient>>
 		where T : IIngredient
 	{
-		public required Predicate<T> Applies;
+		//public required Predicate<T> Applies;
 
 		public required Predicate<T> Predicate;
 		public override Predicate<IIngredient> Value => i => i is T t && Predicate(t);
@@ -60,7 +60,7 @@ public class IngredientRegistry : ModSystem
 		public static implicit operator IngredientFilter<IIngredient>(IngredientFilter<T> self) =>
 			new IngredientFilter<IIngredient>()
 			{
-				Applies = o => o is T oIng ? self.Applies(oIng) : false,
+				//Applies = o => o is T oIng ? self.Applies(oIng) : false,
 				ElementFunc = self.ElementFunc,
 				Name = self.Name,
 				Predicate = o => o is T oIng ? self.Predicate(oIng) : false,
@@ -266,7 +266,7 @@ public class IngredientRegistry : ModSystem
 				Name = filter.HoverName,
 				ElementFunc = () => filter.TabElement,
 				SectionNameKey = handler.FilterGroupText.Key,
-				Applies = x => handler.ShouldShowInUI(x)
+				//Applies = x => handler.ShouldShowInUI(x)
 			});
 		}
 	}
@@ -331,12 +331,24 @@ public class IngredientRegistry : ModSystem
 
 		return group;
 	}
-	
+
+	public UIFilterGroup<T> GetFilterGroup<T>()
+		where T : IIngredient
+	{
+		var group = new UIFilterGroup<T>();
+		foreach (var opt in _filters.OfType<IngredientFilter<T>>())
+		{
+			group.AddFilter(opt.Predicate, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
+		}
+
+		return group;
+	}
+
 	public UIFilterGroup<T> GetFilterGroups<T>(IEnumerable<T> ingredients)
 		where T : IIngredient
 	{
 		var group = new UIFilterGroup<T>();
-		foreach (var opt in _filters.OfType<IngredientFilter<IIngredient>>().Where(f => ingredients.Any(x => f.Applies(x))))
+		foreach (var opt in _filters.OfType<IngredientFilter<IIngredient>>())
 		{
 			group.AddFilter(x => x is T t ? opt.Predicate(t) : false, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
 		}
