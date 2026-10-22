@@ -1,11 +1,8 @@
 ﻿using QuiteEnoughRecipes.ModAPI;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader.IO;
-using static Terraria.ID.ContentSamples.CreativeHelper;
 
 namespace QuiteEnoughRecipes.ModFilters;
 
@@ -14,16 +11,16 @@ public class NpcFiltersHandler : QERFilterHandler
 	public override LocalizedText FilterGroupText { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.NPCFilters.Name");
 
-	public override IEnumerable<IFilterTab<IIngredient>> GetFilters(IEnumerable<IIngredient> items)
+	public override IEnumerable<IFilterTab<IIngredient>> GetFilters()
 	{
 		yield return new SimpleIngredientFilterTab<NPCIngredient>(Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.NPCFilters.IsBoss"), ItemID.SlimeCrown, IngredientOptions.IsBoss);
 
 		yield return new SimpleIngredientFilterTab<NPCIngredient>(Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.NPCFilters.IsTownNPC"), ItemID.GoldCoin, IngredientOptions.IsTownNPC);
 	}
 
-	public override bool ShouldShowInUI(IIngredient obj)
+	public override bool Applies(IEnumerable<IIngredient> items)
 	{
-		return obj is NPCIngredient;
+		return items.Any(i => i is NPCIngredient);
 	}
 }
 

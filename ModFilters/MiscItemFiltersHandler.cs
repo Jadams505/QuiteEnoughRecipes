@@ -1,10 +1,8 @@
 ﻿using QuiteEnoughRecipes.ModAPI;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader.IO;
 using static Terraria.ID.ContentSamples.CreativeHelper;
 
 namespace QuiteEnoughRecipes.ModFilters;
@@ -14,15 +12,15 @@ public class MiscItemFiltersHandler : QERFilterHandler
 	public override LocalizedText FilterGroupText { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.ItemFilters.Misc.Name");
 
-	public override IEnumerable<IFilterTab<IIngredient>> GetFilters(IEnumerable<IIngredient> items)
+	public override IEnumerable<IFilterTab<IIngredient>> GetFilters()
 	{
 		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.ItemFilters.Misc.IsTile"), ItemID.StoneBlock, IngredientOptions.IsTile);
 
 		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.ItemFilters.Misc.IsCraftingStation"), ItemID.Furnace, itemIng => IngredientOptions.IsInGroup(itemIng, ItemGroup.CraftingObjects));
 	}
 
-	public override bool ShouldShowInUI(IIngredient obj)
+	public override bool Applies(IEnumerable<IIngredient> items)
 	{
-		return obj is ItemIngredient;
+		return items.Any(i => i is ItemIngredient);
 	}
 }

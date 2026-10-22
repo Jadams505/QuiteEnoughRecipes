@@ -15,9 +15,9 @@ public abstract class QERFilterHandler : ModType, IFilterHandler<IIngredient>
 
 	public abstract LocalizedText FilterGroupText { get; }
 
-	public abstract bool ShouldShowInUI(IIngredient obj);
+	public abstract bool Applies(IEnumerable<IIngredient> items);
 
-	public abstract IEnumerable<IFilterTab<IIngredient>> GetFilters(IEnumerable<IIngredient> items);
+	public abstract IEnumerable<IFilterTab<IIngredient>> GetFilters();
 
 	/// <summary>
 	/// By default icons are sorted in load order.<br/>

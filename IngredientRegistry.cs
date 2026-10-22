@@ -51,16 +51,13 @@ public class IngredientRegistry : ModSystem
 	private class IngredientFilter<T> : AbstractGenericOption<Predicate<IIngredient>>
 		where T : IIngredient
 	{
-		//public required Predicate<T> Applies;
-
 		public required Predicate<T> Predicate;
 		public override Predicate<IIngredient> Value => i => i is T t && Predicate(t);
 		public override Type IngredientType => typeof(T);
-
+		
 		public static implicit operator IngredientFilter<IIngredient>(IngredientFilter<T> self) =>
 			new IngredientFilter<IIngredient>()
 			{
-				//Applies = o => o is T oIng ? self.Applies(oIng) : false,
 				ElementFunc = self.ElementFunc,
 				Name = self.Name,
 				Predicate = o => o is T oIng ? self.Predicate(oIng) : false,
@@ -258,7 +255,7 @@ public class IngredientRegistry : ModSystem
 	public void AddFilterGroup<T>(IFilterHandler<T> handler)
 		where T : IIngredient
 	{
-		foreach (var filter in handler.GetFilters([]))
+		foreach (var filter in handler.GetFilters())
 		{
 			_filters.Add(new IngredientFilter<T>
 			{
@@ -310,28 +307,6 @@ public class IngredientRegistry : ModSystem
 		return list as List<T> ?? [];
 	}
 
-	// Make a filter group element with the filters for type `T`.
-	public UIFilterGroup<T> MakeFilterGroup<T>()
-		where T : IIngredient
-	{
-		var group = new UIFilterGroup<T>();
-		foreach (var opt in _filters.OfType<IngredientFilter<T>>())
-		{
-			group.AddFilter(opt.Predicate, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
-		}
-
-		return group;
-	}
-
-	public UIFilterGroup<T> MakeFilterGroup<T>(IFilterHandler<T> handler)
-		where T : IIngredient
-	{
-		var group = new UIFilterGroup<T>();
-		group.AddFilters(handler);
-
-		return group;
-	}
-
 	public UIFilterGroup<T> GetFilterGroup<T>()
 		where T : IIngredient
 	{
@@ -344,25 +319,13 @@ public class IngredientRegistry : ModSystem
 		return group;
 	}
 
-	public UIFilterGroup<T> GetFilterGroups<T>(IEnumerable<T> ingredients)
+	public UIFilterGroup<T> MakeFilterGroup<T>()
 		where T : IIngredient
 	{
 		var group = new UIFilterGroup<T>();
 		foreach (var opt in _filters.OfType<IngredientFilter<IIngredient>>())
 		{
 			group.AddFilter(x => x is T t ? opt.Predicate(t) : false, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
-		}
-
-		return group;
-	}
-
-	// Get the generic filter group for ingredient type `t`.
-	public UIFilterGroup<IIngredient> MakeFilterGroup(Type t)
-	{
-		var group = new UIFilterGroup<IIngredient>();
-		foreach (var opt in _filters.Where(f => f.IngredientType == t))
-		{
-			group.AddFilter(opt.Value, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
 		}
 
 		return group;

@@ -27,7 +27,7 @@ public class UIQERState : UIState
 		private List<RecipeEntry> _entries = [];
 
 		private string _searchText = "";
-		private List<UIFilterGroup<IIngredient>> _filterGroups = [];
+		private UIFilterGroup<IIngredient> _filterGroup;
 		private UISortGroup<IIngredient> _sortGroup;
 
 		private UIList _recipeList = new(){
@@ -49,7 +49,7 @@ public class UIQERState : UIState
 		public UIRecipeList(IRecipeHandler handler)
 		{
 			Handler = handler;
-			_filterGroups = [IngredientRegistry.Instance.GetFilterGroup<IIngredient>()];
+			_filterGroup = IngredientRegistry.Instance.MakeFilterGroup<IIngredient>();
 			/*
 			_filterGroups = Handler.GetIngredientTypes()
 				.Select(t => IngredientRegistry.Instance.MakeFilterGroup(t))
@@ -60,7 +60,7 @@ public class UIQERState : UIState
 			*/
 			_sortGroup = IngredientRegistry.Instance.MakeSortGroup(Handler.GetIngredientTypes());
 
-			foreach (var f in _filterGroups) { f.OnFiltersChanged += UpdateDisplayedRecipes; }
+			_filterGroup.OnFiltersChanged += UpdateDisplayedRecipes;
 			_sortGroup.OnSortChanged += UpdateDisplayedRecipes;
 
 			_recipeList.SetScrollbar(Scrollbar);
@@ -86,7 +86,7 @@ public class UIQERState : UIState
 
 		public IEnumerable<IOptionGroup> GetFilterGroups()
 		{
-			return _filterGroups;
+			return [_filterGroup];
 		}
 
 		public IEnumerable<IOptionGroup> GetSortGroups()
@@ -104,26 +104,14 @@ public class UIQERState : UIState
 
 		private void UpdateDisplayedRecipes()
 		{
-			foreach (var filter in _filterGroups)
+			foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
 			{
-				foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
-				{
-					bool shouldShow = false;
-					foreach (var entry in _entries)
-					{
-						if (entry.Ingredients.Any(e => handler.ShouldShowInUI(e)))
-						{
-							shouldShow = true;
-							break;
-						}
-						//shouldShow ^= entry.Ingredients.Any(e => handler.ShouldShowInUI(e));
-					}
-					filter.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
-				}
+				bool shouldShow = _entries.Any(e => handler.Applies(e.Ingredients));
+				_filterGroup.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
 			}
 			var query = SearchQuery.FromSearchText(_searchText);
-			var positiveFilters = _filterGroups.SelectMany(f => f.GetPositiveFilters()).ToList();
-			var negativeFilters = _filterGroups.SelectMany(f => f.GetNegativeFilters()).ToList();
+			var positiveFilters = _filterGroup.GetPositiveFilters();
+			var negativeFilters = _filterGroup.GetNegativeFilters();
 
 			_entries.Sort((x, y) =>
 				LexicographicalCompare(x.Ingredients, y.Ingredients, _sortGroup.GetActiveSort()));

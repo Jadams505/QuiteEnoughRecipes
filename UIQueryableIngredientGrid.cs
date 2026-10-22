@@ -19,8 +19,8 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 	private List<T> _filteredIngredients;
 
 	private string _searchText = "";
-	private List<UIFilterGroup<T>> _filterGroups = [];
-	private UISortGroup<T> _sortGroup = IngredientRegistry.Instance.MakeSortGroup<T>();
+	private UIFilterGroup<T> _filterGroup;
+	private UISortGroup<T> _sortGroup;
 
 	private UIScrollableGrid<T, E> _grid = new();
 
@@ -33,12 +33,10 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 
 		_allIngredients = ingredients;
 		_filteredIngredients = new(_allIngredients);
-		_filterGroups = [
-			IngredientRegistry.Instance.GetFilterGroups(_allIngredients),
-			IngredientRegistry.Instance.MakeModFilterGroup<T>()
-		];
+		_filterGroup = IngredientRegistry.Instance.MakeFilterGroup<T>();
+		_sortGroup = IngredientRegistry.Instance.MakeSortGroup<T>();
 
-		foreach (var f in _filterGroups) { f.OnFiltersChanged += UpdateDisplayedIngredients; }
+		_filterGroup.OnFiltersChanged += UpdateDisplayedIngredients;
 		_sortGroup.OnSortChanged += UpdateDisplayedIngredients;
 
 		var scroll = new UIScrollbar();
@@ -69,7 +67,7 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 
 	public IEnumerable<IOptionGroup> GetFilterGroups()
 	{
-		return _filterGroups;
+		return [_filterGroup];
 	}
 
 	public IEnumerable<IOptionGroup> GetSortGroups()
@@ -80,18 +78,14 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 	// Update what ingredients are being displayed based on the search bar and filters.
 	private void UpdateDisplayedIngredients()
 	{
-		foreach(var filter in _filterGroups)
+		foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
 		{
-			foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
-			{
-				bool shouldShow = handler.ShouldShowInUI(_allIngredients[0]);
-				//shouldShow = true;
-				filter.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
-			}
+			bool shouldShow = handler.Applies(_allIngredients.OfType<IIngredient>());
+			_filterGroup.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
 		}
 		var query = SearchQuery.FromSearchText(_searchText ?? "");
-		var positiveFilters = _filterGroups.SelectMany(f => f.GetPositiveFilters()).ToList();
-		var negativeFilters = _filterGroups.SelectMany(f => f.GetNegativeFilters()).ToList();
+		var positiveFilters = _filterGroup.GetPositiveFilters();
+		var negativeFilters = _filterGroup.GetNegativeFilters();
 
 		var filteredIngredients = _allIngredients
 			.Where(i => query.Matches(i)

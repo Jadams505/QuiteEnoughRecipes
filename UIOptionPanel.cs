@@ -142,7 +142,6 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 		public bool Locked = false;
 	}
 
-	//private List<UIOptionButton<FilterData>> _optionButtons = [];
 	private Dictionary<string, List<UIOptionButton<FilterData>>> _optionButtonsLookup = [];
 	private IEnumerable<UIOptionButton<FilterData>> _optionButtons => _optionButtonsLookup.Values.SelectMany(x => x);
 
@@ -188,7 +187,7 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 
 	public void AddFilters(IFilterHandler<T> handler)
 	{
-		foreach (var filter in handler.GetFilters([]))
+		foreach (var filter in handler.GetFilters())
 		{
 			AddFilter(filter, handler.FilterGroupText.Key);
 		}
