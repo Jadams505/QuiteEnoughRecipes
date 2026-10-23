@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using ReLogic.Content;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -10,9 +9,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.UI;
 using Terraria;
-using QuiteEnoughRecipes.ModFilters;
-using QuiteEnoughRecipes.ModUIElements;
-using Steamworks;
+using QuiteEnoughRecipes.ModFiltersHandlers;
 
 namespace QuiteEnoughRecipes;
 
@@ -60,7 +57,6 @@ public class UIAutoExtendSectionGrid : UIAutoExtendGrid
 	}
 
 	private bool _hasChanged = false;
-	private List<Section> _sections = [];
 	private Dictionary<string, Section> _sectionsLookup = [];
 
 	public void AddToSection(UIElement e, string sectionNameKey)
@@ -150,8 +146,6 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 	public bool HasLocks => _optionButtons.Any(b => b.IsLocked);
 	public UIElement Element => this;
 
-	public bool Visible { get; set; } = true;
-
 	// Activated when any filters are changed.
 	public event Action? OnFiltersChanged;
 
@@ -159,8 +153,6 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 	{
 		Width.Percent = 1;
 	}
-
-	//public Predicate<T> ShouldShowInUI { get; set; } = o => true;
 
 	public void AddFilter(Predicate<T> pred, LocalizedText name, UIElement icon, string sectionNameKey)
 	{

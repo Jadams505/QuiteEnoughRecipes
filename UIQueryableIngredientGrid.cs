@@ -19,7 +19,7 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 	private List<T> _filteredIngredients;
 
 	private string _searchText = "";
-	private UIFilterGroup<T> _filterGroup;
+	private UIFilterGroup<IIngredient> _filterGroup;
 	private UISortGroup<T> _sortGroup;
 
 	private UIScrollableGrid<T, E> _grid = new();
@@ -33,7 +33,7 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 
 		_allIngredients = ingredients;
 		_filteredIngredients = new(_allIngredients);
-		_filterGroup = IngredientRegistry.Instance.MakeFilterGroup<T>();
+		_filterGroup = IngredientRegistry.Instance.GetFilterGroup();
 		_sortGroup = IngredientRegistry.Instance.MakeSortGroup<T>();
 
 		_filterGroup.OnFiltersChanged += UpdateDisplayedIngredients;

@@ -49,15 +49,7 @@ public class UIQERState : UIState
 		public UIRecipeList(IRecipeHandler handler)
 		{
 			Handler = handler;
-			_filterGroup = IngredientRegistry.Instance.MakeFilterGroup<IIngredient>();
-			/*
-			_filterGroups = Handler.GetIngredientTypes()
-				.Select(t => IngredientRegistry.Instance.MakeFilterGroup(t))
-				.Concat([
-					IngredientRegistry.Instance.MakeModFilterGroup(Handler.GetIngredientTypes())
-				])
-				.ToList();
-			*/
+			_filterGroup = IngredientRegistry.Instance.GetFilterGroup();
 			_sortGroup = IngredientRegistry.Instance.MakeSortGroup(Handler.GetIngredientTypes());
 
 			_filterGroup.OnFiltersChanged += UpdateDisplayedRecipes;

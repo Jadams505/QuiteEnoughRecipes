@@ -1,11 +1,7 @@
-﻿using QuiteEnoughRecipes.ModFilters;
-using QuiteEnoughRecipes.ModIngredientHandlers;
-using System;
+﻿using QuiteEnoughRecipes.ModFiltersHandlers;
 using System.Collections.Generic;
-using System.Text;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.UI;
 
 namespace QuiteEnoughRecipes.ModAPI;
 

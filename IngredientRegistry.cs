@@ -94,8 +94,6 @@ public class IngredientRegistry : ModSystem
 		public IEnumerable<IIngredient> Value => this.Select(i => i as IIngredient);
 	}
 
-	private List<AbstractGenericOption<Predicate<IIngredient>>> _filters = [];
-	//private List<IngredientFilter<IIngredient>> _filters = [];
 	private List<AbstractGenericOption<Comparison<IIngredient>>> _sorts = [];
 
 	// Map ingredient types to master lists of ingredients of that type.
@@ -113,7 +111,6 @@ public class IngredientRegistry : ModSystem
 	 */
 	public override void PostSetupRecipes()
 	{
-		_filters.Clear();
 		_sorts.Clear();
 		_ingredients.Clear();
 
@@ -157,10 +154,10 @@ public class IngredientRegistry : ModSystem
 
 		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
 
-		foreach (var filter in FilterHandlerLoader.OrderedFilterHandlers)
-		{
-			AddFilterGroup(filter);
-		}
+		//foreach (var filter in FilterHandlerLoader.OrderedFilterHandlers)
+		//{
+		//	AddFilterGroup(filter);
+		//}
 		/*
 		var miscItemFilters = IngredientOptions.GetOptionButtons<Predicate<ItemIngredient>>(
 			"ItemFilters.Misc");
@@ -238,35 +235,6 @@ public class IngredientRegistry : ModSystem
 			AddSort<BiomeIngredient>(comp, icon, name, $"{keyParent}.{IngredientOptions.BiomeSortsKey}.Name");
 		}
 	}
-	/*
-	public void AddFilter<T>(Predicate<T> pred, int iconItemID, LocalizedText name,
-		string sectionNameKey = "") where T : IIngredient
-	{
-		_filters.Add(new IngredientFilter<T>
-		{
-			Predicate = pred,
-			Name = name,
-			ElementFunc = () => new UIItemIcon(new(iconItemID), false),
-			SectionNameKey = sectionNameKey,
-			Applies = t => t.GetType() == typeof(T)
-		});
-	}*/
-
-	public void AddFilterGroup<T>(IFilterHandler<T> handler)
-		where T : IIngredient
-	{
-		foreach (var filter in handler.GetFilters())
-		{
-			_filters.Add(new IngredientFilter<T>
-			{
-				Predicate = filter.Filter,
-				Name = filter.HoverName,
-				ElementFunc = () => filter.TabElement,
-				SectionNameKey = handler.FilterGroupText.Key,
-				//Applies = x => handler.ShouldShowInUI(x)
-			});
-		}
-	}
 
 	public void AddSort<T>(Comparison<T> comp, int iconItemID, LocalizedText name,
 		string sectionNameKey = "") where T : IIngredient
@@ -307,25 +275,12 @@ public class IngredientRegistry : ModSystem
 		return list as List<T> ?? [];
 	}
 
-	public UIFilterGroup<T> GetFilterGroup<T>()
-		where T : IIngredient
+	public UIFilterGroup<IIngredient> GetFilterGroup()
 	{
-		var group = new UIFilterGroup<T>();
-		foreach (var opt in _filters.OfType<IngredientFilter<T>>())
+		var group = new UIFilterGroup<IIngredient>();
+		foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
 		{
-			group.AddFilter(opt.Predicate, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
-		}
-
-		return group;
-	}
-
-	public UIFilterGroup<T> MakeFilterGroup<T>()
-		where T : IIngredient
-	{
-		var group = new UIFilterGroup<T>();
-		foreach (var opt in _filters.OfType<IngredientFilter<IIngredient>>())
-		{
-			group.AddFilter(x => x is T t ? opt.Predicate(t) : false, opt.Name, opt.ElementFunc(), opt.SectionNameKey);
+			group.AddFilters(handler);
 		}
 
 		return group;
