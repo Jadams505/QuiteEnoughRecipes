@@ -20,7 +20,7 @@ public class MiscItemFiltersHandler : QERFilterHandler
 	{
 		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText($"{GroupKey}.IsTile"), ItemID.StoneBlock, IsTile);
 
-		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText($"{GroupKey}.IsCraftingStation"), ItemID.Furnace, itemIng => IsInGroup(itemIng, ItemGroup.CraftingObjects));
+		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText($"{GroupKey}.IsCraftingStation"), ItemID.Furnace, IsCraftingStation);
 
 		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText($"{GroupKey}.IsBossSummon"), ItemID.SuspiciousLookingEye, IsBossSummon);
 
@@ -50,6 +50,7 @@ public class MiscItemFiltersHandler : QERFilterHandler
 
 		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText($"{GroupKey}.IsVanity"), ItemID.RedHat, IsVanity);
 
+		yield return new SimpleIngredientFilterTab<ItemIngredient>(Language.GetText($"{GroupKey}.IsResearched"), ItemID.Cog, IsResearched);
 	}
 
 	public override bool Applies(IEnumerable<IIngredient> items)
