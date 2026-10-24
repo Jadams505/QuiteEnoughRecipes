@@ -20,16 +20,28 @@ internal class ModFiltersHandler : QERFilterHandler
 
 	public override IEnumerable<IFilterTab<IIngredient>> GetFilters()
 	{
-		var mods = ModLoader.Mods;
-		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups.Mods";
+		var mods = IngredientHandlerLoader.OrderedIngredientHandlers
+			.SelectMany(i => i.GetIngredients().Select(x => x.Value)
+				.Select(x => x.Mod)
+			)
+			.Where(m => m is not null)
+			.DistinctBy(m => m.Name)
+			.OrderBy(m => m.DisplayNameClean);
 
-		var sortedMods = mods.Distinct().OrderBy(m => m.DisplayNameClean);
-		foreach (var mod in sortedMods)
+		foreach (var mod in mods)
 		{
-			var name = Language.GetText($"{keyParent}.ModName")
-				.WithFormatArgs(mod.DisplayNameClean);
-			var icon = mod.ModSourceBestiaryInfoElement.GetFilterImage();
-			yield return new SimpleFilterTab<IIngredient>(name, () => icon, i => i.Mod == mod);
+			var filter = MakeModFilter(mod);
+			yield return filter;
 		}
+	}
+
+	private static IFilterTab<IIngredient> MakeModFilter(Mod mod)
+	{
+		const string keyParent = "Mods.QuiteEnoughRecipes.OptionGroups.Mods";
+		var name = Language.GetText($"{keyParent}.ModName")
+				.WithFormatArgs(mod.DisplayNameClean);
+		var icon = mod.ModSourceBestiaryInfoElement.GetFilterImage();
+		
+		return new SimpleFilterTab<IIngredient>(name, () => icon, i => i.Mod == mod);
 	}
 }

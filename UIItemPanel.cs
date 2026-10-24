@@ -18,14 +18,11 @@ namespace QuiteEnoughRecipes;
  * have any other special behavior when interacted with; this can be achieved by subscribing to the
  * events from `UIElement`.
  */
-public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement<ItemIngredient>, IHighlightableElement
+public class UIItemPanel : UIElement, IIngredientElement, IIngredientGridElement, IHighlightableElement
 {
 	public const int DefaultSideLength = 52;
 
-	public static int GridSideLength => DefaultSideLength;
-	public static int GridPadding => 5;
-
-	private float _scale;
+	public float Scale => Width.Pixels / DefaultSideLength;
 
 	// The item to show. When this is set to `null`, nothing at all will be drawn.
 	public Item? DisplayedItem;
@@ -34,21 +31,21 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 
 	public IIngredient? Ingredient => DisplayedItem == null ? null : new ItemIngredient(DisplayedItem);
 
+	public UIElement Element => this;
+	public IIngredient Value => Ingredient;
+
 	// The icon will be scaled to fit in a square with side length `width`.
 	public UIItemPanel(Item? displayedItem, float width = DefaultSideLength)
 	{
 		DisplayedItem = displayedItem;
 		Width.Pixels = width;
 		Height.Pixels = width;
-		_scale = width / DefaultSideLength;
 
 		// Extremely lazy way to handle text bounds.
-		SetPadding(3 * _scale);
+		SetPadding(3 * Scale);
 	}
 
 	public UIItemPanel() : this(null) {}
-
-	public void SetDisplayedValue(ItemIngredient i) => DisplayedItem = i.Item;
 
 	public virtual void Highlight(IIngredient? source)
 	{
@@ -69,18 +66,19 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 			? TextureAssets.InventoryBack14.Value
 			: TextureAssets.InventoryBack.Value;
 
-		sb.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, _scale, 0, 0);
+		var scale = Scale;
+		sb.Draw(inventoryBack, pos, null, Color.White, 0, Vector2.Zero, scale, 0, 0);
 
 		float oldInventoryScale = Main.inventoryScale;
-		Main.inventoryScale = _scale;
-		QuiteEnoughRecipes.DrawItemIcon(DisplayedItem, -1, sb, pos + inventoryBack.Size() * _scale / 2,
-			_scale, 32, Color.White);
+		Main.inventoryScale = scale;
+		QuiteEnoughRecipes.DrawItemIcon(DisplayedItem, -1, sb, pos + inventoryBack.Size() * scale / 2,
+			scale, 32, Color.White);
 		Main.inventoryScale = oldInventoryScale;
 
 		// Draw trapped chest indicator.
 		if (ItemID.Sets.TrapSigned[DisplayedItem.type])
 		{
-			sb.Draw(TextureAssets.Wire.Value, pos + new Vector2(40) * _scale,
+			sb.Draw(TextureAssets.Wire.Value, pos + new Vector2(40) * scale,
 				new Rectangle(4, 58, 8, 8), Color.White, 0f, new Vector2(4), 1, 0, 0);
 		}
 
@@ -89,7 +87,7 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 		{
 			var indicator = TextureAssets.Extra[ExtrasID.UnsafeIndicator].Value;
 			var frame = indicator.Frame();
-			sb.Draw(indicator, pos + new Vector2(36) * _scale, frame, Color.White, 0,
+			sb.Draw(indicator, pos + new Vector2(36) * scale, frame, Color.White, 0,
 				frame.Size() / 2, 1, 0, 0);
 		}
 
@@ -142,8 +140,9 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 		offset.Y -= PaddingTop;
 
 		var dims = GetInnerDimensions();
-		var scaledOffset = offset * _scale;
-		var textScale = _scale;
+		var scale = Scale;
+		var scaledOffset = offset * scale;
+		var textScale = scale;
 		var defaultTextSize = ChatManager.GetStringSize(FontAssets.ItemStack.Value, s,
 			new Vector2(textScale));
 
@@ -166,6 +165,30 @@ public class UIItemPanel : UIElement, IIngredientElement, IScrollableGridElement
 		ChatManager.DrawColorCodedStringWithShadow(sb, FontAssets.ItemStack.Value, s,
 			dims.Position() + scaledOffset, Color.White, 0, Vector2.Zero, new Vector2(textScale),
 			-1, textScale);
+	}
+
+	public void SetDisplayedValue(IIngredient value)
+	{
+		if (value is ItemIngredient itemIng)
+		{
+			DisplayedItem = itemIng.Item;
+		}
+		else
+		{
+			DisplayedItem = null;
+		}
+	}
+
+	public void Configure(GridOptions options)
+	{
+		Width.Pixels = options.SideLength;
+		Height.Pixels = options.SideLength;
+	}
+
+	public IGridElement<IIngredient> Copy()
+	{
+		var copy = new UIItemPanel(new(DisplayedItem.type));
+		return copy;
 	}
 }
 

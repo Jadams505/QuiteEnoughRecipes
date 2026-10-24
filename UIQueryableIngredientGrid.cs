@@ -9,32 +9,33 @@ using QuiteEnoughRecipes.ModAPI;
 namespace QuiteEnoughRecipes;
 
 // A wrapper around `UIScrollableGrid` that can be queried.
-public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
-	where T : IIngredient
-	where E : UIElement, IScrollableGridElement<T>, new()
+public class UIQueryableIngredientGrid : UIElement, IQueryable
 {
-	public IEnumerable<T> Source => _allIngredients;
-
-	private List<T> _allIngredients;
-	private List<T> _filteredIngredients;
+	private List<IIngredient> _allIngredients;
+	private List<IIngredient> _filteredIngredients;
 
 	private string _searchText = "";
 	private UIFilterGroup<IIngredient> _filterGroup;
-	private UISortGroup<T> _sortGroup;
+	private UISortGroup<IIngredient> _sortGroup;
 
-	private UIScrollableGrid<T, E> _grid = new();
+	private UIScrollableGrid<IIngredient> _grid;
 
 	public int TotalResultCount => _allIngredients.Count;
 	public int DisplayedResultCount => _filteredIngredients.Count;
 
-	public UIQueryableIngredientGrid(List<T> ingredients)
+	public UIQueryableIngredientGrid(IIngredientHandler handler)
 	{
 		const float ScrollBarWidth = 30;
 
-		_allIngredients = ingredients;
+		_allIngredients = handler.GetIngredients().Select(x => x.Value).ToList();
+		_grid = new()
+		{
+			Options = handler.Options,
+			TemplateElement = handler.GetIngredients().First()
+		};
 		_filteredIngredients = new(_allIngredients);
 		_filterGroup = IngredientRegistry.Instance.GetFilterGroup();
-		_sortGroup = IngredientRegistry.Instance.MakeSortGroup<T>();
+		_sortGroup = IngredientRegistry.Instance.MakeSortGroup<IIngredient>();
 
 		_filterGroup.OnFiltersChanged += UpdateDisplayedIngredients;
 		_sortGroup.OnSortChanged += UpdateDisplayedIngredients;
@@ -52,11 +53,6 @@ public class UIQueryableIngredientGrid<T, E> : UIElement, IQueryableSource<T>
 
 		Append(_grid);
 		Append(scroll);
-	}
-
-	public UIQueryableIngredientGrid() : this(IngredientRegistry.Instance.GetIngredients<T>())
-	{
-
 	}
 
 	public void SetSearchText(string text)

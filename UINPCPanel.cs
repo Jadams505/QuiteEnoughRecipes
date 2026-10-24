@@ -21,7 +21,7 @@ namespace QuiteEnoughRecipes;
  * Displays an NPC. Similar to a bestiary button, but is never locked. Shows the name of the NPC
  * when hovered.
  */
-public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<NPCIngredient>
+public class UINPCPanel : UIElement, IIngredientElement, IIngredientGridElement
 {
 	// This needs to be a child of the panel to handle overflow properly.
 	private class UINPCIcon : UIElement, IIngredientElement, IHighlightableElement
@@ -30,15 +30,15 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 		private bool _isHovering => Parent?.IsMouseHovering ?? false;
 
 		public bool IsHighlighted { get; protected set; }
-		public IIngredient Ingredient => new NPCIngredient(NPCID);
+		public IIngredient Ingredient => new NPCIngredient(NpcID);
 
 		public BestiaryEntry Entry { get; private set; }
 
 		private IEntryIcon _icon;
 		// some npcs have entries that are removed from the bestiary so their Icon is null
 		// this ensures that those entries are drawn anyway.
-		public IEntryIcon Icon => _icon ??= (Entry.Icon ?? new UnlockableNPCEntryIcon(NPCID));
-		public required int NPCID
+		public IEntryIcon Icon => _icon ??= (Entry.Icon ?? new UnlockableNPCEntryIcon(NpcID));
+		public required int NpcID
 		{
 			get => _npcID;
 
@@ -72,7 +72,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 				UnlockState = BestiaryEntryUnlockState.CanShowPortraitOnly_1
 			};
 
-			if (QuiteEnoughRecipes.LoadNPCAsync(NPCID).IsLoaded)
+			if (QuiteEnoughRecipes.LoadNPCAsync(NpcID).IsLoaded)
 			{
 				Icon.Update(collectionInfo, rect,
 				new EntryIconDrawSettings()
@@ -94,11 +94,12 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 			if (IsHighlighted)
 			{
 				var dim = GetDimensions().ToRectangle();
+				
 				dim.Inflate(-2, -2);
 				sb.Draw(TextureAssets.MagicPixel.Value, dim, Main.OurFavoriteColor);
 			}
 
-			if (QuiteEnoughRecipes.LoadNPCAsync(NPCID).IsLoaded)
+			if (QuiteEnoughRecipes.LoadNPCAsync(NpcID).IsLoaded)
 			{
 				var dim = GetDimensions().ToRectangle();
 				Icon.Draw(collectionInfo, sb,
@@ -112,17 +113,19 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 		}
 	}
 
-	public static int GridSideLength => 72;
-	public static int GridPadding => 5;
+	public const float DefaultSize = 72;
 
 	private UINPCIcon _icon;
 	private string _hoverText = "";
 
-	public IIngredient Ingredient => new NPCIngredient(_icon.NPCID);
+	public IIngredient Ingredient => new NPCIngredient(_icon.NpcID);
+
+	public IIngredient Value => Ingredient;
+	public UIElement Element => this;
 
 	public UINPCPanel(int npcID, int size = 72)
 	{
-		_icon = new UINPCIcon{ NPCID = npcID};
+		_icon = new UINPCIcon{ NpcID = npcID};
 		UpdateHoverText();
 
 		Width.Pixels = Height.Pixels = size;
@@ -154,7 +157,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 	public void SetDisplayedValue(NPCIngredient i)
 	{
-		_icon.NPCID = i.ID;
+		_icon.NpcID = i.ID;
 		UpdateHoverText();
 	}
 
@@ -170,7 +173,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 
 	private void UpdateHoverText()
 	{
-		ContentSamples.NpcsByNetId.TryGetValue(_icon.NPCID, out var npc);
+		ContentSamples.NpcsByNetId.TryGetValue(_icon.NpcID, out var npc);
 
 		/*
 		 * We color NPC names by rarity, similarly to items. Bosses use the same color as quest
@@ -184,7 +187,7 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 		var mod = npc?.ModNPC?.Mod;
 		var modTag = mod == null ? "" : QuiteEnoughRecipes.GetModTagText(mod);
 
-		_hoverText = $"[c/{rarityColor.Hex3()}:{Lang.GetNPCNameValue(_icon.NPCID)}]{modTag}";
+		_hoverText = $"[c/{rarityColor.Hex3()}:{Lang.GetNPCNameValue(_icon.NpcID)}]{modTag}";
 		var flavorText = Ingredient.GetTooltipLines().FirstOrDefault();
 
 		if (flavorText != null)
@@ -197,5 +200,25 @@ public class UINPCPanel : UIElement, IIngredientElement, IScrollableGridElement<
 			var wrappedFlavorText = FontAssets.MouseText.Value.CreateWrappedText(flavorText, width, Language.ActiveCulture.CultureInfo);
 			_hoverText += $"\n{wrappedFlavorText}";
 		}
+	}
+
+	public void SetDisplayedValue(IIngredient value)
+	{
+		if (value is NPCIngredient npcIng)
+		{
+			_icon.NpcID = npcIng.ID;
+			UpdateHoverText();
+		}
+	}
+
+	public void Configure(GridOptions options)
+	{
+		Width.Pixels = options.SideLength;
+		Height.Pixels = options.SideLength;
+	}
+
+	public IGridElement<IIngredient> Copy()
+	{
+		return new UINPCPanel(_icon.NpcID);
 	}
 }

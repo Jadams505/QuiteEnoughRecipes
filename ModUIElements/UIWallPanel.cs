@@ -17,7 +17,7 @@ using Terraria.UI.Chat;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 
-public class UIWallPanel : UIElement, IIngredientElement, IScrollableGridElement<WallIngredient>, IHighlightableElement
+public class UIWallPanel : UIElement, IIngredientElement, /*IScrollableGridElement<WallIngredient>,*/ IHighlightableElement
 {
 	public static int GridSideLength { get; } = 52;
 	public static int GridPadding { get; } = 5;

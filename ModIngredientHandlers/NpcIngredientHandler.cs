@@ -1,5 +1,6 @@
 ﻿using QuiteEnoughRecipes.ModAPI;
 using QuiteEnoughRecipes.ModRecipeHandlers;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
@@ -15,7 +16,13 @@ public class NpcIngredientHandler : QERIngredientHandler
 	public override LocalizedText SearchHelp { get; } = Language.GetText("Mods.QuiteEnoughRecipes.UI.NPCSearchHelp");
 	public override UIElement TabElement { get; } = ITab.ItemIcon(new Item(ItemID.Bunny));
 
-	public override IQueryableSource<IIngredient> GetIngredients()
+	public override GridOptions Options { get; } = new()
+	{
+		Padding = 5,
+		SideLength = 72
+	};
+
+	public override IEnumerable<IGridElement<IIngredient>> GetIngredients()
 	{
 		var allNPCs = Enumerable.Range(0, NPCLoader.NPCCount)
 			.Where(n => Main.BestiaryDB.FindEntryByNPCID(n).Icon != null ||
@@ -23,6 +30,6 @@ public class NpcIngredientHandler : QERIngredientHandler
 			.Select(n => new NPCIngredient(n))
 			.ToList();
 
-		return new UIQueryableIngredientGrid<NPCIngredient, UINPCPanel>(allNPCs.ToList());
+		return allNPCs.Select(x => new UINPCPanel(x.ID));
 	}
 }

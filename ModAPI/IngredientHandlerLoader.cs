@@ -21,12 +21,8 @@ public class IngredientHandlerLoader
 
 	internal static UISearchPage CreateSearchPage(QERIngredientHandler handler)
 	{
-		return new UISearchPage(handler.GetIngredients(), handler.SearchHelp);
-	}
-
-	internal static UISearchPage CreateBrowserTab(QERIngredientHandler handler)
-	{
-		return new UISearchPage(handler.GetIngredients(), handler.SearchHelp);
+		var grid = new UIQueryableIngredientGrid(handler);
+		return new UISearchPage(grid, handler.SearchHelp);
 	}
 
 	internal static void ResizeArrays()

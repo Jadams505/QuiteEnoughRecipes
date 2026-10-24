@@ -22,10 +22,12 @@ public abstract class QERIngredientHandler : ModType, IIngredientHandler
 	// The icon that will be displayed in the tab.
 	public abstract UIElement TabElement { get; }
 
+	public abstract GridOptions Options { get; }
+
 	/*
 	 * Returns a queryable list of ingredients that should be displayed in a tab
 	 */
-	public abstract IQueryableSource<IIngredient> GetIngredients();
+	public abstract IEnumerable<IGridElement<IIngredient>> GetIngredients();
 
 	/// <summary>
 	/// By default icons are sorted in load order.<br/>

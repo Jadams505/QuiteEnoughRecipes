@@ -13,7 +13,7 @@ using Terraria.UI.Chat;
 
 namespace QuiteEnoughRecipes.ModUIElements;
 
-public class UIArmorSetPanel : UIElement, IIngredientElement, IScrollableGridElement<ArmorSetIngredient>, IHighlightableElement
+public class UIArmorSetPanel : UIElement, IIngredientElement, /*IScrollableGridElement<ArmorSetIngredient>,*/ IHighlightableElement
 {
 	public static int GridSideLength { get; } = 52;
 	public static int GridPadding { get; } = 5;

@@ -19,13 +19,19 @@ public class ItemIngredientHandler : QERIngredientHandler
 	public override LocalizedText SearchHelp { get; } = Language.GetText("Mods.QuiteEnoughRecipes.UI.ItemSearchHelp");
 	public override UIElement TabElement { get; } = ITab.ItemIcon(new Item(ItemID.IronBar));
 
-	public override IQueryableSource<IIngredient> GetIngredients()
+	public override GridOptions Options { get; } = new()
+	{
+		Padding = 5,
+		SideLength = 52
+	};
+
+	public override IEnumerable<IGridElement<IIngredient>> GetIngredients()
 	{
 		var allItems = Enumerable.Range(0, ItemLoader.ItemCount)
 			.Select(i => new Item(i))
 			.Where(i => i.type != 0)
 			.Select(i => new ItemIngredient(i));
 
-		return new UIQueryableIngredientGrid<ItemIngredient, UIItemPanel>(allItems.ToList());
+		return allItems.Select(x => new UIItemPanel(x.Item));
 	}
 }

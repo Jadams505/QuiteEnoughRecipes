@@ -11,7 +11,7 @@ using Terraria.UI;
 using Terraria.UI.Chat;
 
 namespace QuiteEnoughRecipes.ModUIElements;
-public class UIBuffPanel : UIElement, IIngredientElement, IScrollableGridElement<BuffIngredient>, IHighlightableElement
+public class UIBuffPanel : UIElement, IIngredientElement, /*IScrollableGridElement<BuffIngredient>, */IHighlightableElement
 {
 	public static int GridSideLength { get; } = 52;
 	public static int GridPadding { get; } = 5;
