@@ -26,5 +26,8 @@ public class ItemSortHandler : QERSortHandler
 	{
 		yield return new SimpleIngredientSortTab<ItemIngredient>(Language.GetText($"{GroupKey}.ByCreative"), ItemID.TreeStatue, ByCreative);
 		yield return new SimpleIngredientSortTab<ItemIngredient>(Language.GetText($"{GroupKey}.ByID"), ItemID.AlphabetStatue1, ByID);
+		yield return new SimpleIngredientSortTab<ItemIngredient>(Language.GetText($"{GroupKey}.ByName"), ItemID.AlphabetStatueA, ByName);
+		yield return new SimpleIngredientSortTab<ItemIngredient>(Language.GetText($"{GroupKey}.ByRarity"), ItemID.StarStatue, ByRarity);
+		yield return new SimpleIngredientSortTab<ItemIngredient>(Language.GetText($"{GroupKey}.ByValue"), ItemID.ChestStatue, ByValue);
 	}
 }
