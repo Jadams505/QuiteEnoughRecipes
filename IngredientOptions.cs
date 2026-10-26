@@ -1,33 +1,17 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.UI;
 using Terraria;
 
 using ItemGroup = Terraria.ID.ContentSamples.CreativeHelper.ItemGroup;
-using QuiteEnoughRecipes.ModIngredients;
 
 namespace QuiteEnoughRecipes;
-
-public class IngredientOptionAttribute : Attribute
-{
-	public string Group;
-	public int IconID;
-
-	public IngredientOptionAttribute(string group, int iconID = 0)
-	{
-		Group = group;
-		IconID = iconID;
-	}
-};
 
 /*
  * Various predicates on items used for filtering. For the most part, I try to stick to the vanilla
@@ -36,21 +20,7 @@ public class IngredientOptionAttribute : Attribute
  */
 static class IngredientOptions
 {
-	// Mostly used by `IngredientRegistry`.
-	public record OptionButtonSpec<T>(T Value, int IconID, LocalizedText Name) {}
-
-	public static readonly string KeyParent = "Mods.QuiteEnoughRecipes.OptionGroups";
-
-	// Get list of option buttons for options of type `T`.
-	public static IEnumerable<OptionButtonSpec<T>> GetOptionButtons<T>(string groupName)
-		where T : Delegate
-	{
-		var heading = Language.Exists($"{KeyParent}.{groupName}.Name")
-			? Language.GetText($"{KeyParent}.{groupName}.Name")
-			: null;
-		return typeof(IngredientOptions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-			.SelectMany(m => GetOptionsFromMethod<T>(m, groupName));
-	}
+	public record OptionButtonSpec<T>(T Value, int IconID, LocalizedText Name) { }
 
 	// Check if `i` is in the creative item group `g`.
 	public static bool IsInGroup(ItemIngredient i, params ItemGroup[] groups)
@@ -69,64 +39,47 @@ static class IngredientOptions
 		&& i.Item.ammo == AmmoID.None;
 
 	#region Item Filters
-	//[IngredientOption("ItemFilters.Misc", ItemID.StoneBlock)]
 	public static bool IsTile(ItemIngredient i) => IsInGroup(i, ItemGroup.CraftingObjects,
 		ItemGroup.Torches, ItemGroup.Wood, ItemGroup.Crates, ItemGroup.PlaceableObjects,
 		ItemGroup.Blocks, ItemGroup.Rope, ItemGroup.Walls);
 
-	//[IngredientOption("ItemFilters.Misc", ItemID.Furnace)]
 	public static bool IsCraftingStation(ItemIngredient i) => IsInGroup(i, ItemGroup.CraftingObjects);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.SuspiciousLookingEye)]
 	public static bool IsBossSummon(ItemIngredient i) => IsInGroup(i, ItemGroup.BossItem,
 		ItemGroup.BossSpawners);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.GoodieBag)]
 	public static bool IsLootItem(ItemIngredient i) => IsInGroup(i, ItemGroup.Crates, ItemGroup.BossBags,
 		ItemGroup.GoodieBags);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.InfernoPotion)]
 	public static bool IsPotion(ItemIngredient i) => IsInGroup(i, ItemGroup.LifePotions,
 		ItemGroup.ManaPotions, ItemGroup.BuffPotion, ItemGroup.Flask);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.Apple)]
 	public static bool IsFood(ItemIngredient i) => IsInGroup(i, ItemGroup.Food);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.WoodFishingPole)]
 	public static bool IsFishing(ItemIngredient i) => IsInGroup(i, ItemGroup.FishingRods,
 		ItemGroup.FishingQuestFish, ItemGroup.Fish, ItemGroup.FishingBait);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.RedDye)]
 	public static bool IsDye(ItemIngredient i) => IsInGroup(i, ItemGroup.DyeMaterial, ItemGroup.Dye,
 		ItemGroup.HairDye);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.AnkletoftheWind)]
 	public static bool IsAccessory(ItemIngredient i) => IsInGroup(i, ItemGroup.Accessories);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.ExoticEasternChewToy)]
 	public static bool IsPet(ItemIngredient i) => IsInGroup(i, ItemGroup.VanityPet);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.SlimySaddle)]
 	public static bool IsMount(ItemIngredient i) => IsInGroup(i, ItemGroup.Mount, ItemGroup.Minecart);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.CreativeWings)]
 	public static bool IsWings(ItemIngredient i) => i.Item.wingSlot >= 0;
 
-	[IngredientOption("ItemFilters.Misc", ItemID.GrapplingHook)]
 	public static bool IsHook(ItemIngredient i) => IsInGroup(i, ItemGroup.Hook);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.CopperPickaxe)]
 	public static bool IsTool(ItemIngredient i) => IsInGroup(i, ItemGroup.Pickaxe, ItemGroup.Axe,
 		ItemGroup.Hammer);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.CopperChainmail)]
 	public static bool IsArmor(ItemIngredient i) => IsInGroup(i, ItemGroup.Headgear, ItemGroup.Torso,
 		ItemGroup.Pants) && !IsVanity(i);
 
-	[IngredientOption("ItemFilters.Misc", ItemID.RedHat)]
 	public static bool IsVanity(ItemIngredient i) => i.Item.vanity;
 
-	[IngredientOption("ItemFilters.Misc", ItemID.Cog)]
 	public static bool IsResearched(ItemIngredient i)
 	{
 		Main.LocalPlayerCreativeTracker.ItemSacrifices.TryGetSacrificeNumbers(i.Item.type,
@@ -135,22 +88,16 @@ static class IngredientOptions
 		return needed > 0 && sacrificed >= needed;
 	}
 
-	[IngredientOption("ItemFilters.Weapons", ItemID.CopperShortsword)]
 	public static bool IsMeleeWeapon(ItemIngredient i) => IsInGroup(i, ItemGroup.MeleeWeapon);
 
-	[IngredientOption("ItemFilters.Weapons", ItemID.WoodenBow)]
 	public static bool IsRangedWeapon(ItemIngredient i) => IsInGroup(i, ItemGroup.RangedWeapon);
 
-	[IngredientOption("ItemFilters.Weapons", ItemID.WandofSparking)]
 	public static bool IsMagicWeapon(ItemIngredient i) => IsInGroup(i, ItemGroup.MagicWeapon);
 
-	[IngredientOption("ItemFilters.Weapons", ItemID.BabyBirdStaff)]
 	public static bool IsSummonWeapon(ItemIngredient i) => IsInGroup(i, ItemGroup.SummonWeapon);
 
-	[IngredientOption("ItemFilters.Weapons", ItemID.FlareGun)]
 	public static bool IsClasslessWeapon(ItemIngredient i) => IsWeaponInDamageClass(i, DamageClass.Default);
 
-	[IngredientOption("ItemFilters.Weapons")]
 	public static IEnumerable<OptionButtonSpec<Predicate<ItemIngredient>>> CustomWeaponFilters(
 		string keyParent)
 	{
@@ -204,7 +151,6 @@ static class IngredientOptions
 	#endregion
 
 	#region Item Sorts
-	[IngredientOption("ItemSorts", ItemID.TreeStatue)]
 	public static int ByCreative(ItemIngredient x, ItemIngredient y)
 	{
 		var xg = ContentSamples.CreativeHelper.GetItemGroup(x.Item, out int xo);
@@ -212,33 +158,26 @@ static class IngredientOptions
 		return (xg, xo, x.Item.type).CompareTo((yg, yo, y.Item.type));
 	}
 
-	[IngredientOption("ItemSorts", ItemID.AlphabetStatue1)]
 	public static int ByID(ItemIngredient x, ItemIngredient y) =>
 		x.Item.type.CompareTo(y.Item.type);
 
-	[IngredientOption("ItemSorts", ItemID.AlphabetStatueA)]
 	public static int ByName(ItemIngredient x, ItemIngredient y) => x.Name.CompareTo(y.Name);
 
-	[IngredientOption("ItemSorts", ItemID.StarStatue)]
 	public static int ByRarity(ItemIngredient x, ItemIngredient y) =>
 		x.Item.rare.CompareTo(y.Item.rare);
 
-	[IngredientOption("ItemSorts", ItemID.ChestStatue)]
 	public static int ByValue(ItemIngredient x, ItemIngredient y) =>
 		x.Item.value.CompareTo(y.Item.value);
 	#endregion
 
 	#region NPC Filters
-	[IngredientOption("NPCFilters", ItemID.SlimeCrown)]
 	public static bool IsBoss(NPCIngredient n) =>
 		TryGetBestiaryInfoElement<BossBestiaryInfoElement>(n.ID) != null;
 
-	[IngredientOption("NPCFilters", ItemID.GoldCoin)]
 	public static bool IsTownNPC(NPCIngredient n) => TryGetNPC(n.ID)?.isLikeATownNPC ?? false;
 	#endregion
 
 	#region NPC Sorts
-	[IngredientOption("NPCSorts", ItemID.TreeStatue)]
 	public static int ByBestiary(NPCIngredient x, NPCIngredient y)
 	{
 		int xid, yid;
@@ -254,105 +193,16 @@ static class IngredientOptions
 		return xid.CompareTo(yid);
 	}
 
-	[IngredientOption("NPCSorts", ItemID.AlphabetStatue1)]
 	public static int ByID(NPCIngredient x, NPCIngredient y) => x.ID.CompareTo(y.ID);
 
-	[IngredientOption("NPCSorts", ItemID.AlphabetStatueA)]
 	public static int ByName(NPCIngredient x, NPCIngredient y) => x.Name.CompareTo(y.Name);
 
-	[IngredientOption("NPCSorts", ItemID.StarStatue)]
 	public static int ByRarity(NPCIngredient x, NPCIngredient y)
 	{
 		int xRare = TryGetNPC(x.ID)?.rarity ?? 0;
 		int yRare = TryGetNPC(y.ID)?.rarity ?? 0;
 		return xRare.CompareTo(yRare);
 	}
-	#endregion
-
-	#region Tile Sorts
-	public const string TileSortsKey = "TileSorts";
-	[IngredientOption(TileSortsKey, ItemID.AlphabetStatue1)]
-	public static int ByID(TileIngredient x, TileIngredient y)
-	{
-		var compareId = x.TileType.CompareTo(y.TileType);
-		if (compareId is 0)
-		{
-			// Although not mentioned in the name, it is natural to sort in order of style as well
-			var compareStyle = x.TileStyle.CompareTo(y.TileStyle);
-			return compareStyle;
-		}
-		return compareId; 
-	}
-
-	[IngredientOption(TileSortsKey, ItemID.AlphabetStatueA)]
-	public static int ByName(TileIngredient x, TileIngredient y) => x.Name.CompareTo(y.Name);
-	#endregion
-
-	#region Wall Sorts
-	public const string WallSortsKey = "WallSorts";
-	[IngredientOption(WallSortsKey, ItemID.AlphabetStatue1)]
-	public static int ByID(WallIngredient x, WallIngredient y) =>
-		x.WallType.CompareTo(y.WallType);
-
-	[IngredientOption(WallSortsKey, ItemID.AlphabetStatueA)]
-	public static int ByName(WallIngredient x, WallIngredient y) => x.Name.CompareTo(y.Name);
-	#endregion
-
-	#region Buff Sorts
-	public const string BuffSortsKey = "BuffSorts";
-	[IngredientOption(BuffSortsKey, ItemID.AlphabetStatue1)]
-	public static int ByID(BuffIngredient x, BuffIngredient y) =>
-		x.BuffType.CompareTo(y.BuffType);
-
-	[IngredientOption(BuffSortsKey, ItemID.AlphabetStatueA)]
-	public static int ByName(BuffIngredient x, BuffIngredient y) => x.Name.CompareTo(y.Name);
-	#endregion
-
-	#region Biome Sorts
-	public const string BiomeSortsKey = "BiomeSorts";
-	[IngredientOption(BiomeSortsKey, ItemID.AlphabetStatue1)]
-	public static int ByID(BiomeIngredient x, BiomeIngredient y)
-	{
-		var order = BestiaryDatabaseNPCsPopulator.CommonTags.GetCommonInfoElementsForFilters();
-		int xIndex = x.InfoType is IBestiaryInfoElement xBestiary 
-			? order.IndexOf(xBestiary)
-			: -1;
-
-		int yIndex = y.InfoType is IBestiaryInfoElement yBestiary
-			? order.IndexOf(yBestiary)
-			: -1;
-
-		return xIndex.CompareTo(yIndex);
-	}
-		
-
-	[IngredientOption(BiomeSortsKey, ItemID.AlphabetStatueA)]
-	public static int ByName(BiomeIngredient x, BiomeIngredient y) => x.Name.CompareTo(y.Name);
-	#endregion
-
-	#region Tile Filters
-	public const string TileFiltersKey = "TileFilters";
-	[IngredientOption(TileFiltersKey, ItemID.AlphabetStatue0)]
-	public static bool IsDefaultStyle(TileIngredient n) =>
-		n.TileStyle == 0;
-
-	[IngredientOption(TileFiltersKey, ItemID.Solidifier)]
-	public static bool IsSolid(TileIngredient n) =>
-		Main.tileSolid[n.TileType];
-	#endregion
-
-	#region Wall Filters
-	public const string WallFiltersKey = "WallFilters";
-	[IngredientOption(WallFiltersKey, ItemID.Safe)]
-	public static bool IsSafe(WallIngredient n) =>
-		Main.wallHouse[n.WallType];
-	#endregion
-
-	#region Buff Filters
-	public const string BuffFiltersKey = "BuffFilters";
-	[IngredientOption(BuffFiltersKey, ItemID.Ichor)]
-	public static bool IsDebuff(BuffIngredient i) =>
-		Main.debuff[i.BuffType];
 	#endregion
 
 	/*
@@ -394,44 +244,5 @@ static class IngredientOptions
 	private static NPC? TryGetNPC(int npcID)
 	{
 		return ContentSamples.NpcsByNetId.TryGetValue(npcID, out var npc) ? npc : null;
-	}
-
-	/*
-	 * Get option(s) represented by the method `m`. `T` must be a delegate type. `m` is handled as
-	 * follows:
-	 * - If `m` does not have an `IngredientOption` attribute, or if the group name specified in
-	 *   the attribute is not `groupName`, then no buttons are returned.
-	 * - If `m` is directly convertible to the delegate type `T` then it is added as an option
-	 *   button directly based on the specification given in the `IngredientOption` attribute.
-	 * - If `m` is convertible to a delegate of type `(string) ->
-	 *   IEnumerable<OptionButtonSpec<T>>`, then it will be called with the group's localization
-	 *   key as an argument, and the 
-	 */
-	private static IEnumerable<OptionButtonSpec<T>> GetOptionsFromMethod<T>(MethodInfo m,
-		string groupName) where T : Delegate
-	{
-		var attr = m.GetCustomAttribute<IngredientOptionAttribute>();
-		if (attr == null || attr.Group != groupName) { return []; }
-
-		var pred = TryCreateDelegate<T>(m);
-		if (pred != null)
-		{
-			var text = Language.GetText($"{KeyParent}.{attr.Group}.{m.Name}");
-			return [new(pred, attr.IconID, text)];
-		}
-
-		var listGen = TryCreateDelegate<Func<string, IEnumerable<OptionButtonSpec<T>>>>(m);
-		if (listGen != null)
-		{
-			return listGen($"{KeyParent}.{groupName}");
-		}
-
-		return [];
-	}
-
-	private static T? TryCreateDelegate<T>(MethodInfo m) where T : Delegate
-	{
-		var d = Delegate.CreateDelegate(typeof(T), m, false);
-		return d == null ? null : (d as T);
 	}
 }

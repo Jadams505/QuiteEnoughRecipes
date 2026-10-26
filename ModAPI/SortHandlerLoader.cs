@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace QuiteEnoughRecipes.ModAPI;
 
-public class SortHandlerLoader
+public static class SortHandlerLoader
 {
 	public static int SortHandlerCount => _sortHandlers.Count;
 	private static readonly List<QERSortHandler> _sortHandlers = [];
@@ -46,5 +46,16 @@ public class SortHandlerLoader
 		}
 
 		_orderedSortHandlers = sortedLayers.ToArray();
+	}
+
+	public static UISortGroup<IIngredient> GetSortGroup()
+	{
+		var group = new UISortGroup<IIngredient>();
+		foreach (var handler in OrderedSortHandler)
+		{
+			group.AddSorts(handler);
+		}
+
+		return group;
 	}
 }

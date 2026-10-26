@@ -34,8 +34,8 @@ public class UIQueryableIngredientGrid : UIElement, IQueryable
 			TemplateElement = handler.GetIngredients().First()
 		};
 		_filteredIngredients = new(_allIngredients);
-		_filterGroup = IngredientRegistry.Instance.GetFilterGroup();
-		_sortGroup = IngredientRegistry.Instance.GetSortGroup();
+		_filterGroup = FilterHandlerLoader.GetFilterGroup();
+		_sortGroup = SortHandlerLoader.GetSortGroup();
 
 		_filterGroup.OnFiltersChanged += UpdateDisplayedIngredients;
 		_sortGroup.OnSortChanged += UpdateDisplayedIngredients;

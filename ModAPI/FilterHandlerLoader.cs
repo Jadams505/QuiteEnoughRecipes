@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Terraria;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace QuiteEnoughRecipes.ModAPI;
 
-public class FilterHandlerLoader
+public static class FilterHandlerLoader
 {
 	public static int FilterHandlerCount => _filterHandlers.Count;
 	private static readonly List<QERFilterHandler> _filterHandlers = [];
@@ -46,5 +43,16 @@ public class FilterHandlerLoader
 		}
 
 		_orderedFilterHandlers = sortedLayers.ToArray();
+	}
+
+	public static UIFilterGroup<IIngredient> GetFilterGroup()
+	{
+		var group = new UIFilterGroup<IIngredient>();
+		foreach (var handler in OrderedFilterHandlers)
+		{
+			group.AddFilters(handler);
+		}
+
+		return group;
 	}
 }
