@@ -50,7 +50,7 @@ public class UIQERState : UIState
 		{
 			Handler = handler;
 			_filterGroup = IngredientRegistry.Instance.GetFilterGroup();
-			_sortGroup = IngredientRegistry.Instance.MakeSortGroup(Handler.GetIngredientTypes());
+			_sortGroup = IngredientRegistry.Instance.GetSortGroup();
 
 			_filterGroup.OnFiltersChanged += UpdateDisplayedRecipes;
 			_sortGroup.OnSortChanged += UpdateDisplayedRecipes;

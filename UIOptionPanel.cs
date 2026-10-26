@@ -1,15 +1,17 @@
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using QuiteEnoughRecipes.ModFiltersHandlers;
+using QuiteEnoughRecipes.ModSortHandlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using Terraria.GameContent.UI.Elements;
+using Terraria;
 using Terraria.GameContent;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.Localization;
 using Terraria.UI;
-using Terraria;
-using QuiteEnoughRecipes.ModFiltersHandlers;
 
 namespace QuiteEnoughRecipes;
 
@@ -53,7 +55,7 @@ public class UIAutoExtendSectionGrid : UIAutoExtendGrid
 		public required string Key;
 		public List<UIElement> Elems = [];
 		public required UIText HeaderElem;
-		public bool Visible { get; set; }
+		public bool Visible { get; set; } = true;
 	}
 
 	private bool _hasChanged = false;
@@ -316,14 +318,27 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 
 public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 {
-	private int _activeSortIndex = 0;
-	private List<UIOptionButton<Comparison<T>>> _sortButtons = [];
+	public static readonly UISortGroup<T> Default = new UISortGroup<T>((x, y) => 0, Language.GetText(""),
+				new UIItemIcon(new(ItemID.AngelStatue), false), "");
 
-	public bool IsDefaulted => _activeSortIndex == 0;
+	public UIOptionButton<Comparison<T>> ActiveSort
+	{
+		get => field;
+		set
+		{
+			if (value is null) { return; }
+
+			foreach (var button in _optionButtons) { button.PanelOverrideColor = null; }
+			value.PanelOverrideColor = Color.White;
+			field = value;
+		}
+	}
+
+	private Dictionary<string, List<UIOptionButton<Comparison<T>>>> _optionButtonsLookup = [];
+	private IEnumerable<UIOptionButton<Comparison<T>>> _optionButtons => _optionButtonsLookup.Values.SelectMany(x => x);
+	public bool IsDefaulted => ActiveSort == _optionButtons.FirstOrDefault();
 	public bool HasLocks => false;
 	public UIElement Element => this;
-
-	public bool Visible { get; set; } = true;
 
 	public event Action? OnSortChanged;
 
@@ -336,21 +351,49 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 	{
 		Width.Percent = 1;
 		AddSort(defaultComp, defaultName, defaultIcon, defaultSectionNameKey);
+		ActiveSort = _optionButtons.First();
+	}
+
+	public UISortGroup()
+	{
+		Width.Percent = 1;
 	}
 
 	public void AddSort(Comparison<T> comp, LocalizedText name, UIElement icon, string sectionNameKey)
 	{
-		_sortButtons.Add(new(icon){
+		UIOptionButton<Comparison<T>> button = new(icon)
+		{
 			Value = comp,
 			HoverText = name
-		});
+		};
 
-		AddToSection(_sortButtons[_sortButtons.Count - 1], sectionNameKey);
+		AddButton(sectionNameKey, button);
+		AddToSection(button, sectionNameKey);
+	}
+
+	public void AddSort(ISortTab<T> sort, string sectionNameKey)
+	{
+		UIOptionButton<Comparison<T>> button = new(sort.TabElement)
+		{
+			Value = sort.Sorter,
+			HoverText = sort.HoverName
+		};
+
+		AddButton(sectionNameKey, button);
+		AddToSection(button, sectionNameKey);
+	}
+
+	public void AddSorts(ISortHandler<T> handler)
+	{
+		foreach(var sort in handler.GetSorts())
+		{
+			AddSort(sort, handler.SortGroupText.Key);
+		}
 	}
 
 	public void Reset()
 	{
-		SetIndex(0);
+		ActiveSort = _optionButtons.FirstOrDefault() ?? Default.ActiveSort;
 		OnSortChanged?.Invoke();
 	}
 
@@ -362,21 +405,23 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 
 		if (e.Target is UIOptionButton<Comparison<T>> b)
 		{
-			int index = _sortButtons.FindIndex(button => button == b);
-			if (index != -1) { SetIndex(index); }
+			ActiveSort = b;
 			OnSortChanged?.Invoke();
 		}
 	}
 
-	public Comparison<T> GetActiveSort() => _sortButtons[_activeSortIndex].Value;
+	public Comparison<T> GetActiveSort() => ActiveSort?.Value ?? Default.ActiveSort.Value;
 
-	private void SetIndex(int i)
+	private void AddButton(string sectionNameKey, UIOptionButton<Comparison<T>> button)
 	{
-		if (i >= _sortButtons.Count) { return; }
-
-		foreach (var button in _sortButtons) { button.PanelOverrideColor = null; }
-		_sortButtons[i].PanelOverrideColor = Color.White;
-		_activeSortIndex = i;
+		if (_optionButtonsLookup.TryGetValue(sectionNameKey, out var existing))
+		{
+			existing.Add(button);
+		}
+		else
+		{
+			_optionButtonsLookup[sectionNameKey] = [button];
+		}
 	}
 }
 
@@ -484,18 +529,6 @@ public class UIOptionPanel : UIPanel, IOptionGroup
 
 		Append(_list);
 		Append(scroll);
-	}
-
-	public override void Update(GameTime gameTime)
-	{
-		base.Update(gameTime);
-		/*
-		_list.Clear();
-		foreach (var group in _groups.Where(g => g.Visible))
-		{
-			AddGroup(group);
-		}
-		*/
 	}
 
 	public void AddGroup(IOptionGroup group)

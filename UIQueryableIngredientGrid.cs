@@ -35,7 +35,7 @@ public class UIQueryableIngredientGrid : UIElement, IQueryable
 		};
 		_filteredIngredients = new(_allIngredients);
 		_filterGroup = IngredientRegistry.Instance.GetFilterGroup();
-		_sortGroup = IngredientRegistry.Instance.MakeSortGroup<IIngredient>();
+		_sortGroup = IngredientRegistry.Instance.GetSortGroup();
 
 		_filterGroup.OnFiltersChanged += UpdateDisplayedIngredients;
 		_sortGroup.OnSortChanged += UpdateDisplayedIngredients;
@@ -78,6 +78,12 @@ public class UIQueryableIngredientGrid : UIElement, IQueryable
 		{
 			bool shouldShow = handler.Applies(_allIngredients.OfType<IIngredient>());
 			_filterGroup.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
+		}
+
+		foreach (var handler in SortHandlerLoader.OrderedSortHandler)
+		{
+			bool shouldShow = handler.Applies(_allIngredients.OfType<IIngredient>());
+			_sortGroup.SetSectionVisibility(handler.SortGroupText.Key, shouldShow);
 		}
 		var query = SearchQuery.FromSearchText(_searchText ?? "");
 		var positiveFilters = _filterGroup.GetPositiveFilters();

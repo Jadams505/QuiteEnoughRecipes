@@ -286,49 +286,12 @@ public class IngredientRegistry : ModSystem
 		return group;
 	}
 
-	/*
-	 * Make a filter group for filtering by mod. Only mods included in the list of ingredients of
-	 * type `T` will be used.
-	 */
-	public UIFilterGroup<T> MakeModFilterGroup<T>()
-		where T : IIngredient
+	public UISortGroup<IIngredient> GetSortGroup()
 	{
-		_ingredients.TryGetValue(typeof(T), out var list);
-		var mods = (list?.Value ?? []).Select(i => i.Mod)
-			.Where(m => m is not null)
-			.Select(m => m!);
-		return MakeModFilterGroup<T>(mods);
-	}
-
-	// Make a generic mod filter group for ingredients of any type in `ingredientTypes`.
-	public UIFilterGroup<IIngredient> MakeModFilterGroup(
-		IEnumerable<Type> ingredientTypes)
-	{
-		var mods = ingredientTypes
-			.SelectMany(t => _ingredients.TryGetValue(t, out var ings) ? ings.Value : [])
-			.Select(i => i.Mod)
-			.Where(m => m is not null)
-			.Select(m => m!);
-		return MakeModFilterGroup<IIngredient>(mods);
-	}
-
-	/*
-	 * Make a filter group containing each mod in `mods`. Only one filter will be added for each
-	 * different mod in `mods`, and they will be in alphabetical order.
-	 */
-	public UIFilterGroup<T> MakeModFilterGroup<T>(IEnumerable<Mod> mods)
-		where T : IIngredient
-	{
-		var keyParent = "Mods.QuiteEnoughRecipes.OptionGroups.Mods";
-		var group = new UIFilterGroup<T>();
-
-		var sortedMods = mods.Distinct().OrderBy(m => m.DisplayNameClean);
-		foreach (var mod in sortedMods)
+		var group = new UISortGroup<IIngredient>();
+		foreach (var handler in SortHandlerLoader.OrderedSortHandler)
 		{
-			var name = Language.GetText($"{keyParent}.ModName")
-				.WithFormatArgs(mod.DisplayNameClean);
-			var icon = mod.ModSourceBestiaryInfoElement.GetFilterImage();
-			group.AddFilter(i => i.Mod == mod, name, icon, $"{keyParent}.Name");
+			group.AddSorts(handler);
 		}
 
 		return group;

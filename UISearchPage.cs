@@ -199,8 +199,8 @@ public class UISearchPage : UIElement, IFocusableSearchPage
 			Append(filterToggleButton);
 		}
 
-		var sorts = queryElement.GetSortGroups().ToList();
-		if (sorts.Count > 0)
+		var sorts = queryElement.GetSortGroups();
+		if (sorts.Any())
 		{
 			_sortPanel.Width.Percent = 1;
 			_sortPanel.Height.Percent = 1;
