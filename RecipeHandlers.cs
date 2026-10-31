@@ -38,8 +38,6 @@ public static class RecipeHandlers
 				}
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	// Recipes requiring a crafting station.
@@ -65,8 +63,6 @@ public static class RecipeHandlers
 				}
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	public class ShimmerTransmutations : QERRecipeHandler
@@ -144,8 +140,6 @@ public static class RecipeHandlers
 				}
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	public class NPCShops : QERRecipeHandler
@@ -193,9 +187,6 @@ public static class RecipeHandlers
 				break;
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() =>
-			[typeof(ItemIngredient), typeof(NPCIngredient)];
 
 		public static bool MatchesCurrency(Item currency, Item shopEntry)
 		{
@@ -245,8 +236,6 @@ public static class RecipeHandlers
 				}
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	// Items dropped by NPCs when they are killed.
@@ -299,9 +288,6 @@ public static class RecipeHandlers
 				break;
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() =>
-			[typeof(ItemIngredient), typeof(NPCIngredient)];
 	}
 
 	// If the item can be dropped from *any* NPC, this tab will show.
@@ -325,8 +311,6 @@ public static class RecipeHandlers
 				yield return new GlobalDropsRecipe{ Drops = drops };
 			}
 		}
-
-		public override IEnumerable<Type> GetIngredientTypes() => [typeof(ItemIngredient)];
 	}
 
 	private static bool RecipeAcceptsItem(Recipe r, Item i)

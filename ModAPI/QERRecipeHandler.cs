@@ -16,8 +16,6 @@ public abstract class QERRecipeHandler : ModType, IRecipeHandler
 
 	public abstract IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType);
 
-	public abstract IEnumerable<Type> GetIngredientTypes();
-
 	/// <summary>
 	/// By default icons are sorted in load order.<br/>
 	/// This hook allows you to sort this icon before/after other icons.<br/>

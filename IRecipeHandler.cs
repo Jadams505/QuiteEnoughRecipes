@@ -16,12 +16,6 @@ public interface IRecipeHandler : ITab
 	 * result in that ingredient.
 	 */
 	public IEnumerable<IRecipe> GetRecipes(IIngredient ing, QueryType queryType);
-
-	/*
-	 * List of ingredient types that might show up in recipes from this handler. These are used to
-	 * determine which sorts and filters will be available.
-	 */
-	public IEnumerable<Type> GetIngredientTypes();
 }
 
 public enum QueryType
