@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 using QuiteEnoughRecipes.ModFiltersHandlers;
 using QuiteEnoughRecipes.ModSortHandlers;
 using System;
@@ -318,25 +319,18 @@ public class UIFilterGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 
 public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 {
-	public static readonly UISortGroup<T> Default = new UISortGroup<T>((x, y) => 0, Language.GetText(""),
-				new UIItemIcon(new(ItemID.AngelStatue), false), "");
+	public static readonly Comparison<T> DefaultComparison = (x, y) => 0;
 
-	public UIOptionButton<Comparison<T>> ActiveSort
+	private UIOptionButton<Comparison<T>>? _activeSort;
+	public UIOptionButton<Comparison<T>>? ActiveSort
 	{
-		get => field;
-		set
-		{
-			if (value is null) { return; }
-
-			foreach (var button in _optionButtons) { button.PanelOverrideColor = null; }
-			value.PanelOverrideColor = Color.White;
-			field = value;
-		}
+		get => _activeSort;
+		set => SetActiveSort(value);
 	}
 
 	private Dictionary<string, List<UIOptionButton<Comparison<T>>>> _optionButtonsLookup = [];
 	private IEnumerable<UIOptionButton<Comparison<T>>> _optionButtons => _optionButtonsLookup.Values.SelectMany(x => x);
-	public bool IsDefaulted => ActiveSort == _optionButtons.FirstOrDefault();
+	public bool IsDefaulted => ActiveSort == GetActiveSortFrom(null);
 	public bool HasLocks => false;
 	public UIElement Element => this;
 
@@ -351,12 +345,53 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 	{
 		Width.Percent = 1;
 		AddSort(defaultComp, defaultName, defaultIcon, defaultSectionNameKey);
-		ActiveSort = _optionButtons.First();
+		_activeSort = _optionButtons.First();
 	}
 
 	public UISortGroup()
 	{
 		Width.Percent = 1;
+	}
+
+	public void SetActiveSort(UIOptionButton<Comparison<T>>? active)
+	{
+		var selected = GetActiveSortFrom(active);
+
+		foreach (var button in _optionButtons) 
+		{ 
+			button.PanelOverrideColor = null; 
+		}
+		selected?.PanelOverrideColor = Color.White;
+
+		_activeSort = selected;
+	}
+
+	private UIOptionButton<Comparison<T>>? GetActiveSortFrom(UIOptionButton<Comparison<T>>? active)
+	{
+		UIOptionButton<Comparison<T>>? target = active;
+		UIOptionButton<Comparison<T>>? firstVisible = null;
+		foreach (var entry in _optionButtonsLookup)
+		{
+			var section = GetSection(entry.Key);
+			if (section is null)
+				continue;
+
+			for (int i = 0; i < section.Elems.Count; ++i)
+			{
+				var curr = section.Elems[i];
+				if (section.Visible && firstVisible is null)
+					firstVisible = entry.Value[i];
+				if (curr == target && !section.Visible)
+					target = null;
+			}
+		}
+		var selected = target ?? firstVisible;
+		return selected;
+	}
+
+	public Comparison<T> GetActiveSort()
+	{
+		return _activeSort?.Value ?? DefaultComparison;
 	}
 
 	public void AddSort(Comparison<T> comp, LocalizedText name, UIElement icon, string sectionNameKey)
@@ -381,6 +416,7 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 
 		AddButton(sectionNameKey, button);
 		AddToSection(button, sectionNameKey);
+		SetActiveSort(ActiveSort); // this is kind of dumb
 	}
 
 	public void AddSorts(ISortHandler<T> handler)
@@ -393,7 +429,7 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 
 	public void Reset()
 	{
-		ActiveSort = _optionButtons.FirstOrDefault() ?? Default.ActiveSort;
+		ActiveSort = null;
 		OnSortChanged?.Invoke();
 	}
 
@@ -409,8 +445,6 @@ public class UISortGroup<T> : UIAutoExtendSectionGrid, IOptionGroup
 			OnSortChanged?.Invoke();
 		}
 	}
-
-	public Comparison<T> GetActiveSort() => ActiveSort?.Value ?? Default.ActiveSort.Value;
 
 	private void AddButton(string sectionNameKey, UIOptionButton<Comparison<T>> button)
 	{

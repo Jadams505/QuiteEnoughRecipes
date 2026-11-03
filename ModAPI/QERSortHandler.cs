@@ -25,7 +25,7 @@ public abstract class QERSortHandler : ModType, ISortHandler<IIngredient>
 	/// </para>
 	/// By default, this hook returns <c>[]</c>, which indicates that this icon has no ordering constraints.
 	/// </summary>
-	public virtual IEnumerable<Position<QERSortHandler>> GetConstraints() => [];
+	public virtual IEnumerable<Position> GetConstraints() => [];
 
 	protected sealed override void Register()
 	{
@@ -34,4 +34,34 @@ public abstract class QERSortHandler : ModType, ISortHandler<IIngredient>
 	}
 
 	public sealed override void SetupContent() => SetStaticDefaults();
+
+	public abstract class Position;
+
+	public sealed class Before : Position
+	{
+		public QERSortHandler Value { get; }
+		public Before(QERSortHandler value)
+		{
+			Value = value;
+		}
+
+		public static Before Instance<T>() where T : QERSortHandler
+		{
+			return new(ModContent.GetInstance<T>());
+		}
+	}
+
+	public sealed class After : Position
+	{
+		public QERSortHandler Value { get; }
+		public After(QERSortHandler value)
+		{
+			Value = value;
+		}
+
+		public static After Instance<T>() where T : QERSortHandler
+		{
+			return new(ModContent.GetInstance<T>());
+		}
+	}
 }

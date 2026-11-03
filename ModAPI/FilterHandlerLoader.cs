@@ -33,8 +33,8 @@ public static class FilterHandlerLoader
 		{
 			var elements = sortingSlots[i];
 			var sort = new TopoSort<QERFilterHandler>(elements,
-				i => i.GetConstraints()?.OfType<After<QERFilterHandler>>().Select(a => a.Value).Where(elements.Contains) ?? [],
-				i => i.GetConstraints()?.OfType<Before<QERFilterHandler>>().Select(a => a.Value).Where(elements.Contains) ?? []);
+				i => i.GetConstraints()?.OfType<QERFilterHandler.After>().Select(a => a.Value).Where(elements.Contains) ?? [],
+				i => i.GetConstraints()?.OfType<QERFilterHandler.Before>().Select(a => a.Value).Where(elements.Contains) ?? []);
 
 			foreach (QERFilterHandler icon in sort.Sort())
 			{

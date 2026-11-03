@@ -40,8 +40,8 @@ public class IngredientHandlerLoader
 		{
 			var elements = sortingSlots[i];
 			var sort = new TopoSort<QERIngredientHandler>(elements,
-				i => i.GetConstraints()?.OfType<After<QERIngredientHandler>>().Select(a => a.Value).Where(elements.Contains) ?? [],
-				i => i.GetConstraints()?.OfType<Before<QERIngredientHandler>>().Select(a => a.Value).Where(elements.Contains) ?? []);
+				i => i.GetConstraints()?.OfType<QERIngredientHandler.After>().Select(a => a.Value).Where(elements.Contains) ?? [],
+				i => i.GetConstraints()?.OfType<QERIngredientHandler.Before>().Select(a => a.Value).Where(elements.Contains) ?? []);
 
 			foreach (QERIngredientHandler icon in sort.Sort())
 			{

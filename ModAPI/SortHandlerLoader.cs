@@ -36,8 +36,8 @@ public static class SortHandlerLoader
 		{
 			var elements = sortingSlots[i];
 			var sort = new TopoSort<QERSortHandler>(elements,
-				i => i.GetConstraints()?.OfType<After<QERSortHandler>>().Select(a => a.Value).Where(elements.Contains) ?? [],
-				i => i.GetConstraints()?.OfType<Before<QERSortHandler>>().Select(a => a.Value).Where(elements.Contains) ?? []);
+				i => i.GetConstraints()?.OfType<QERSortHandler.After>().Select(a => a.Value).Where(elements.Contains) ?? [],
+				i => i.GetConstraints()?.OfType<QERSortHandler.Before>().Select(a => a.Value).Where(elements.Contains) ?? []);
 
 			foreach (QERSortHandler icon in sort.Sort())
 			{

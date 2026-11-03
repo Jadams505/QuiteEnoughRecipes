@@ -25,8 +25,7 @@ public class NpcIngredientHandler : QERIngredientHandler
 	public override IEnumerable<IGridElement<IIngredient>> GetIngredients()
 	{
 		var allNPCs = Enumerable.Range(0, NPCLoader.NPCCount)
-			.Where(n => Main.BestiaryDB.FindEntryByNPCID(n).Icon != null ||
-				NpcCapturingHandler.GetAllCatchableNpcs().Any(npc => npc.type == n))
+			.Where(n => Main.BestiaryDB.FindEntryByNPCID(n).Icon != null)
 			.Select(n => new NPCIngredient(n))
 			.ToList();
 

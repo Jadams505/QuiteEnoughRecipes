@@ -25,7 +25,7 @@ public abstract class QERRecipeHandler : ModType, IRecipeHandler
 	/// </para>
 	/// By default, this hook returns <c>[]</c>, which indicates that this icon has no ordering constraints.
 	/// </summary>
-	public virtual IEnumerable<Position<QERRecipeHandler>> GetConstraints() => [];
+	public virtual IEnumerable<Position> GetConstraints() => [];
 
 	protected sealed override void Register()
 	{
@@ -34,4 +34,34 @@ public abstract class QERRecipeHandler : ModType, IRecipeHandler
 	}
 
 	public sealed override void SetupContent() => SetStaticDefaults();
+
+	public abstract class Position;
+
+	public sealed class Before : Position
+	{
+		public QERRecipeHandler Value { get; }
+		public Before(QERRecipeHandler value)
+		{
+			Value = value;
+		}
+
+		public static Before Instance<T>() where T : QERRecipeHandler
+		{
+			return new(ModContent.GetInstance<T>());
+		}
+	}
+
+	public sealed class After : Position
+	{
+		public QERRecipeHandler Value { get; }
+		public After(QERRecipeHandler value)
+		{
+			Value = value;
+		}
+
+		public static After Instance<T>() where T : QERRecipeHandler
+		{
+			return new(ModContent.GetInstance<T>());
+		}
+	}
 }

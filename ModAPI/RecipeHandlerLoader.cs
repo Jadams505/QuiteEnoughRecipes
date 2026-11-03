@@ -36,8 +36,8 @@ public class RecipeHandlerLoader
 		{
 			var elements = sortingSlots[i];
 			var sort = new TopoSort<QERRecipeHandler>(elements,
-				i => i.GetConstraints()?.OfType<After<QERRecipeHandler>>().Select(a => a.Value).Where(elements.Contains) ?? [],
-				i => i.GetConstraints()?.OfType<Before<QERRecipeHandler>>().Select(a => a.Value).Where(elements.Contains) ?? []);
+				i => i.GetConstraints()?.OfType<QERRecipeHandler.After>().Select(a => a.Value).Where(elements.Contains) ?? [],
+				i => i.GetConstraints()?.OfType<QERRecipeHandler.Before>().Select(a => a.Value).Where(elements.Contains) ?? []);
 
 			foreach (QERRecipeHandler icon in sort.Sort())
 			{

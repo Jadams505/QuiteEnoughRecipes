@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace QuiteEnoughRecipes.ModFiltersHandlers;
 
-internal class ModFiltersHandler : QERFilterHandler
+public class ModFiltersHandler : QERFilterHandler
 {
 	public override LocalizedText FilterGroupText { get; }
 		= Language.GetText("Mods.QuiteEnoughRecipes.OptionGroups.Mods.Name");

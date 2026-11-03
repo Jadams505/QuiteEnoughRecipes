@@ -1,5 +1,4 @@
 ﻿using QuiteEnoughRecipes.ModAPI;
-using QuiteEnoughRecipes.ModRecipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
