@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Terraria.Localization;
 
-namespace QuiteEnoughRecipes.ModFiltersHandlers;
+namespace QuiteEnoughRecipes.ModAPI.Filters;
 
 public interface IFilterHandler<T>
 {

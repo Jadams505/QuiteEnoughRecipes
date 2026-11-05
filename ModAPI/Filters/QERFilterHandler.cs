@@ -1,9 +1,8 @@
-﻿using QuiteEnoughRecipes.ModFiltersHandlers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace QuiteEnoughRecipes.ModAPI;
+namespace QuiteEnoughRecipes.ModAPI.Filters;
 
 public abstract class QERFilterHandler : ModType, IFilterHandler<IIngredient>
 {

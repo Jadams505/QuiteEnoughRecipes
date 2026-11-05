@@ -1,10 +1,9 @@
 ﻿using QuiteEnoughRecipes.ModFiltersHandlers;
-using QuiteEnoughRecipes.ModSortHandlers;
 using System.Collections.Generic;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace QuiteEnoughRecipes.ModAPI;
+namespace QuiteEnoughRecipes.ModAPI.Sorts;
 
 public abstract class QERSortHandler : ModType, ISortHandler<IIngredient>
 {

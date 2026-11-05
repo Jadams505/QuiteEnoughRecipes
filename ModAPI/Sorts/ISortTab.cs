@@ -5,7 +5,7 @@ using System.Text;
 using Terraria.Localization;
 using Terraria.UI;
 
-namespace QuiteEnoughRecipes.ModSortHandlers;
+namespace QuiteEnoughRecipes.ModAPI.Sorts;
 
 public interface ISortTab<in T> : ITab
 {

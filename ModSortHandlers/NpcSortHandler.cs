@@ -1,4 +1,4 @@
-﻿using QuiteEnoughRecipes.ModAPI;
+﻿using QuiteEnoughRecipes.ModAPI.Sorts;
 using QuiteEnoughRecipes.ModFiltersHandlers;
 using System;
 using System.Collections.Generic;

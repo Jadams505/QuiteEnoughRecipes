@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
-using QuiteEnoughRecipes.ModFiltersHandlers;
-using QuiteEnoughRecipes.ModSortHandlers;
+using QuiteEnoughRecipes.ModAPI.Filters;
+using QuiteEnoughRecipes.ModAPI.Sorts;
 using System;
 using System.Collections.Generic;
 using System.Linq;

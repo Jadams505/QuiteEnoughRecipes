@@ -1,5 +1,4 @@
-﻿using QuiteEnoughRecipes.ModAPI;
-using QuiteEnoughRecipes.ModFiltersHandlers;
+﻿using QuiteEnoughRecipes.ModAPI.Filters;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.ID;

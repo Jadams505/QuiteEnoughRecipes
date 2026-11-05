@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Terraria.ModLoader;
 
-namespace QuiteEnoughRecipes.ModAPI;
+namespace QuiteEnoughRecipes.ModAPI.Ingredients;
 
 public class IngredientHandlerLoader
 {

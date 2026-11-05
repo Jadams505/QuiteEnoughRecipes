@@ -2,7 +2,7 @@
 using Terraria.Localization;
 using Terraria.UI;
 
-namespace QuiteEnoughRecipes.ModFiltersHandlers;
+namespace QuiteEnoughRecipes.ModAPI.Filters;
 
 public interface IFilterTab<in T> : ITab
 {

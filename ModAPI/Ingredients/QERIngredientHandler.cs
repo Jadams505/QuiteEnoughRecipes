@@ -7,7 +7,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace QuiteEnoughRecipes.ModAPI;
+namespace QuiteEnoughRecipes.ModAPI.Ingredients;
 
 public abstract class QERIngredientHandler : ModType, IIngredientHandler
 {

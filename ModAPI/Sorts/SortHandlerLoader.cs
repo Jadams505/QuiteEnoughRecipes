@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace QuiteEnoughRecipes.ModAPI;
+namespace QuiteEnoughRecipes.ModAPI.Sorts;
 
 public static class SortHandlerLoader
 {

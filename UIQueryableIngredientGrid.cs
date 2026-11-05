@@ -4,7 +4,8 @@ using System;
 using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
 using QuiteEnoughRecipes.ModIngredientHandlers;
-using QuiteEnoughRecipes.ModAPI;
+using QuiteEnoughRecipes.ModAPI.Filters;
+using QuiteEnoughRecipes.ModAPI.Sorts;
 
 namespace QuiteEnoughRecipes;
 
@@ -76,13 +77,13 @@ public class UIQueryableIngredientGrid : UIElement, IQueryable
 	{
 		foreach (var handler in FilterHandlerLoader.OrderedFilterHandlers)
 		{
-			bool shouldShow = handler.Applies(_allIngredients.OfType<IIngredient>());
+			bool shouldShow = handler.Applies(_allIngredients);
 			_filterGroup.SetSectionVisibility(handler.FilterGroupText.Key, shouldShow);
 		}
 
 		foreach (var handler in SortHandlerLoader.OrderedSortHandler)
 		{
-			bool shouldShow = handler.Applies(_allIngredients.OfType<IIngredient>());
+			bool shouldShow = handler.Applies(_allIngredients);
 			_sortGroup.SetSectionVisibility(handler.SortGroupText.Key, shouldShow);
 		}
 		var query = SearchQuery.FromSearchText(_searchText ?? "");

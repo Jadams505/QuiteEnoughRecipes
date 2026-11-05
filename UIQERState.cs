@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Terraria.GameContent.UI.Elements;
-using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria;
-using QuiteEnoughRecipes.ModRecipeHandlers;
 using QuiteEnoughRecipes.ModUIElements;
-using QuiteEnoughRecipes.ModIngredients;
-using System.Diagnostics;
-using QuiteEnoughRecipes.ModAPI;
+using QuiteEnoughRecipes.ModAPI.Filters;
+using QuiteEnoughRecipes.ModAPI.Sorts;
+using QuiteEnoughRecipes.ModAPI.Ingredients;
+using QuiteEnoughRecipes.ModAPI.Recipes;
 
 namespace QuiteEnoughRecipes;
 

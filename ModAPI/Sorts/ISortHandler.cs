@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Terraria.Localization;
 
-namespace QuiteEnoughRecipes.ModSortHandlers;
+namespace QuiteEnoughRecipes.ModAPI.Sorts;
 
 public interface ISortHandler<T>
 {

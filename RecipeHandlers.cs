@@ -11,7 +11,7 @@ using Terraria.UI;
 using Terraria;
 using Terraria.GameContent;
 using System.Runtime.CompilerServices;
-using QuiteEnoughRecipes.ModAPI;
+using QuiteEnoughRecipes.ModAPI.Recipes;
 
 namespace QuiteEnoughRecipes;
 

@@ -1,5 +1,4 @@
-﻿using QuiteEnoughRecipes.ModAPI;
-using QuiteEnoughRecipes.ModRecipeHandlers;
+﻿using QuiteEnoughRecipes.ModAPI.Ingredients;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
