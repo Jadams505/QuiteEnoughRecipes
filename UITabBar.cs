@@ -1,12 +1,12 @@
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
 using Terraria.UI;
-using Terraria;
 
 namespace QuiteEnoughRecipes;
 
@@ -129,6 +129,54 @@ public class UITabBar<T> : UIElement
 	{
 		ReLayoutTabs();
 		base.RecalculateChildren();
+	}
+
+	public override void ScrollWheel(UIScrollWheelEvent evt)
+	{
+		base.ScrollWheel(evt);
+
+		int scroll = evt.ScrollWheelValue;
+
+		if (scroll > 0)
+		{
+			ShiftTabsRight();
+			Recalculate();
+		}
+		else if (scroll < 0)
+		{
+			ShiftTabsLeft();
+			Recalculate();
+		}
+	}
+
+	private void ShiftTabsRight()
+	{
+		if (_tabs.Count <= 1)
+			return;
+
+		var cache = _tabs[0];
+		for (int i = 1; i < _tabs.Count; ++i)
+		{
+			var current = _tabs[i];
+			_tabs[i] = cache;
+			cache = current;
+		}
+		_tabs[0] = cache;
+	}
+
+	private void ShiftTabsLeft()
+	{
+		if (_tabs.Count <= 1)
+			return;
+
+		var cache = _tabs[0];
+		for (int i = _tabs.Count - 1; i > 0; --i)
+		{
+			var current = _tabs[i];
+			_tabs[i] = cache;
+			cache = current;
+		}
+		_tabs[0] = cache;
 	}
 
 	public override void LeftClick(UIMouseEvent e)
